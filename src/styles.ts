@@ -37,6 +37,7 @@ export const widgetStyles = `
 .zd-lead-panel,
 .zd-pdf-note-field,
 .zd-pdf-note,
+.zd-pdf-cta,
 .zd-actions,
 .zd-step-actions,
 .zd-option,
@@ -434,6 +435,30 @@ export const widgetStyles = `
   font-size: 0.92rem;
   font-weight: 700;
   margin: 8px 0 0;
+}
+
+.zd-pdf-cta {
+  align-items: center;
+  background: #eef8f4;
+  border: 1px solid #c7eadf;
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: space-between;
+  margin: 16px 0 4px;
+  padding: 16px;
+}
+
+.zd-pdf-cta-title {
+  color: var(--zd-primary);
+  font-size: 1rem;
+  margin: 0 0 4px;
+}
+
+.zd-pdf-cta-text {
+  color: #165f4b;
+  margin: 0;
 }
 
 .zd-lead-panel {

@@ -738,6 +738,19 @@ function ResultStep({
         <Metric label="Mögliche monatliche Lücke" value={formatCurrency(Math.max(0, result.monthlyGap))} />
       </div>
 
+      <div className="zd-pdf-cta">
+        <div>
+          <h3 className="zd-pdf-cta-title">PDF für den Kunden sichern</h3>
+          <p className="zd-pdf-cta-text">
+            Erstellt eine übersichtliche PDF-/Druckansicht für das Kundengespräch.
+          </p>
+        </div>
+        <button className="zd-button zd-button-accent" type="button" onClick={onCreatePdf}>
+          PDF herunterladen / speichern
+        </button>
+      </div>
+      {pdfStatus && <p className="zd-copy-status">{pdfStatus}</p>}
+
       <ResultSection title="Steuerdiagnose">
         <p>{getIncomeTypesDiagnosis(result.incomeTypeCount)}</p>
         <p>
@@ -879,7 +892,7 @@ function ResultStep({
         </div>
         <div className="zd-button-row">
           <button className="zd-button zd-button-accent" type="button" onClick={onCreatePdf}>
-            PDF-Bericht erstellen
+            PDF herunterladen / speichern
           </button>
         </div>
         {pdfStatus && <p className="zd-copy-status">{pdfStatus}</p>}
