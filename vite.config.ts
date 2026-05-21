@@ -7,6 +7,9 @@ export default defineConfig({
   define: {
     "process.env.NODE_ENV": JSON.stringify("production")
   },
+  preview: {
+    allowedHosts: ["zinsendoktor-check.onrender.com"]
+  },
   build: {
     target: "es2018",
     emptyOutDir: true,
