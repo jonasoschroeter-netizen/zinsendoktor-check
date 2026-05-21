@@ -35,6 +35,8 @@ export const widgetStyles = `
 .zd-textarea,
 .zd-alert,
 .zd-lead-panel,
+.zd-pdf-note-field,
+.zd-pdf-note,
 .zd-actions,
 .zd-step-actions,
 .zd-option,
@@ -440,6 +442,15 @@ export const widgetStyles = `
   border-radius: 8px;
   margin-top: 18px;
   padding: 16px;
+}
+
+.zd-pdf-note-field {
+  margin-top: 14px;
+}
+
+.zd-pdf-note {
+  min-height: 104px;
+  resize: vertical;
 }
 
 .zd-small {

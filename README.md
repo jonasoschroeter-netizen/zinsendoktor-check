@@ -30,6 +30,18 @@ dist/
 
 Das CSS wird vom Widget in den Widget-Container injiziert. Für IONOS muss deshalb nur eine JavaScript-Datei hochgeladen und eingebunden werden.
 
+## PDF-Kundenbericht
+
+In der Auswertung kann ein Vertriebler einen Kundenbericht erstellen. Der Bericht wird vollständig clientseitig als druckoptimierte HTML/PDF-Ansicht erzeugt. Über den Browser-Druckdialog kann er als PDF gespeichert werden.
+
+Optionale Felder:
+
+- Kundenname
+- Beratername
+- Notiz für den Bericht
+
+Auch dieser Prozess speichert nichts lokal und sendet keine Daten an einen Server.
+
 ## Render Deployment
 
 Das Projekt ist als Render Static Site vorbereitet.

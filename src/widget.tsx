@@ -19,6 +19,7 @@ import {
   satisfactionLabels,
   trafficLightLabels
 } from "./calculations";
+import { openCustomerReportPdf } from "./pdfReport";
 import type {
   CheckInput,
   CheckResult,
@@ -89,6 +90,12 @@ export function ZinsendoktorWidget({
     result: CheckResult;
   } | null>(null);
   const [copyStatus, setCopyStatus] = useState("");
+  const [pdfStatus, setPdfStatus] = useState("");
+  const [reportMeta, setReportMeta] = useState({
+    customerName: "",
+    advisorName: "",
+    note: ""
+  });
   const resultTextRef = useRef<HTMLTextAreaElement | null>(null);
 
   const themeStyle = useMemo(
@@ -214,6 +221,20 @@ export function ZinsendoktorWidget({
     }
   }
 
+  function createPdfReport(): void {
+    if (!resultBundle) {
+      return;
+    }
+
+    const opened = openCustomerReportPdf(resultBundle.input, resultBundle.result, reportMeta);
+
+    setPdfStatus(
+      opened
+        ? "PDF-Ansicht wurde geöffnet. Im Druckdialog bitte „Als PDF speichern“ wählen."
+        : "Die PDF-Ansicht konnte nicht geöffnet werden. Bitte Pop-ups für diese Seite erlauben."
+    );
+  }
+
   function handleLeadSubmit(lead: LeadInput): void {
     if (resultBundle && options.enableLeadForm && lead.consent) {
       options.onResult?.(resultBundle.result, resultBundle.input, lead);
@@ -283,7 +304,11 @@ export function ZinsendoktorWidget({
               input={resultBundle.input}
               onBack={goBack}
               onCopy={copyResultText}
+              onCreatePdf={createPdfReport}
               onLeadSubmit={handleLeadSubmit}
+              onUpdateReportMeta={setReportMeta}
+              pdfStatus={pdfStatus}
+              reportMeta={reportMeta}
               result={resultBundle.result}
               textareaRef={resultTextRef}
             />
@@ -667,7 +692,11 @@ function ResultStep({
   input,
   onBack,
   onCopy,
+  onCreatePdf,
   onLeadSubmit,
+  onUpdateReportMeta,
+  pdfStatus,
+  reportMeta,
   result,
   textareaRef
 }: {
@@ -676,7 +705,11 @@ function ResultStep({
   input: CheckInput;
   onBack: () => void;
   onCopy: () => void;
+  onCreatePdf: () => void;
   onLeadSubmit: (lead: LeadInput) => void;
+  onUpdateReportMeta: (meta: { customerName: string; advisorName: string; note: string }) => void;
+  pdfStatus: string;
+  reportMeta: { customerName: string; advisorName: string; note: string };
   result: CheckResult;
   textareaRef: React.RefObject<HTMLTextAreaElement | null>;
 }): React.ReactElement {
@@ -797,6 +830,59 @@ function ResultStep({
         <p>
           <TrafficBadge value={result.globalTrafficLight} /> Prüfscore {formatNumber(result.globalScore)} / 100
         </p>
+      </ResultSection>
+
+      <ResultSection title="PDF-Kundenbericht">
+        <p className="zd-card-text">
+          Erstellen Sie einen übersichtlichen Bericht für das Kundengespräch. Die PDF-Ansicht wird
+          nur lokal im Browser erzeugt; es werden keine Daten gespeichert oder übertragen.
+        </p>
+        <div className="zd-grid zd-grid-two">
+          <TextField
+            id="report-customer-name"
+            label="Kundenname optional"
+            onChange={(value) =>
+              onUpdateReportMeta({
+                ...reportMeta,
+                customerName: value
+              })
+            }
+            value={reportMeta.customerName}
+          />
+          <TextField
+            id="report-advisor-name"
+            label="Beratername optional"
+            onChange={(value) =>
+              onUpdateReportMeta({
+                ...reportMeta,
+                advisorName: value
+              })
+            }
+            value={reportMeta.advisorName}
+          />
+        </div>
+        <div className="zd-field zd-pdf-note-field">
+          <label className="zd-label" htmlFor="report-note">
+            Notiz für den Bericht optional
+          </label>
+          <textarea
+            className="zd-input zd-pdf-note"
+            id="report-note"
+            onChange={(event) =>
+              onUpdateReportMeta({
+                ...reportMeta,
+                note: event.target.value
+              })
+            }
+            value={reportMeta.note}
+          />
+        </div>
+        <div className="zd-button-row">
+          <button className="zd-button zd-button-accent" type="button" onClick={onCreatePdf}>
+            PDF-Bericht erstellen
+          </button>
+        </div>
+        {pdfStatus && <p className="zd-copy-status">{pdfStatus}</p>}
       </ResultSection>
 
       <ResultSection title="Kopierbarer Ergebnistext">
@@ -988,25 +1074,25 @@ function LeadPanel({ onSubmit }: { onSubmit: (lead: LeadInput) => void }): React
     <div className="zd-lead-panel">
       <h3 className="zd-section-title">Sie möchten Ihre Auswertung prüfen lassen?</h3>
       <div className="zd-grid zd-grid-two">
-        <NumberLikeTextField
+        <TextField
           id="lead-name"
           label="Name"
           onChange={(value) => setLead((current) => ({ ...current, name: value }))}
           value={lead.name}
         />
-        <NumberLikeTextField
+        <TextField
           id="lead-email"
           label="E-Mail"
           onChange={(value) => setLead((current) => ({ ...current, email: value }))}
           value={lead.email}
         />
-        <NumberLikeTextField
+        <TextField
           id="lead-phone"
           label="Telefon optional"
           onChange={(value) => setLead((current) => ({ ...current, phone: value }))}
           value={lead.phone ?? ""}
         />
-        <NumberLikeTextField
+        <TextField
           id="lead-message"
           label="Nachricht optional"
           onChange={(value) => setLead((current) => ({ ...current, message: value }))}
@@ -1031,7 +1117,7 @@ function LeadPanel({ onSubmit }: { onSubmit: (lead: LeadInput) => void }): React
   );
 }
 
-function NumberLikeTextField({
+function TextField({
   id,
   label,
   onChange,
