@@ -1,0 +1,6 @@
+node_modules/
+dist/
+*.log
+localtunnel.*.log
+zinsendoktor-check-test.html
+zinsendoktor-result-check.png

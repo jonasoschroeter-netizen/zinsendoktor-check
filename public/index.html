@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zinsendoktor Finanz-Gesundheitscheck</title>
+    <style>
+      body {
+        margin: 0;
+        background: #eef2f7;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      .zd-demo-shell {
+        margin: 0 auto;
+        max-width: 1120px;
+        padding: 28px 16px 48px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="zd-demo-shell">
+      <div id="zinsendoktor-check"></div>
+    </main>
+    <script src="/zinsendoktor-check.js"></script>
+    <script>
+      ZinsendoktorCheck.mount("#zinsendoktor-check", {
+        mode: "anonymous",
+        enableLeadForm: false,
+        storage: false,
+        theme: {
+          primaryColor: "#0B1F3A",
+          accentColor: "#1FA37A"
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zinsendoktor Widget Einbindung</title>
+    <style>
+      body {
+        color: #162033;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+        margin: 0;
+      }
+
+      .zd-demo-shell {
+        margin: 0 auto;
+        max-width: 860px;
+        padding: 32px 16px;
+      }
+
+      .zd-demo-code {
+        background: #f6f8fb;
+        border: 1px solid #dbe2ec;
+        border-radius: 8px;
+        overflow-x: auto;
+        padding: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="zd-demo-shell">
+      <h1>Zinsendoktor Widget Einbindung</h1>
+      <p>
+        Ersetze <code>https://DEINE-RENDER-URL.onrender.com</code> durch die Live-URL dieser
+        Render-Seite.
+      </p>
+      <pre class="zd-demo-code"><code>&lt;div id="zinsendoktor-check"&gt;&lt;/div&gt;
+&lt;script src="https://DEINE-RENDER-URL.onrender.com/zinsendoktor-check.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  ZinsendoktorCheck.mount("#zinsendoktor-check", {
+    mode: "anonymous",
+    enableLeadForm: false,
+    storage: false
+  });
+&lt;/script&gt;</code></pre>
+    </main>
+  </body>
+</html>
