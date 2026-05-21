@@ -19,7 +19,7 @@ import {
   satisfactionLabels,
   trafficLightLabels
 } from "./calculations";
-import { openCustomerReportPdf } from "./pdfReport";
+import { buildCustomerReportPayload, openCustomerReportPdf } from "./pdfReport";
 import type {
   CheckInput,
   CheckResult,
@@ -227,6 +227,14 @@ export function ZinsendoktorWidget({
     }
 
     const opened = openCustomerReportPdf(resultBundle.input, resultBundle.result, reportMeta);
+    const reportPayload = buildCustomerReportPayload(
+      resultBundle.input,
+      resultBundle.result,
+      reportMeta,
+      options.integration?.currentUser
+    );
+
+    options.onCustomerReportGenerated?.(reportPayload);
 
     setPdfStatus(
       opened

@@ -19,6 +19,10 @@ export type Satisfaction = "zufrieden" | "unzufrieden" | "unsicher";
 
 export type TrafficLight = "green" | "yellow" | "red";
 
+export type DashboardContractStatus = "running" | "open" | "failed";
+
+export type IntegrationProvider = "odoo" | "custom";
+
 export interface TaxInput {
   incomeTypes: IncomeType[];
   maritalStatus: MaritalStatus;
@@ -92,6 +96,48 @@ export interface LeadInput {
   consent: boolean;
 }
 
+export interface AuthenticatedUserContext {
+  id: string;
+  name?: string;
+  email?: string;
+  role?: "sales" | "admin" | "advisor";
+}
+
+export interface CustomerReportPayload {
+  source: "zinsendoktor-check";
+  version: string;
+  generatedAt: string;
+  input: CheckInput;
+  result: CheckResult;
+  reportHtml: string;
+  reportText: string;
+  customer?: {
+    name?: string;
+  };
+  advisor?: {
+    name?: string;
+    userId?: string;
+    email?: string;
+  };
+  note?: string;
+}
+
+export interface FutureOdooIntegrationOptions {
+  provider?: IntegrationProvider;
+  enabled?: false;
+  currentUser?: AuthenticatedUserContext;
+  endpoints?: {
+    saveReport?: string;
+    saveContract?: string;
+    listContracts?: string;
+  };
+  odooModels?: {
+    report?: string;
+    contract?: string;
+    attachment?: "ir.attachment";
+  };
+}
+
 export interface ZinsendoktorTheme {
   primaryColor?: string;
   accentColor?: string;
@@ -103,8 +149,10 @@ export interface ZinsendoktorOptions {
   mode?: "anonymous" | "lead";
   enableLeadForm?: boolean;
   storage?: false;
+  integration?: FutureOdooIntegrationOptions;
   theme?: ZinsendoktorTheme;
   onResult?: ((result: CheckResult, input: CheckInput, lead?: LeadInput) => void) | null;
+  onCustomerReportGenerated?: ((payload: CustomerReportPayload) => void) | null;
   useShadowDom?: boolean;
 }
 

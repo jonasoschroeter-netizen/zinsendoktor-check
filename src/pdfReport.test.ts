@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { calculateCheck } from "./calculations";
-import { generateCustomerReportHtml } from "./pdfReport";
+import { buildCustomerReportPayload, generateCustomerReportHtml } from "./pdfReport";
 import type { CheckInput } from "./types";
 
 describe("customer PDF report", () => {
@@ -36,5 +36,44 @@ describe("customer PDF report", () => {
     expect(html).toContain("§ 32a EStG");
     expect(html).toContain("10.548,00");
     expect(html).toContain("Kundenbericht");
+  });
+
+  it("builds a hidden integration payload for future Odoo persistence", () => {
+    const input: CheckInput = {
+      tax: {
+        incomeTypes: ["nichtselbststaendig"],
+        maritalStatus: "ledig",
+        taxableIncome: 50000
+      },
+      pension: {
+        monthlyNetIncomePerson1: 2600,
+        yearsToRetirementPerson1: 30
+      },
+      inflation: {
+        expectedInflationPercent: 2.5,
+        currentWarmRent: 900,
+        currentLivingCosts: 1300
+      },
+      contracts: []
+    };
+    const result = calculateCheck(input);
+    const payload = buildCustomerReportPayload(
+      input,
+      result,
+      {
+        customerName: "Kunde",
+        advisorName: "Vertrieb"
+      },
+      {
+        id: "odoo-user-1",
+        email: "vertrieb@example.test"
+      }
+    );
+
+    expect(payload.source).toBe("zinsendoktor-check");
+    expect(payload.customer?.name).toBe("Kunde");
+    expect(payload.advisor?.userId).toBe("odoo-user-1");
+    expect(payload.reportHtml).toContain("Finanz-Gesundheitscheck");
+    expect(payload.reportText).toContain("Rechnerische Einkommensteuer 2026");
   });
 });

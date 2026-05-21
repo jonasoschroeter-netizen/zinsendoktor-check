@@ -17,11 +17,38 @@ import {
   trafficLightLabels
 } from "./calculations";
 import type { CheckInput, CheckResult, TrafficLight } from "./types";
+import type { AuthenticatedUserContext, CustomerReportPayload } from "./types";
 
 export interface CustomerReportMeta {
   customerName?: string;
   advisorName?: string;
   note?: string;
+}
+
+export function buildCustomerReportPayload(
+  input: CheckInput,
+  result: CheckResult,
+  meta: CustomerReportMeta = {},
+  user?: AuthenticatedUserContext
+): CustomerReportPayload {
+  return {
+    source: "zinsendoktor-check",
+    version: "0.1.0",
+    generatedAt: new Date().toISOString(),
+    input,
+    result,
+    reportHtml: generateCustomerReportHtml(input, result, meta),
+    reportText: result.generatedText,
+    customer: {
+      name: meta.customerName?.trim() || undefined
+    },
+    advisor: {
+      name: meta.advisorName?.trim() || user?.name || undefined,
+      userId: user?.id,
+      email: user?.email
+    },
+    note: meta.note?.trim() || undefined
+  };
 }
 
 export function openCustomerReportPdf(
