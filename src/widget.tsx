@@ -15,6 +15,7 @@ import {
   getTaxComparisonText,
   incomeTypeLabels,
   maritalStatusLabels,
+  OFFICIAL_TAX_SOURCE_2026,
   satisfactionLabels,
   trafficLightLabels
 } from "./calculations";
@@ -363,8 +364,9 @@ function TaxStep({
         Steuern und Einkommensarten
       </h2>
       <p className="zd-card-text">
-        Hier entsteht eine erste Orientierung zur Steuerlast und zur Breite Ihrer
-        Einkommensstruktur.
+        Die Einkommensteuer wird nach dem offiziellen Einkommensteuertarif 2026 aus § 32a EStG
+        berechnet. Der staatliche BMF-Rechner nutzt dieselbe gesetzliche Tarifgrundlage für die
+        tarifliche Einkommensteuer nach zu versteuerndem Einkommen.
       </p>
 
       <fieldset className="zd-fieldset">
@@ -708,6 +710,10 @@ function ResultStep({
         <p>
           Rechnerische Einkommensteuer 2026: <strong>{formatCurrency(result.calculatedIncomeTax)}</strong>.
           Geschätzte Steuerlast über 10 Jahre: <strong>{formatCurrency(result.estimatedTax10Years)}</strong>.
+        </p>
+        <p className="zd-small">
+          Berechnungsgrundlage: {OFFICIAL_TAX_SOURCE_2026.label}.{" "}
+          {OFFICIAL_TAX_SOURCE_2026.scope}
         </p>
         <div className={`zd-alert zd-alert-${taxComparisonLight}`}>
           {getTaxComparisonText(input.tax, result.calculatedIncomeTax)}

@@ -1,10 +1,44 @@
 import { describe, expect, it } from "vitest";
-import { calculateCheck, calculateIncomeTax2026, evaluateContract } from "./calculations";
+import {
+  calculateCheck,
+  calculateIncomeTax2026,
+  evaluateContract,
+  INCOME_TAX_2026_PARAMETERS
+} from "./calculations";
 import type { CheckInput, VorsorgeContractInput } from "./types";
 
 describe("Finanz-Gesundheitscheck calculations", () => {
   it("calculates the 2026 income tax formula for a single person", () => {
     expect(calculateIncomeTax2026(50000, "ledig")).toBe(10548);
+  });
+
+  it("keeps the official 2026 §32a EStG tariff parameters explicit", () => {
+    expect(INCOME_TAX_2026_PARAMETERS).toMatchObject({
+      basicAllowance: 12348,
+      progressionZone1End: 17799,
+      progressionZone2End: 69878,
+      proportionalZoneEnd: 277825,
+      zone1A: 914.51,
+      zone1B: 1400,
+      zone2A: 173.1,
+      zone2B: 2397,
+      zone2C: 1034.87,
+      zone3Rate: 0.42,
+      zone3Deduction: 11135.63,
+      zone4Rate: 0.45,
+      zone4Deduction: 19470.38
+    });
+  });
+
+  it("calculates official 2026 §32a EStG tariff boundary values", () => {
+    expect(calculateIncomeTax2026(12348, "ledig")).toBe(0);
+    expect(calculateIncomeTax2026(12349, "ledig")).toBe(0);
+    expect(calculateIncomeTax2026(17799, "ledig")).toBe(1034);
+    expect(calculateIncomeTax2026(17800, "ledig")).toBe(1035);
+    expect(calculateIncomeTax2026(69878, "ledig")).toBe(18213);
+    expect(calculateIncomeTax2026(69879, "ledig")).toBe(18213);
+    expect(calculateIncomeTax2026(277825, "ledig")).toBe(105550);
+    expect(calculateIncomeTax2026(277826, "ledig")).toBe(105551);
   });
 
   it("matches the expected orientation values for test case 1", () => {
@@ -37,6 +71,8 @@ describe("Finanz-Gesundheitscheck calculations", () => {
     expect(result.futureTotalNeed).toBeCloseTo(4614.65, 1);
     expect(result.monthlyGap).toBeCloseTo(2846.65, 1);
     expect(result.globalTrafficLight).toBe("red");
+    expect(result.generatedText).toContain("Berechnungsgrundlage");
+    expect(result.generatedText).toContain("§ 32a EStG");
   });
 
   it("uses splitting tax and the longer household horizon for married users", () => {

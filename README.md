@@ -95,3 +95,15 @@ Nach dem Deployment:
 - `src/zinsendoktor-check.tsx`: globaler Widget-Export
 
 Das Widget kann mehrfach gemountet werden. Standardmäßig nutzt es Shadow DOM, fällt bei Bedarf aber auf normales DOM mit stark gescopten Klassen zurück.
+
+## Steuerberechnung
+
+Die rechnerische Einkommensteuer 2026 wird lokal im Browser nach dem offiziellen Einkommensteuertarif aus § 32a EStG berechnet. Die Tarifparameter sind im Code als `INCOME_TAX_2026_PARAMETERS` hinterlegt und mit Grenzwert-Tests abgesichert.
+
+Offizielle Referenzen:
+
+- Gesetzestext § 32a EStG: https://www.gesetze-im-internet.de/estg/__32a.html
+- BMF Lohn- und Einkommensteuerrechner: https://www.bmf-steuerrechner.de/
+- BMF Programmablaufpläne 2026: https://www.bundesfinanzministerium.de/Datenportal/Daten/frei-nutzbare-produkte/Anwendungen/Programmablaufplan-2026/Programmablaufplan-2026.html
+
+Wichtig: Der Rechner bildet die tarifliche Einkommensteuer auf Basis des eingegebenen zu versteuernden Einkommens ab. Er berechnet keine verbindliche Steuererklärung und berücksichtigt aktuell keinen Solidaritätszuschlag, keine Kirchensteuer, keine Abgeltungsteuer und keine Sondervorschriften.

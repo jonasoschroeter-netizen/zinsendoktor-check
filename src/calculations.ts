@@ -14,6 +14,30 @@ import type {
 
 export const RENTENFAKTOR = 0.68;
 
+export const OFFICIAL_TAX_SOURCE_2026 = {
+  label: "Einkommensteuertarif 2026 nach § 32a EStG",
+  lawUrl: "https://www.gesetze-im-internet.de/estg/__32a.html",
+  bmfCalculatorUrl: "https://www.bmf-steuerrechner.de/",
+  scope:
+    "Tarifliche Einkommensteuer auf Basis des zu versteuernden Einkommens; ohne Solidaritätszuschlag, Kirchensteuer, Abgeltungsteuer und Sondervorschriften."
+} as const;
+
+export const INCOME_TAX_2026_PARAMETERS = {
+  basicAllowance: 12348,
+  progressionZone1End: 17799,
+  progressionZone2End: 69878,
+  proportionalZoneEnd: 277825,
+  zone1A: 914.51,
+  zone1B: 1400,
+  zone2A: 173.1,
+  zone2B: 2397,
+  zone2C: 1034.87,
+  zone3Rate: 0.42,
+  zone3Deduction: 11135.63,
+  zone4Rate: 0.45,
+  zone4Deduction: 19470.38
+} as const;
+
 export const incomeTypeLabels: Record<TaxInput["incomeTypes"][number], string> = {
   land_forst: "Land- und Forstwirtschaft",
   gewerbe: "Gewerbebetrieb",
@@ -60,21 +84,22 @@ export function calculateIncomeTax2026(
 }
 
 export function calculateSingleIncomeTax2026(taxableIncome: number): number {
+  const p = INCOME_TAX_2026_PARAMETERS;
   const x = Math.floor(Math.max(0, taxableIncome));
   let tax = 0;
 
-  if (x <= 12348) {
+  if (x <= p.basicAllowance) {
     tax = 0;
-  } else if (x >= 12349 && x <= 17799) {
-    const y = (x - 12348) / 10000;
-    tax = (914.51 * y + 1400) * y;
-  } else if (x >= 17800 && x <= 69878) {
-    const z = (x - 17799) / 10000;
-    tax = (173.1 * z + 2397) * z + 1034.87;
-  } else if (x >= 69879 && x <= 277825) {
-    tax = 0.42 * x - 11135.63;
+  } else if (x <= p.progressionZone1End) {
+    const y = (x - p.basicAllowance) / 10000;
+    tax = (p.zone1A * y + p.zone1B) * y;
+  } else if (x <= p.progressionZone2End) {
+    const z = (x - p.progressionZone1End) / 10000;
+    tax = (p.zone2A * z + p.zone2B) * z + p.zone2C;
+  } else if (x <= p.proportionalZoneEnd) {
+    tax = p.zone3Rate * x - p.zone3Deduction;
   } else {
-    tax = 0.45 * x - 19470.38;
+    tax = p.zone4Rate * x - p.zone4Deduction;
   }
 
   return Math.max(0, Math.floor(tax));
@@ -347,6 +372,8 @@ export function generateResultText(input: CheckInput, result: CheckResult): stri
     `Zu versteuerndes Einkommen: ${formatCurrency(input.tax.taxableIncome)}`,
     `Angegebene Einkommensteuer: ${paidTax}`,
     `Rechnerische Einkommensteuer 2026: ${formatCurrency(result.calculatedIncomeTax)}`,
+    `Berechnungsgrundlage: ${OFFICIAL_TAX_SOURCE_2026.label}`,
+    `Hinweis: ${OFFICIAL_TAX_SOURCE_2026.scope}`,
     `Geschätzte Steuerlast über 10 Jahre: ${formatCurrency(result.estimatedTax10Years)}`,
     "",
     "2. Angaben Rente",
