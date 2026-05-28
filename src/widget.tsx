@@ -444,6 +444,7 @@ function TaxStep({
         <div className="zd-tax-side">
           <fieldset className="zd-fieldset" aria-describedby={errors.maritalStatus ? "zd-marital-error" : undefined}>
             <legend className="zd-legend">Familienstand</legend>
+            <p className="zd-help" aria-hidden="true">&nbsp;</p>
             <div className="zd-option-list">
               {(Object.keys(maritalStatusLabels) as MaritalStatus[]).map((status) => (
                 <label className="zd-option" key={status}>
