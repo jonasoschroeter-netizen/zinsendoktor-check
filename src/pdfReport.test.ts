@@ -43,6 +43,9 @@ describe("customer PDF report", () => {
     expect(html).toContain("Private Vorsorge");
     expect(html).toContain("MÃ¶gliches Gesamtergebnis");
     expect(html).toContain("monatliche VersorgungslÃ¼cke");
+    expect(html).toContain("Prüfbedarf-Ampel");
+    expect(html).toContain("PDF-Kundenbericht");
+    expect(html).toContain("Kopierbarer Ergebnistext");
     expect(html).toContain("Max &lt;Kunde&gt;");
     expect(html).toContain("Berater &amp; Partner");
     expect(html).toContain("§ 32a EStG");
