@@ -32,6 +32,8 @@ describe("customer PDF report", () => {
 
     expect(html).toContain("Financial Care Preview");
     expect(html).toContain("Auswertung");
+    expect(html).toContain("PDF für den Kunden sichern");
+    expect(html).toContain("PDF herunterladen / speichern");
     expect(html).toContain("Max &lt;Kunde&gt;");
     expect(html).toContain("Berater &amp; Partner");
     expect(html).toContain("§ 32a EStG");

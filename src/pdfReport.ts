@@ -229,6 +229,41 @@ export function generateCustomerReportHtml(
         margin: 4px 0 0;
       }
 
+      .report-pdf-cta {
+        align-items: center;
+        background: #eef8f4;
+        border: 1px solid #c7eadf;
+        border-radius: 8px;
+        display: flex;
+        gap: 18px;
+        justify-content: space-between;
+        margin: 16px 38px 0;
+        padding: 14px 16px;
+      }
+
+      .report-pdf-title {
+        color: #0b3b2f;
+        font-size: 13px;
+        font-weight: 800;
+        margin: 0 0 3px;
+      }
+
+      .report-pdf-text {
+        color: #27705d;
+        font-size: 13px;
+        margin: 0;
+      }
+
+      .report-pdf-button {
+        background: var(--accent);
+        border-radius: 6px;
+        color: #ffffff;
+        flex: 0 0 auto;
+        font-size: 13px;
+        font-weight: 800;
+        padding: 11px 18px;
+      }
+
       .meta-bar {
         border-bottom: 1px solid var(--border);
         display: grid;
@@ -402,6 +437,11 @@ export function generateCustomerReportHtml(
           box-shadow: none;
           max-width: none;
         }
+
+        .report-pdf-cta {
+          margin-left: 0;
+          margin-right: 0;
+        }
       }
     </style>
   </head>
@@ -421,6 +461,14 @@ export function generateCustomerReportHtml(
           <span class="progress-tab progress-tab-active">Auswertung</span>
         </div>
       </header>
+
+      <div class="report-pdf-cta">
+        <div>
+          <p class="report-pdf-title">PDF für den Kunden sichern</p>
+          <p class="report-pdf-text">Erstellt eine übersichtliche PDF-/Druckansicht für das Kundengespräch.</p>
+        </div>
+        <div class="report-pdf-button">PDF herunterladen / speichern</div>
+      </div>
 
       <main class="content">
         <section class="report-intro">
