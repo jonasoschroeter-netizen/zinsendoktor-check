@@ -24,6 +24,8 @@ export const widgetStyles = `
 .zd-grid,
 .zd-field,
 .zd-input,
+.zd-input-wrap,
+.zd-input-suffix,
 .zd-button,
 .zd-progress,
 .zd-progress-track,
@@ -211,6 +213,25 @@ export const widgetStyles = `
   min-height: 44px;
   padding: 10px 11px;
   width: 100%;
+}
+
+.zd-input-wrap {
+  position: relative;
+}
+
+.zd-input-has-suffix {
+  padding-right: 42px;
+}
+
+.zd-input-suffix {
+  color: var(--zd-muted);
+  font-weight: 800;
+  line-height: 1;
+  pointer-events: none;
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .zd-textarea {

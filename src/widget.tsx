@@ -465,6 +465,7 @@ function TaxStep({
             id="taxableIncome"
             label="Wie hoch war Ihr letztes zu versteuerndes Einkommen?"
             onChange={(value) => onUpdateField("taxableIncome", value)}
+            suffix="€"
             value={formState.taxableIncome}
           />
           <NumberField
@@ -473,6 +474,7 @@ function TaxStep({
             label="Wie viel Einkommensteuer haben Sie darauf ungefähr gezahlt?"
             onChange={(value) => onUpdateField("paidIncomeTax", value)}
             optional
+            suffix="€"
             value={formState.paidIncomeTax}
           />
         </div>
@@ -1025,6 +1027,7 @@ function NumberField({
   label,
   onChange,
   optional = false,
+  suffix,
   value
 }: {
   error?: string;
@@ -1033,6 +1036,7 @@ function NumberField({
   label: string;
   onChange: (value: string) => void;
   optional?: boolean;
+  suffix?: string;
   value: string;
 }): React.ReactElement {
   const errorId = `${id}-error`;
@@ -1049,16 +1053,19 @@ function NumberField({
           {help}
         </p>
       )}
-      <input
-        aria-describedby={describedBy || undefined}
-        aria-invalid={error ? "true" : "false"}
-        className="zd-input"
-        id={id}
-        inputMode="decimal"
-        onChange={(event) => onChange(event.target.value)}
-        type="text"
-        value={value}
-      />
+      <div className={suffix ? "zd-input-wrap" : undefined}>
+        <input
+          aria-describedby={describedBy || undefined}
+          aria-invalid={error ? "true" : "false"}
+          className={`zd-input${suffix ? " zd-input-has-suffix" : ""}`}
+          id={id}
+          inputMode="decimal"
+          onChange={(event) => onChange(event.target.value)}
+          type="text"
+          value={value}
+        />
+        {suffix && <span className="zd-input-suffix">{suffix}</span>}
+      </div>
       <ErrorMessage error={error} id={errorId} />
     </div>
   );
