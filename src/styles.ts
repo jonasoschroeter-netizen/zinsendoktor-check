@@ -495,6 +495,18 @@ export const widgetStyles = `
   grid-template-columns: 1fr;
 }
 
+.zd-contract-fields .zd-field {
+  align-content: start;
+}
+
+.zd-contract-fields .zd-label {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-height: 48px;
+}
+
 .zd-copy-status {
   color: #12664e;
   font-size: 0.92rem;
