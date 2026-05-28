@@ -58,6 +58,7 @@ interface ContractFormState {
   yearsRunning: string;
   currentBalance: string;
   annualContribution: string;
+  selfPaid: string;
   satisfaction: Satisfaction;
 }
 
@@ -165,6 +166,7 @@ export function ZinsendoktorWidget({
           yearsRunning: "",
           currentBalance: "",
           annualContribution: "",
+          selfPaid: "",
           satisfaction: "unsicher"
         }
       ]
@@ -687,9 +689,16 @@ function ContractStep({
               <NumberField
                 error={errors[`${contract.id}.currentBalance`]}
                 id={`${contract.id}-currentBalance`}
-                label="Aktuelles Guthaben in EUR"
+                label="Wie hoch ist der aktuelle Rückkaufswert bzw. das Guthaben des Vertrages?"
                 onChange={(value) => onUpdateContract(contract.id, "currentBalance", value)}
                 value={contract.currentBalance}
+              />
+              <NumberField
+                error={errors[`${contract.id}.selfPaid`]}
+                id={`${contract.id}-selfPaid`}
+                label="Davon haben Sie selbst einbezahlt:"
+                onChange={(value) => onUpdateContract(contract.id, "selfPaid", value)}
+                value={contract.selfPaid}
               />
               <NumberField
                 error={errors[`${contract.id}.annualContribution`]}
@@ -858,8 +867,8 @@ function ResultStep({
                   <p>{contractResult.message}</p>
                   <p>{contractResult.hint}</p>
                   <p className="zd-small">
-                    Bisher eingezahlt: {formatCurrency(contractResult.totalPaid)}. Aktuelles
-                    Guthaben: {formatCurrency(contract.currentBalance)}.
+                    Selbst eingezahlt: {formatCurrency(contractResult.totalPaid)}. Aktuelles
+                    Guthaben/Rückkaufswert: {formatCurrency(contract.currentBalance)}.
                   </p>
                 </div>
               );
@@ -1273,6 +1282,9 @@ function validateStep(formState: FormState, step: StepId): { valid: true } | { v
       requireNumber(errors, `${contract.id}.currentBalance`, contract.currentBalance, {
         min: 0
       });
+      requireNumber(errors, `${contract.id}.selfPaid`, contract.selfPaid, {
+        min: 0
+      });
       requireNumber(errors, `${contract.id}.annualContribution`, contract.annualContribution, {
         min: 0
       });
@@ -1293,6 +1305,7 @@ function buildCheckInput(formState: FormState): CheckInput {
     yearsRunning: toNumber(contract.yearsRunning),
     currentBalance: toNumber(contract.currentBalance),
     annualContribution: toNumber(contract.annualContribution),
+    selfPaid: toNumber(contract.selfPaid),
     satisfaction: contract.satisfaction
   }));
 

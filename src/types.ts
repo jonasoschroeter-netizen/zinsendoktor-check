@@ -49,6 +49,7 @@ export interface VorsorgeContractInput {
   yearsRunning: number;
   currentBalance: number;
   annualContribution: number;
+  selfPaid?: number;
   satisfaction: Satisfaction;
 }
 

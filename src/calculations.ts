@@ -187,7 +187,10 @@ export function calculateInflation(
 }
 
 export function evaluateContract(contract: VorsorgeContractInput): ContractResult {
-  const totalPaid = contract.annualContribution * contract.yearsRunning;
+  const totalPaid =
+    typeof contract.selfPaid === "number" && Number.isFinite(contract.selfPaid)
+      ? contract.selfPaid
+      : contract.annualContribution * contract.yearsRunning;
   const valueRatio = totalPaid > 0 ? contract.currentBalance / totalPaid : null;
   let score = 0;
 
@@ -380,8 +383,8 @@ export function generateResultText(input: CheckInput, result: CheckResult): stri
             `Art: ${contractTypeLabels[contract.type]}`,
             `Laufzeit: ${formatNumber(contract.yearsRunning)} Jahre`,
             `Jährlicher Beitrag: ${formatCurrency(contract.annualContribution)}`,
-            `Bisher eingezahlt: ${formatCurrency(contractResult?.totalPaid ?? 0)}`,
-            `Aktuelles Guthaben: ${formatCurrency(contract.currentBalance)}`,
+            `Davon selbst eingezahlt: ${formatCurrency(contractResult?.totalPaid ?? 0)}`,
+            `Aktuelles Guthaben/Rückkaufswert: ${formatCurrency(contract.currentBalance)}`,
             `Erfüllt der Vertrag Ihre Erwartungen? ${satisfactionLabels[contract.satisfaction]}`,
             `Bewertung: ${trafficLightLabels[contractResult?.trafficLight ?? "green"]}`,
             `Hinweis: ${contractResult?.hint ?? ""}`,
