@@ -77,6 +77,12 @@ const initialFormState: FormState = {
 };
 
 const stepLabels = ["Start", "Steuern", "Rente", "Inflation", "Vorsorge", "Auswertung"];
+const retirementYearOptions: Record<string, string> = Object.fromEntries(
+  Array.from({ length: 50 }, (_, index) => {
+    const value = String(index + 1);
+    return [value, value];
+  })
+);
 
 export function ZinsendoktorWidget({
   options
@@ -492,15 +498,17 @@ function PensionStep({
         <NumberField
           error={errors.monthlyNetIncomePerson1}
           id="monthlyNetIncomePerson1"
-          label="Monatliches Nettoeinkommen Person 1 (circa-Angabe)"
+          label="Aktuelles monatliches Nettoeinkommen Person 1 (circa-Angabe)"
           onChange={(value) => onUpdateField("monthlyNetIncomePerson1", value)}
           value={formState.monthlyNetIncomePerson1}
         />
-        <NumberField
+        <SelectField
           error={errors.yearsToRetirementPerson1}
           id="yearsToRetirementPerson1"
-          label="Jahre bis zur Rente Person 1 (1 bis 50)"
+          label="Jahre bis zur Rente Person 1"
           onChange={(value) => onUpdateField("yearsToRetirementPerson1", value)}
+          options={retirementYearOptions}
+          placeholder="Bitte auswählen"
           value={formState.yearsToRetirementPerson1}
         />
       </div>
@@ -510,17 +518,19 @@ function PensionStep({
           <NumberField
             error={errors.monthlyNetIncomePerson2}
             id="monthlyNetIncomePerson2"
-            label="Monatliches Nettoeinkommen Person 2 (circa-Angabe)"
+            label="Aktuelles monatliches Nettoeinkommen Person 2 (circa-Angabe)"
             onChange={(value) => onUpdateField("monthlyNetIncomePerson2", value)}
             optional
             value={formState.monthlyNetIncomePerson2}
           />
-          <NumberField
+          <SelectField
             error={errors.yearsToRetirementPerson2}
             id="yearsToRetirementPerson2"
-            label="Jahre bis zur Rente Person 2 (1 bis 50)"
+            label="Jahre bis zur Rente Person 2"
             onChange={(value) => onUpdateField("yearsToRetirementPerson2", value)}
             optional
+            options={retirementYearOptions}
+            placeholder="Keine Angabe"
             value={formState.yearsToRetirementPerson2}
           />
         </div>
@@ -1029,35 +1039,47 @@ function NumberField({
 }
 
 function SelectField({
+  error,
   id,
   label,
   onChange,
+  optional = false,
   options,
+  placeholder,
   value
 }: {
+  error?: string;
   id: string;
   label: string;
   onChange: (value: string) => void;
+  optional?: boolean;
   options: Record<string, string>;
+  placeholder?: string;
   value: string;
 }): React.ReactElement {
+  const errorId = `${id}-error`;
+
   return (
     <div className="zd-field">
       <label className="zd-label" htmlFor={id}>
-        {label}
+        {label} {optional && <span className="zd-small">(optional)</span>}
       </label>
       <select
+        aria-describedby={error ? errorId : undefined}
+        aria-invalid={error ? "true" : "false"}
         className="zd-select"
         id={id}
         onChange={(event) => onChange(event.target.value)}
         value={value}
       >
+        {placeholder && <option value="">{placeholder}</option>}
         {Object.entries(options).map(([optionValue, optionLabel]) => (
           <option key={optionValue} value={optionValue}>
             {optionLabel}
           </option>
         ))}
       </select>
+      <ErrorMessage error={error} id={errorId} />
     </div>
   );
 }
