@@ -155,6 +155,22 @@ export const widgetStyles = `
   color: var(--zd-accent);
 }
 
+.zd-inline-action {
+  background: transparent;
+  border: 0;
+  color: var(--zd-accent);
+  cursor: pointer;
+  display: inline;
+  font: inherit;
+  padding: 0;
+}
+
+.zd-inline-action:hover,
+.zd-inline-action:focus {
+  color: #14775b;
+  text-decoration: underline;
+}
+
 .zd-trust {
   background: #eef8f4;
   border: 1px solid #c7eadf;

@@ -641,8 +641,10 @@ function ContractStep({
       </h2>
       <p className="zd-card-text">
         Wenn Sie noch keine Vorsorgeverträge oder Sparverträge haben, können Sie direkt auf{" "}
-        <span className="zd-inline-accent">Auswertung anzeigen</span> klicken. Anderenfalls
-        klicken Sie auf <em>Vertrag hinzufügen</em>.
+        <button className="zd-inline-action" type="button" onClick={onShowResult}>
+          Auswertung anzeigen
+        </button>{" "}
+        klicken. Anderenfalls klicken Sie auf <em>Vertrag hinzufügen</em>.
       </p>
 
       <button className="zd-button zd-button-secondary" type="button" onClick={onAddContract}>
