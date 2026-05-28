@@ -40,6 +40,8 @@ export const widgetStyles = `
 .zd-pdf-cta,
 .zd-actions,
 .zd-step-actions,
+.zd-tax-layout,
+.zd-tax-side,
 .zd-option,
 .zd-contract-list,
 .zd-contract-fields {
@@ -97,14 +99,14 @@ export const widgetStyles = `
 
 .zd-progress-label {
   color: var(--zd-primary);
-  font-size: 1.08rem;
-  font-weight: 800;
+  font-size: 0.92rem;
+  font-weight: 700;
   margin: 0;
 }
 
 .zd-progress-count {
   color: var(--zd-muted);
-  font-size: 0.95rem;
+  font-size: 0.85rem;
 }
 
 .zd-progress-track {
@@ -164,6 +166,16 @@ export const widgetStyles = `
 
 .zd-grid-two {
   grid-template-columns: 1fr;
+}
+
+.zd-tax-layout {
+  display: grid;
+  gap: 18px;
+}
+
+.zd-tax-side {
+  display: grid;
+  gap: 14px;
 }
 
 .zd-field {
@@ -505,6 +517,11 @@ export const widgetStyles = `
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .zd-tax-layout {
+    align-items: start;
+    grid-template-columns: minmax(0, 1.18fr) minmax(300px, 0.82fr);
+  }
+
   .zd-summary-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -517,18 +534,14 @@ export const widgetStyles = `
     color: var(--zd-muted);
     display: flex;
     flex-wrap: wrap;
-    font-size: 1rem;
-    gap: 12px;
-    margin-top: 14px;
+    font-size: 0.82rem;
+    gap: 10px;
+    margin-top: 10px;
   }
 
   .zd-step-item {
-    align-items: center;
-    border-left: 4px solid #dbe2ec;
-    display: inline-flex;
-    line-height: 1.2;
-    min-height: 30px;
-    padding-left: 10px;
+    border-left: 3px solid #dbe2ec;
+    padding-left: 8px;
   }
 
   .zd-step-item-active {

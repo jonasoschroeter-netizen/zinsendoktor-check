@@ -402,59 +402,59 @@ function TaxStep({
         tarifliche Einkommensteuer nach zu versteuerndem Einkommen.
       </p>
 
-      <fieldset className="zd-fieldset">
-        <legend className="zd-legend">Einkommensarten</legend>
-        <p className="zd-help">Mehrfachauswahl möglich. Eine Auswahl ist empfohlen.</p>
-        <div className="zd-option-list">
-          {(Object.keys(incomeTypeLabels) as IncomeType[]).map((type) => (
-            <label className="zd-option" key={type}>
-              <input
-                checked={formState.incomeTypes.includes(type)}
-                onChange={() => onToggleIncomeType(type)}
-                type="checkbox"
-              />
-              <span>{incomeTypeLabels[type]}</span>
-            </label>
-          ))}
-        </div>
-      </fieldset>
-
-      <div className="zd-section">
-        <fieldset className="zd-fieldset" aria-describedby={errors.maritalStatus ? "zd-marital-error" : undefined}>
-          <legend className="zd-legend">Familienstand</legend>
+      <div className="zd-tax-layout">
+        <fieldset className="zd-fieldset">
+          <legend className="zd-legend">Einkommensarten</legend>
+          <p className="zd-help">Mehrfachauswahl möglich. Eine Auswahl ist empfohlen.</p>
           <div className="zd-option-list">
-            {(Object.keys(maritalStatusLabels) as MaritalStatus[]).map((status) => (
-              <label className="zd-option" key={status}>
+            {(Object.keys(incomeTypeLabels) as IncomeType[]).map((type) => (
+              <label className="zd-option" key={type}>
                 <input
-                  checked={formState.maritalStatus === status}
-                  name="maritalStatus"
-                  onChange={() => onUpdateMaritalStatus(status)}
-                  type="radio"
+                  checked={formState.incomeTypes.includes(type)}
+                  onChange={() => onToggleIncomeType(type)}
+                  type="checkbox"
                 />
-                <span>{maritalStatusLabels[status]}</span>
+                <span>{incomeTypeLabels[type]}</span>
               </label>
             ))}
           </div>
-          <ErrorMessage error={errors.maritalStatus} id="zd-marital-error" />
         </fieldset>
-      </div>
 
-      <div className="zd-grid zd-grid-two zd-section">
-        <NumberField
-          error={errors.taxableIncome}
-          id="taxableIncome"
-          label="Wie hoch war Ihr letztes zu versteuerndes Einkommen?"
-          onChange={(value) => onUpdateField("taxableIncome", value)}
-          value={formState.taxableIncome}
-        />
-        <NumberField
-          error={errors.paidIncomeTax}
-          id="paidIncomeTax"
-          label="Wie viel Einkommensteuer haben Sie darauf ungefähr gezahlt?"
-          onChange={(value) => onUpdateField("paidIncomeTax", value)}
-          optional
-          value={formState.paidIncomeTax}
-        />
+        <div className="zd-tax-side">
+          <fieldset className="zd-fieldset" aria-describedby={errors.maritalStatus ? "zd-marital-error" : undefined}>
+            <legend className="zd-legend">Familienstand</legend>
+            <div className="zd-option-list">
+              {(Object.keys(maritalStatusLabels) as MaritalStatus[]).map((status) => (
+                <label className="zd-option" key={status}>
+                  <input
+                    checked={formState.maritalStatus === status}
+                    name="maritalStatus"
+                    onChange={() => onUpdateMaritalStatus(status)}
+                    type="radio"
+                  />
+                  <span>{maritalStatusLabels[status]}</span>
+                </label>
+              ))}
+            </div>
+            <ErrorMessage error={errors.maritalStatus} id="zd-marital-error" />
+          </fieldset>
+
+          <NumberField
+            error={errors.taxableIncome}
+            id="taxableIncome"
+            label="Wie hoch war Ihr letztes zu versteuerndes Einkommen?"
+            onChange={(value) => onUpdateField("taxableIncome", value)}
+            value={formState.taxableIncome}
+          />
+          <NumberField
+            error={errors.paidIncomeTax}
+            id="paidIncomeTax"
+            label="Wie viel Einkommensteuer haben Sie darauf ungefähr gezahlt?"
+            onChange={(value) => onUpdateField("paidIncomeTax", value)}
+            optional
+            value={formState.paidIncomeTax}
+          />
+        </div>
       </div>
 
       <StepActions onBack={onBack} onNext={onNext} />
