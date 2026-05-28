@@ -491,7 +491,7 @@ function contractsTable(input: CheckInput, result: CheckResult): string {
         <th>Laufzeit</th>
         <th>Eingezahlt</th>
         <th>Guthaben</th>
-        <th>Zufriedenheit</th>
+        <th>Erfüllt Erwartungen?</th>
         <th>Bewertung</th>
       </tr>
     </thead>

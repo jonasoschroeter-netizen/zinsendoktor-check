@@ -382,7 +382,7 @@ export function generateResultText(input: CheckInput, result: CheckResult): stri
             `Jährlicher Beitrag: ${formatCurrency(contract.annualContribution)}`,
             `Bisher eingezahlt: ${formatCurrency(contractResult?.totalPaid ?? 0)}`,
             `Aktuelles Guthaben: ${formatCurrency(contract.currentBalance)}`,
-            `Zufriedenheit: ${satisfactionLabels[contract.satisfaction]}`,
+            `Erfüllt der Vertrag Ihre Erwartungen? ${satisfactionLabels[contract.satisfaction]}`,
             `Bewertung: ${trafficLightLabels[contractResult?.trafficLight ?? "green"]}`,
             `Hinweis: ${contractResult?.hint ?? ""}`,
             ""

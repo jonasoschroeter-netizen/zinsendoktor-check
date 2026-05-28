@@ -700,7 +700,7 @@ function ContractStep({
               />
               <SelectField
                 id={`${contract.id}-satisfaction`}
-                label="Zufriedenheit"
+                label="Erfüllt der Vertrag Ihre Erwartungen?"
                 onChange={(value) =>
                   onUpdateContract(contract.id, "satisfaction", value as Satisfaction)
                 }
