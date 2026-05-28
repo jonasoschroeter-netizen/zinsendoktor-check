@@ -694,7 +694,7 @@ function ContractStep({
               <NumberField
                 error={errors[`${contract.id}.annualContribution`]}
                 id={`${contract.id}-annualContribution`}
-                label="Jährlicher Beitrag in EUR"
+                label="Wie hoch ist der Jahresbeitrag?"
                 onChange={(value) => onUpdateContract(contract.id, "annualContribution", value)}
                 value={contract.annualContribution}
               />
