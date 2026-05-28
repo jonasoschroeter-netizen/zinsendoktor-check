@@ -61,7 +61,7 @@ export interface CheckInput {
 
 export interface CheckResult {
   calculatedIncomeTax: number;
-  estimatedTax10Years: number;
+  estimatedTaxUntilRetirement: number;
   incomeTypeCount: number;
   estimatedPensionPerson1: number;
   estimatedPensionPerson2: number;

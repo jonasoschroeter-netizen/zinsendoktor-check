@@ -16,6 +16,7 @@ import {
   incomeTypeLabels,
   maritalStatusLabels,
   OFFICIAL_TAX_SOURCE_2026,
+  RENTEN_SCHAETZUNG_HINWEIS,
   satisfactionLabels,
   trafficLightLabels
 } from "./calculations";
@@ -364,8 +365,7 @@ function StartStep({ onStart }: { onStart: () => void }): React.ReactElement {
         Ende erhalten Sie direkt eine verständliche Auswertung im Browser.
       </p>
       <div className="zd-trust">
-        Keine Speicherung Ihrer Angaben im ersten Test. Die Auswertung wird nur in Ihrem Browser
-        erzeugt.
+        Keine Speicherung Ihrer Angaben. Die Auswertung wird nur in Ihrem Browser erzeugt.
       </div>
       <button className="zd-button zd-button-accent" type="button" onClick={onStart}>
         Jetzt kostenlosen Check starten
@@ -483,21 +483,23 @@ function PensionStep({
         Rente und Altersversorgung
       </h2>
       <p className="zd-card-text">
-        Vereinfachte Orientierung auf Basis Ihrer Angaben. Die tatsächliche Rente kann abweichen.
+        Die gesetzliche Rente wird als Orientierungsschätzung aus dem heutigen monatlichen
+        Nettoeinkommen berechnet. Für eine genaue Beratung sollte später die Renteninformation
+        genutzt werden.
       </p>
 
       <div className="zd-grid zd-grid-two">
         <NumberField
           error={errors.monthlyNetIncomePerson1}
           id="monthlyNetIncomePerson1"
-          label="Monatliches Nettoeinkommen Person 1"
+          label="Monatliches Nettoeinkommen Person 1 (circa-Angabe)"
           onChange={(value) => onUpdateField("monthlyNetIncomePerson1", value)}
           value={formState.monthlyNetIncomePerson1}
         />
         <NumberField
           error={errors.yearsToRetirementPerson1}
           id="yearsToRetirementPerson1"
-          label="Jahre bis zur Rente Person 1"
+          label="Jahre bis zur Rente Person 1 (1 bis 50)"
           onChange={(value) => onUpdateField("yearsToRetirementPerson1", value)}
           value={formState.yearsToRetirementPerson1}
         />
@@ -508,7 +510,7 @@ function PensionStep({
           <NumberField
             error={errors.monthlyNetIncomePerson2}
             id="monthlyNetIncomePerson2"
-            label="Monatliches Nettoeinkommen Person 2"
+            label="Monatliches Nettoeinkommen Person 2 (circa-Angabe)"
             onChange={(value) => onUpdateField("monthlyNetIncomePerson2", value)}
             optional
             value={formState.monthlyNetIncomePerson2}
@@ -516,7 +518,7 @@ function PensionStep({
           <NumberField
             error={errors.yearsToRetirementPerson2}
             id="yearsToRetirementPerson2"
-            label="Jahre bis zur Rente Person 2"
+            label="Jahre bis zur Rente Person 2 (1 bis 50)"
             onChange={(value) => onUpdateField("yearsToRetirementPerson2", value)}
             optional
             value={formState.yearsToRetirementPerson2}
@@ -553,18 +555,19 @@ function InflationStep({
 
       <div className="zd-grid zd-grid-two">
         <NumberField
-          error={errors.expectedInflationPercent}
-          id="expectedInflationPercent"
-          label="Erwartete jährliche Inflationsrate in Prozent"
-          onChange={(value) => onUpdateField("expectedInflationPercent", value)}
-          value={formState.expectedInflationPercent}
-        />
-        <NumberField
           error={errors.currentWarmRent}
           id="currentWarmRent"
           label="Aktuelle monatliche Warmmiete in EUR"
           onChange={(value) => onUpdateField("currentWarmRent", value)}
           value={formState.currentWarmRent}
+        />
+        <NumberField
+          error={errors.expectedInflationPercent}
+          help="0,5 bis 20 Prozent; circa-Angabe ist ausreichend."
+          id="expectedInflationPercent"
+          label="Erwartete jährliche Inflationsrate in Prozent"
+          onChange={(value) => onUpdateField("expectedInflationPercent", value)}
+          value={formState.expectedInflationPercent}
         />
         <NumberField
           error={errors.currentLivingCosts}
@@ -763,7 +766,8 @@ function ResultStep({
         <p>{getIncomeTypesDiagnosis(result.incomeTypeCount)}</p>
         <p>
           Rechnerische Einkommensteuer 2026: <strong>{formatCurrency(result.calculatedIncomeTax)}</strong>.
-          Geschätzte Steuerlast über 10 Jahre: <strong>{formatCurrency(result.estimatedTax10Years)}</strong>.
+          Geschätzte Steuerlast bis Rentenbeginn:{" "}
+          <strong>{formatCurrency(result.estimatedTaxUntilRetirement)}</strong>.
         </p>
         <p className="zd-small">
           Berechnungsgrundlage: {OFFICIAL_TAX_SOURCE_2026.label}.{" "}
@@ -773,9 +777,8 @@ function ResultStep({
           {getTaxComparisonText(input.tax, result.calculatedIncomeTax)}
         </div>
         <p>
-          Über 10 Jahre betrachtet kann aus der jährlichen Steuerlast ein erheblicher Betrag
-          entstehen. Genau hier kann eine strukturierte Prüfung helfen, Potenziale sichtbar zu
-          machen.
+          Bis zum Rentenbeginn kann aus der jährlichen Steuerlast ein erheblicher Betrag entstehen.
+          Die Projektion nutzt modellhaft den 2026-Tarif und die angegebene Inflation.
         </p>
       </ResultSection>
 
@@ -786,7 +789,7 @@ function ResultStep({
         </div>
         <p>{getPensionDiagnosis(input, result)}</p>
         <p className="zd-small">
-          Vereinfachte Orientierung auf Basis Ihrer Angaben. Die tatsächliche Rente kann abweichen.
+          {RENTEN_SCHAETZUNG_HINWEIS} Die tatsächliche Rente kann abweichen.
         </p>
       </ResultSection>
 
@@ -1198,8 +1201,8 @@ function validateStep(formState: FormState, step: StepId): { valid: true } | { v
   if (step === 2) {
     requireNumber(errors, "monthlyNetIncomePerson1", formState.monthlyNetIncomePerson1, { min: 0 });
     requireNumber(errors, "yearsToRetirementPerson1", formState.yearsToRetirementPerson1, {
-      min: 0,
-      max: 60
+      min: 1,
+      max: 50
     });
 
     if (formState.maritalStatus === "verheiratet") {
@@ -1207,15 +1210,15 @@ function validateStep(formState: FormState, step: StepId): { valid: true } | { v
         min: 0
       });
       optionalNumber(errors, "yearsToRetirementPerson2", formState.yearsToRetirementPerson2, {
-        min: 0,
-        max: 60
+        min: 1,
+        max: 50
       });
     }
   }
 
   if (step === 3) {
     requireNumber(errors, "expectedInflationPercent", formState.expectedInflationPercent, {
-      min: 0,
+      min: 0.5,
       max: 20
     });
     requireNumber(errors, "currentWarmRent", formState.currentWarmRent, { min: 0 });

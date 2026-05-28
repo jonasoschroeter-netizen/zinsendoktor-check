@@ -64,7 +64,7 @@ describe("Finanz-Gesundheitscheck calculations", () => {
     const result = calculateCheck(input);
 
     expect(result.calculatedIncomeTax).toBe(10548);
-    expect(result.estimatedTax10Years).toBe(105480);
+    expect(result.estimatedTaxUntilRetirement).toBe(591569);
     expect(result.estimatedPensionPerson1).toBeCloseTo(1768, 2);
     expect(result.futureRent).toBeCloseTo(1887.81, 1);
     expect(result.futureLivingCosts).toBeCloseTo(2726.84, 1);

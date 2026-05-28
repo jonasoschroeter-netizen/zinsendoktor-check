@@ -13,6 +13,8 @@ import type {
 } from "./types";
 
 export const RENTENFAKTOR = 0.68;
+export const RENTEN_SCHAETZUNG_HINWEIS =
+  "Orientierungsschätzung: gesetzliche Monatsrente grob mit 68 % des heutigen monatlichen Nettoeinkommens.";
 
 export const OFFICIAL_TAX_SOURCE_2026 = {
   label: "Einkommensteuertarif 2026 nach § 32a EStG",
@@ -103,6 +105,24 @@ export function calculateSingleIncomeTax2026(taxableIncome: number): number {
   }
 
   return Math.max(0, Math.floor(tax));
+}
+
+export function calculateEstimatedTaxUntilRetirement(
+  taxableIncome: number,
+  maritalStatus: MaritalStatus,
+  analysisYears: number,
+  inflationPercent: number
+): number {
+  const years = Math.max(1, Math.floor(analysisYears));
+  const inflationRate = Math.max(0, inflationPercent) / 100;
+  let total = 0;
+
+  for (let year = 0; year < years; year += 1) {
+    const projectedIncome = taxableIncome * Math.pow(1 + inflationRate, year);
+    total += calculateIncomeTax2026(projectedIncome, maritalStatus);
+  }
+
+  return total;
 }
 
 export function calculatePension(
@@ -288,11 +308,17 @@ export function calculateCheck(input: CheckInput): CheckResult {
   );
   const pension = calculatePension(input.pension, input.tax.maritalStatus);
   const inflation = calculateInflation(input.inflation, input.pension, input.tax.maritalStatus);
+  const estimatedTaxUntilRetirement = calculateEstimatedTaxUntilRetirement(
+    input.tax.taxableIncome,
+    input.tax.maritalStatus,
+    inflation.analysisYears,
+    input.inflation.expectedInflationPercent
+  );
   const contractResults = input.contracts.map(evaluateContract);
 
   const partialResult = {
     calculatedIncomeTax,
-    estimatedTax10Years: calculatedIncomeTax * 10,
+    estimatedTaxUntilRetirement,
     incomeTypeCount: input.tax.incomeTypes.length,
     estimatedPensionPerson1: pension.estimatedPensionPerson1,
     estimatedPensionPerson2: pension.estimatedPensionPerson2,
@@ -374,9 +400,10 @@ export function generateResultText(input: CheckInput, result: CheckResult): stri
     `Rechnerische Einkommensteuer 2026: ${formatCurrency(result.calculatedIncomeTax)}`,
     `Berechnungsgrundlage: ${OFFICIAL_TAX_SOURCE_2026.label}`,
     `Hinweis: ${OFFICIAL_TAX_SOURCE_2026.scope}`,
-    `Geschätzte Steuerlast über 10 Jahre: ${formatCurrency(result.estimatedTax10Years)}`,
+    `Geschätzte Steuerlast bis Rentenbeginn: ${formatCurrency(result.estimatedTaxUntilRetirement)}`,
     "",
     "2. Angaben Rente",
+    RENTEN_SCHAETZUNG_HINWEIS,
     `Nettoeinkommen Person 1: ${formatCurrency(input.pension.monthlyNetIncomePerson1)}`,
     `Jahre bis zur Rente Person 1: ${formatNumber(input.pension.yearsToRetirementPerson1)}`,
     `Geschätzte monatliche Altersversorgung Person 1: ${formatCurrency(
@@ -485,8 +512,8 @@ export function getTaxComparisonLight(
 export function getPensionDiagnosis(input: CheckInput, result: CheckResult): string {
   const person1Text =
     result.estimatedPensionPerson1 < input.pension.monthlyNetIncomePerson1 * 0.75
-      ? "Ihre spätere gesetzliche Versorgung kann deutlich unter Ihrem heutigen Netto liegen."
-      : "Ihre spätere Versorgung liegt in dieser vereinfachten Orientierung näher an Ihrem heutigen Netto.";
+      ? "Die geschätzte spätere gesetzliche Versorgung kann deutlich unter dem heutigen Netto liegen."
+      : "Die geschätzte spätere Versorgung liegt in dieser vereinfachten Orientierung näher am heutigen Netto.";
 
   if (
     input.tax.maritalStatus === "verheiratet" &&

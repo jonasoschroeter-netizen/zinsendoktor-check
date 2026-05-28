@@ -13,6 +13,7 @@ import {
   incomeTypeLabels,
   maritalStatusLabels,
   OFFICIAL_TAX_SOURCE_2026,
+  RENTEN_SCHAETZUNG_HINWEIS,
   satisfactionLabels,
   trafficLightLabels
 } from "./calculations";
@@ -94,6 +95,13 @@ export function generateCustomerReportHtml(
   const customerName = meta.customerName?.trim() || "Kunde / Interessent";
   const advisorName = meta.advisorName?.trim() || "Zinsendoktor.de";
   const note = meta.note?.trim();
+  const pensionMetrics = [
+    metric("Geschätzte Versorgung Person 1", formatCurrency(result.estimatedPensionPerson1)),
+    input.tax.maritalStatus === "verheiratet"
+      ? metric("Geschätzte Versorgung Person 2", formatCurrency(result.estimatedPensionPerson2))
+      : "",
+    metric("Geschätzte Gesamtversorgung", formatCurrency(result.totalEstimatedPension))
+  ].join("");
 
   return `<!doctype html>
 <html lang="de">
@@ -386,23 +394,22 @@ export function generateCustomerReportHtml(
             </div>
             <div class="callout">
               <p><strong>Rechnerische Einkommensteuer:</strong> ${formatCurrency(result.calculatedIncomeTax)}</p>
-              <p><strong>Steuerlast über 10 Jahre:</strong> ${formatCurrency(result.estimatedTax10Years)}</p>
+              <p><strong>Steuerlast bis Rentenbeginn:</strong> ${formatCurrency(result.estimatedTaxUntilRetirement)}</p>
               <p><strong>Grundlage:</strong> ${escapeHtml(OFFICIAL_TAX_SOURCE_2026.label)}</p>
             </div>
           </div>
           <p>${escapeHtml(getIncomeTypesDiagnosis(result.incomeTypeCount))}</p>
           <p>${escapeHtml(getTaxComparisonText(input.tax, result.calculatedIncomeTax))}</p>
+          <p class="footer">Die Projektion bis Rentenbeginn nutzt modellhaft den 2026-Tarif und die angegebene Inflation.</p>
         </section>
 
         <section>
           <h2>2. Rente und Versorgung</h2>
           <div class="metrics">
-            ${metric("Versorgung Person 1", formatCurrency(result.estimatedPensionPerson1))}
-            ${metric("Versorgung Person 2", formatCurrency(result.estimatedPensionPerson2))}
-            ${metric("Gesamtversorgung", formatCurrency(result.totalEstimatedPension))}
+            ${pensionMetrics}
           </div>
           <p>${escapeHtml(getPensionDiagnosis(input, result))}</p>
-          <p class="footer">Vereinfachte Orientierung auf Basis eines Rentenfaktors. Die tatsächliche Rente kann abweichen.</p>
+          <p class="footer">${escapeHtml(RENTEN_SCHAETZUNG_HINWEIS)} Die tatsächliche Rente kann abweichen.</p>
         </section>
 
         <section>

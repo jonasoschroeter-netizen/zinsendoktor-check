@@ -119,3 +119,9 @@ Offizielle Referenzen:
 - BMF Programmablaufpläne 2026: https://www.bundesfinanzministerium.de/Datenportal/Daten/frei-nutzbare-produkte/Anwendungen/Programmablaufplan-2026/Programmablaufplan-2026.html
 
 Wichtig: Der Rechner bildet die tarifliche Einkommensteuer auf Basis des eingegebenen zu versteuernden Einkommens ab. Er berechnet keine verbindliche Steuererklärung und berücksichtigt aktuell keinen Solidaritätszuschlag, keine Kirchensteuer, keine Abgeltungsteuer und keine Sondervorschriften.
+
+Die geschätzte Steuerlast bis Rentenbeginn ist eine Projektion: Das aktuelle zu versteuernde Einkommen wird jährlich mit der angegebenen Inflation fortgeschrieben und jeweils mit dem 2026-Tarif berechnet. Das ist bewusst als Orientierung gekennzeichnet, weil künftige Tarifjahre und individuelle Steuerdetails nicht verbindlich vorhergesagt werden.
+
+## Rentenschätzung
+
+Die gesetzliche Monatsrente wird im MVP als Orientierungsschätzung mit `68 %` des heutigen monatlichen Nettoeinkommens berechnet. Diese Schätzung ersetzt keine Renteninformation und keine individuelle Beratung; sie dient nur dazu, Versorgungslücke und Bedarf im Preview sichtbar zu machen.
