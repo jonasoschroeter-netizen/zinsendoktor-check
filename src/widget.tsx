@@ -7,6 +7,7 @@ import {
   formatPercent,
   getGapDiagnosis,
   getGlobalSummaryText,
+  getContractTypeLabel,
   getIncomeTypesDiagnosis,
   getInflationDiagnosis,
   getPensionDiagnosis,
@@ -56,6 +57,7 @@ interface ContractFormState {
   id: string;
   name: string;
   type: ContractType;
+  typeLabel: string;
   yearsRunning: string;
   currentBalance: string;
   annualContribution: string;
@@ -97,6 +99,9 @@ const contractYearsRunningOptions: Record<string, string> = Object.fromEntries(
     const value = String(index + 1);
     return [value, value];
   })
+);
+const contractTypeInputOptions = Object.fromEntries(
+  Object.values(contractTypeLabels).map((label) => [label, label])
 );
 
 export function ZinsendoktorWidget({
@@ -165,6 +170,7 @@ export function ZinsendoktorWidget({
           id: createId(),
           name: "",
           type: "rentenversicherung",
+          typeLabel: contractTypeLabels.rentenversicherung,
           yearsRunning: "",
           currentBalance: "",
           annualContribution: "",
@@ -700,14 +706,16 @@ function ContractStep({
             </div>
 
             <div className="zd-contract-fields">
-              <SelectField
+              <DatalistField
                 id={`${contract.id}-type`}
                 label="Vertragsart"
-                onChange={(value) =>
-                  onUpdateContract(contract.id, "type", value as ContractType)
-                }
-                options={contractTypeLabels}
-                value={contract.type}
+                onChange={(value) => {
+                  onUpdateContract(contract.id, "typeLabel", value);
+                  onUpdateContract(contract.id, "type", resolveContractType(value));
+                }}
+                options={contractTypeInputOptions}
+                placeholder="Auswählen oder selbst eintragen"
+                value={contract.typeLabel}
               />
               <SelectField
                 error={errors[`${contract.id}.yearsRunning`]}
@@ -894,7 +902,7 @@ function ResultStep({
                 <div className="zd-contract-row" key={contract.id}>
                   <div className="zd-contract-head">
                     <p className="zd-contract-title">
-                      {contractDisplayName}: {contractTypeLabels[contract.type]}
+                      {contractDisplayName}: {getContractTypeLabel(contract)}
                     </p>
                     <TrafficBadge value={contractResult.trafficLight} />
                   </div>
@@ -1149,6 +1157,52 @@ function SelectField({
   );
 }
 
+function DatalistField({
+  error,
+  id,
+  label,
+  onChange,
+  options,
+  placeholder,
+  value
+}: {
+  error?: string;
+  id: string;
+  label: string;
+  onChange: (value: string) => void;
+  options: Record<string, string>;
+  placeholder?: string;
+  value: string;
+}): React.ReactElement {
+  const errorId = `${id}-error`;
+  const listId = `${id}-options`;
+
+  return (
+    <div className="zd-field">
+      <label className="zd-label" htmlFor={id}>
+        {label}
+      </label>
+      <input
+        aria-describedby={error ? errorId : undefined}
+        aria-invalid={error ? "true" : "false"}
+        className="zd-input"
+        id={id}
+        list={listId}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={placeholder}
+        type="text"
+        value={value}
+      />
+      <datalist id={listId}>
+        {Object.entries(options).map(([optionValue, optionLabel]) => (
+          <option key={optionValue} value={optionLabel} />
+        ))}
+      </datalist>
+      <ErrorMessage error={error} id={errorId} />
+    </div>
+  );
+}
+
 function ErrorMessage({ error, id }: { error?: string; id: string }): React.ReactElement | null {
   if (!error) {
     return null;
@@ -1341,11 +1395,25 @@ function getContractDisplayName(contract: { name?: string }, index: number): str
   return contract.name?.trim() || `Vertrag ${index + 1}`;
 }
 
+function resolveContractType(value: string): ContractType {
+  const normalizedValue = normalizeContractTypeLabel(value);
+  const knownType = Object.entries(contractTypeLabels).find(
+    ([, label]) => normalizeContractTypeLabel(label) === normalizedValue
+  )?.[0];
+
+  return (knownType as ContractType | undefined) ?? "sonstiges";
+}
+
+function normalizeContractTypeLabel(value: string): string {
+  return value.trim().toLocaleLowerCase("de-DE");
+}
+
 function buildCheckInput(formState: FormState): CheckInput {
   const contracts: VorsorgeContractInput[] = formState.contracts.map((contract) => ({
     id: contract.id,
     name: contract.name.trim() || undefined,
     type: contract.type,
+    typeLabel: contract.typeLabel.trim() || undefined,
     yearsRunning: toNumber(contract.yearsRunning),
     currentBalance: toNumber(contract.currentBalance),
     annualContribution: toNumber(contract.annualContribution),

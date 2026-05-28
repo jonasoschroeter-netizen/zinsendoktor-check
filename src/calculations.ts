@@ -62,6 +62,12 @@ export const contractTypeLabels: Record<ContractType, string> = {
   sonstiges: "Sonstiges"
 };
 
+export function getContractTypeLabel(
+  contract: Pick<VorsorgeContractInput, "type" | "typeLabel">
+): string {
+  return contract.typeLabel?.trim() || contractTypeLabels[contract.type];
+}
+
 export const satisfactionLabels: Record<Satisfaction, string> = {
   zufrieden: "Ja",
   unzufrieden: "Nein",
@@ -381,7 +387,7 @@ export function generateResultText(input: CheckInput, result: CheckResult): stri
 
           return [
             `${contractName}:`,
-            `Art: ${contractTypeLabels[contract.type]}`,
+            `Art: ${getContractTypeLabel(contract)}`,
             `Laufzeit: ${formatNumber(contract.yearsRunning)} Jahre`,
             `Jährlicher Beitrag: ${formatCurrency(contract.annualContribution)}`,
             `Davon selbst eingezahlt: ${formatCurrency(contractResult?.totalPaid ?? 0)}`,

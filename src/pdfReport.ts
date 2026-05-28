@@ -1,10 +1,10 @@
 import {
-  contractTypeLabels,
   formatCurrency,
   formatNumber,
   formatPercent,
   getGapDiagnosis,
   getGlobalSummaryText,
+  getContractTypeLabel,
   getIncomeTypesDiagnosis,
   getInflationDiagnosis,
   getPensionDiagnosis,
@@ -474,7 +474,7 @@ function contractsTable(input: CheckInput, result: CheckResult): string {
 
       return `<tr>
         <td>${escapeHtml(contractName)}</td>
-        <td>${escapeHtml(contractTypeLabels[contract.type])}</td>
+        <td>${escapeHtml(getContractTypeLabel(contract))}</td>
         <td>${formatNumber(contract.yearsRunning)} Jahre</td>
         <td>${formatCurrency(contractResult.totalPaid)}</td>
         <td>${formatCurrency(contract.currentBalance)}</td>

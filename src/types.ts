@@ -47,6 +47,7 @@ export interface VorsorgeContractInput {
   id: string;
   name?: string;
   type: ContractType;
+  typeLabel?: string;
   yearsRunning: number;
   currentBalance: number;
   annualContribution: number;
