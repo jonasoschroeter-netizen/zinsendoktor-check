@@ -63,9 +63,9 @@ export const contractTypeLabels: Record<ContractType, string> = {
 };
 
 export const satisfactionLabels: Record<Satisfaction, string> = {
-  zufrieden: "Bin zufrieden",
-  unzufrieden: "Bin unzufrieden",
-  unsicher: "Weiß ich nicht / unsicher"
+  zufrieden: "Ja",
+  unzufrieden: "Nein",
+  unsicher: "Weiß nicht"
 };
 
 export const trafficLightLabels: Record<TrafficLight, string> = {
