@@ -512,7 +512,7 @@ function PensionStep({
         genutzt werden.
       </p>
 
-      <div className="zd-grid zd-grid-two">
+      <div className="zd-grid zd-grid-two zd-equal-field-grid">
         <NumberField
           error={errors.monthlyNetIncomePerson1}
           id="monthlyNetIncomePerson1"
@@ -532,7 +532,7 @@ function PensionStep({
       </div>
 
       {isMarried && (
-        <div className="zd-grid zd-grid-two zd-section">
+        <div className="zd-grid zd-grid-two zd-section zd-equal-field-grid">
           <NumberField
             error={errors.monthlyNetIncomePerson2}
             id="monthlyNetIncomePerson2"

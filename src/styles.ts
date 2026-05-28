@@ -174,6 +174,18 @@ export const widgetStyles = `
   grid-template-columns: 1fr;
 }
 
+.zd-equal-field-grid .zd-field {
+  align-content: start;
+}
+
+.zd-equal-field-grid .zd-label {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-height: 48px;
+}
+
 .zd-tax-layout {
   display: grid;
   gap: 18px;
