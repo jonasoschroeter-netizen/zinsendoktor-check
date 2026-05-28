@@ -264,6 +264,44 @@ export function generateCustomerReportHtml(
         padding: 11px 18px;
       }
 
+      .tax-situation-panel {
+        background: #ffffff;
+        margin: 18px 38px 0;
+        padding: 28px 14px 10px;
+      }
+
+      .tax-situation-title {
+        color: #000000;
+        font-size: 22px;
+        font-weight: 500;
+        margin: 0 0 18px;
+      }
+
+      .tax-situation-row {
+        align-items: center;
+        display: grid;
+        gap: 30px;
+        grid-template-columns: minmax(0, 1fr) 210px;
+        margin-bottom: 28px;
+      }
+
+      .tax-situation-label {
+        color: #000000;
+        font-size: 13px;
+        line-height: 1.25;
+        margin: 0;
+      }
+
+      .tax-situation-value {
+        align-items: center;
+        border: 2px solid #0b3144;
+        color: #000000;
+        display: flex;
+        font-size: 14px;
+        min-height: 28px;
+        padding: 3px 10px;
+      }
+
       .meta-bar {
         border-bottom: 1px solid var(--border);
         display: grid;
@@ -442,6 +480,11 @@ export function generateCustomerReportHtml(
           margin-left: 0;
           margin-right: 0;
         }
+
+        .tax-situation-panel {
+          margin-left: 0;
+          margin-right: 0;
+        }
       }
     </style>
   </head>
@@ -468,6 +511,22 @@ export function generateCustomerReportHtml(
           <p class="report-pdf-text">Erstellt eine übersichtliche PDF-/Druckansicht für das Kundengespräch.</p>
         </div>
         <div class="report-pdf-button">PDF herunterladen / speichern</div>
+      </div>
+
+      <div class="tax-situation-panel">
+        <h2 class="tax-situation-title">Steuerliche Situation</h2>
+        <div class="tax-situation-row">
+          <p class="tax-situation-label">Angenommenes zu versteuerndes Einkommen</p>
+          <div class="tax-situation-value">${formatCurrency(input.tax.taxableIncome)}</div>
+        </div>
+        <div class="tax-situation-row">
+          <p class="tax-situation-label">Rechnerische Einkommensteuer 2026<br />nach § 32a EStG</p>
+          <div class="tax-situation-value">${formatCurrency(result.calculatedIncomeTax)}</div>
+        </div>
+        <div class="tax-situation-row">
+          <p class="tax-situation-label">Geschätzte Steuerlast bis zum Rentenbeginn<br />unter Berücksichtigung der angegebenen Inflation</p>
+          <div class="tax-situation-value">${formatCurrency(result.estimatedTaxUntilRetirement)}</div>
+        </div>
       </div>
 
       <main class="content">

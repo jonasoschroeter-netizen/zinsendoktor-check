@@ -34,6 +34,9 @@ describe("customer PDF report", () => {
     expect(html).toContain("Auswertung");
     expect(html).toContain("PDF für den Kunden sichern");
     expect(html).toContain("PDF herunterladen / speichern");
+    expect(html).toContain("Steuerliche Situation");
+    expect(html).toContain("Angenommenes zu versteuerndes Einkommen");
+    expect(html).toContain("50.000,00");
     expect(html).toContain("Max &lt;Kunde&gt;");
     expect(html).toContain("Berater &amp; Partner");
     expect(html).toContain("§ 32a EStG");
