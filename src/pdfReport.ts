@@ -95,6 +95,7 @@ export function generateCustomerReportHtml(
   const customerName = meta.customerName?.trim() || "Kunde / Interessent";
   const advisorName = meta.advisorName?.trim() || "Zinsendoktor.de";
   const note = meta.note?.trim();
+  const privateCare = buildPrivateCarePreview(input, result);
   const pensionMetrics = [
     metric("Geschätzte Versorgung Person 1", formatCurrency(result.estimatedPensionPerson1)),
     input.tax.maritalStatus === "verheiratet"
@@ -366,6 +367,105 @@ export function generateCustomerReportHtml(
         height: 14px;
       }
 
+      .private-care-panel {
+        background: #ffffff;
+        margin: 58px 38px 0;
+        padding: 0 14px 22px;
+      }
+
+      .private-care-title {
+        color: #000000;
+        font-size: 22px;
+        font-weight: 500;
+        margin: 0 0 18px 28px;
+      }
+
+      .private-care-intro {
+        color: #000000;
+        font-size: 13px;
+        line-height: 1.25;
+        margin: 0 0 46px;
+        max-width: 520px;
+      }
+
+      .private-contract-row,
+      .private-care-summary-row,
+      .private-care-effect-row {
+        align-items: center;
+        display: grid;
+        gap: 18px;
+        grid-template-columns: 285px 170px 170px;
+        margin-bottom: 16px;
+      }
+
+      .private-contract-name {
+        color: #000000;
+        font-size: 13px;
+        font-weight: 800;
+        margin: 0;
+      }
+
+      .private-contract-type {
+        font-weight: 800;
+        margin-left: 7px;
+      }
+
+      .private-care-field-label {
+        color: #000000;
+        font-size: 12px;
+        margin: 0 0 7px;
+        text-align: center;
+      }
+
+      .private-care-value {
+        align-items: center;
+        border: 2px solid #0b3144;
+        color: #000000;
+        display: flex;
+        font-size: 13px;
+        justify-content: flex-end;
+        min-height: 26px;
+        padding: 3px 8px;
+      }
+
+      .private-care-divider {
+        background: #0a6188;
+        height: 2px;
+        margin: 10px 0 22px 20px;
+        width: calc(100% - 40px);
+      }
+
+      .private-care-summary-row {
+        grid-template-columns: 185px 170px 170px 120px;
+        margin-left: 14px;
+      }
+
+      .private-care-total-label {
+        color: #000000;
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1.15;
+        margin: 0;
+      }
+
+      .private-care-inline-label {
+        color: #000000;
+        font-size: 12px;
+        margin: 0 0 7px;
+        text-align: left;
+      }
+
+      .private-care-effect-row {
+        grid-template-columns: 285px 170px 170px;
+        margin-top: 58px;
+      }
+
+      .private-care-empty {
+        color: #000000;
+        font-size: 13px;
+        margin: 0 0 16px 28px;
+      }
+
       .meta-bar {
         border-bottom: 1px solid var(--border);
         display: grid;
@@ -554,6 +654,11 @@ export function generateCustomerReportHtml(
           margin-left: 0;
           margin-right: 0;
         }
+
+        .private-care-panel {
+          margin-left: 0;
+          margin-right: 0;
+        }
       }
     </style>
   </head>
@@ -638,6 +743,39 @@ export function generateCustomerReportHtml(
           <span></span>
           <p class="care-situation-label care-situation-label-strong">Ergebnis&nbsp;&nbsp; Bedarf vs. Versorgung</p>
           <div class="care-situation-value care-situation-value-green">${formatCurrency(Math.max(0, result.monthlyGap))}</div>
+        </div>
+      </div>
+
+      <div class="private-care-panel">
+        <h2 class="private-care-title">Private Vorsorge</h2>
+        <p class="private-care-intro">Bei den privaten VertrÃ¤gen kÃ¶nnte nach Hochrechnung der angegebenen aktuellen Entwicklung mit folgenden Ergebnissen gerechnet werden</p>
+        ${privateCare.contractRows}
+        <div class="private-care-divider"></div>
+        <div class="private-care-summary-row">
+          <p class="private-care-total-label">MÃ¶gliches Gesamtergebnis<br />Der Privaten VertrÃ¤ge</p>
+          <div>
+            <p class="private-care-inline-label">MÃ¶glicher Ertrag</p>
+            <div class="private-care-value">${formatCurrency(privateCare.totalPossibleYield)}</div>
+          </div>
+          <div>
+            <p class="private-care-inline-label">selbst eingezahlt</p>
+            <div class="private-care-value">${formatCurrency(privateCare.totalSelfPaid)}</div>
+          </div>
+          <div>
+            <p class="private-care-field-label">Nettorendite</p>
+            <div class="private-care-value">${privateCare.netReturn}</div>
+          </div>
+        </div>
+        <div class="private-care-effect-row">
+          <p class="private-care-total-label">Altersversorgungseffekt</p>
+          <div>
+            <p class="private-care-field-label">monatliche VersorgungslÃ¼cke</p>
+            <div class="private-care-value">${formatCurrency(Math.max(0, result.monthlyGap))}</div>
+          </div>
+          <div>
+            <p class="private-care-field-label">ausgeglichene Monate</p>
+            <div class="private-care-value">${privateCare.coveredMonths}</div>
+          </div>
         </div>
       </div>
 
@@ -792,6 +930,61 @@ function contractsTable(input: CheckInput, result: CheckResult): string {
     </thead>
     <tbody>${rows}</tbody>
   </table>`;
+}
+
+function buildPrivateCarePreview(input: CheckInput, result: CheckResult): {
+  contractRows: string;
+  coveredMonths: string;
+  netReturn: string;
+  totalPossibleYield: number;
+  totalSelfPaid: number;
+} {
+  let totalPossibleYield = 0;
+  let totalSelfPaid = 0;
+  let totalCurrentBalance = 0;
+  const rows = input.contracts.slice(0, 3).map((contract, index) => {
+    const contractResult = result.contractResults.find((item) => item.id === contract.id);
+    const totalPaid =
+      contractResult?.totalPaid ??
+      (typeof contract.selfPaid === "number"
+        ? contract.selfPaid
+        : contract.annualContribution * contract.yearsRunning);
+    const possibleYield = contract.currentBalance - totalPaid;
+    totalPossibleYield += possibleYield;
+    totalSelfPaid += totalPaid;
+    totalCurrentBalance += contract.currentBalance;
+
+    return `<div class="private-contract-row">
+      <p class="private-contract-name">Vertrag ${index + 1}<span class="private-contract-type">${escapeHtml(
+        getContractTypeLabel(contract)
+      )}</span></p>
+      <div>
+        <p class="private-care-field-label">Möglicher Ertrag</p>
+        <div class="private-care-value">${formatCurrency(possibleYield)}</div>
+      </div>
+      <div>
+        <p class="private-care-field-label">Davon selbst eingezahlt</p>
+        <div class="private-care-value">${formatCurrency(totalPaid)}</div>
+      </div>
+    </div>`;
+  });
+
+  if (input.contracts.length === 0) {
+    rows.push('<p class="private-care-empty">Keine privaten Vorsorgeverträge angegeben.</p>');
+  }
+
+  const netReturn =
+    totalSelfPaid > 0 ? formatPercent((totalPossibleYield / totalSelfPaid) * 100) : "0 %";
+  const coveredMonths =
+    result.monthlyGap > 0 ? formatNumber(totalCurrentBalance / result.monthlyGap) : "Keine Lücke";
+
+  return {
+    contractRows: rows.join(""),
+    coveredMonths,
+    netReturn,
+    totalPossibleYield,
+    totalSelfPaid
+  };
 }
 
 function metaItem(label: string, value: string): string {

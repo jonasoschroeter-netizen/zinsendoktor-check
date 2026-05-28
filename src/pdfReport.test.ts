@@ -40,6 +40,9 @@ describe("customer PDF report", () => {
     expect(html).toContain("Versorgungs- Bedarfssituation");
     expect(html).toContain("Person 1");
     expect(html).toContain("Bedarf vs. Versorgung");
+    expect(html).toContain("Private Vorsorge");
+    expect(html).toContain("MÃ¶gliches Gesamtergebnis");
+    expect(html).toContain("monatliche VersorgungslÃ¼cke");
     expect(html).toContain("Max &lt;Kunde&gt;");
     expect(html).toContain("Berater &amp; Partner");
     expect(html).toContain("§ 32a EStG");
