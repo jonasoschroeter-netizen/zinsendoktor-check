@@ -99,14 +99,14 @@ export const widgetStyles = `
 
 .zd-progress-label {
   color: var(--zd-primary);
-  font-size: 0.92rem;
-  font-weight: 700;
+  font-size: 1.02rem;
+  font-weight: 800;
   margin: 0;
 }
 
 .zd-progress-count {
   color: var(--zd-muted);
-  font-size: 0.85rem;
+  font-size: 0.92rem;
 }
 
 .zd-progress-track {
@@ -538,14 +538,18 @@ export const widgetStyles = `
     color: var(--zd-muted);
     display: flex;
     flex-wrap: wrap;
-    font-size: 0.82rem;
-    gap: 10px;
-    margin-top: 10px;
+    font-size: 1rem;
+    gap: 14px;
+    margin-top: 12px;
   }
 
   .zd-step-item {
-    border-left: 3px solid #dbe2ec;
-    padding-left: 8px;
+    align-items: center;
+    border-left: 4px solid #dbe2ec;
+    display: inline-flex;
+    line-height: 1.2;
+    min-height: 28px;
+    padding-left: 10px;
   }
 
   .zd-step-item-active {
