@@ -46,7 +46,9 @@ export const widgetStyles = `
 .zd-tax-side,
 .zd-option,
 .zd-contract-list,
-.zd-contract-fields {
+.zd-contract-fields,
+.zd-contract-title-wrap,
+.zd-icon-button {
   box-sizing: border-box;
 }
 
@@ -487,6 +489,39 @@ export const widgetStyles = `
   color: var(--zd-primary);
   font-weight: 800;
   margin: 0;
+}
+
+.zd-contract-title-wrap {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.zd-icon-button {
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid var(--zd-border);
+  border-radius: 999px;
+  color: var(--zd-primary);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: inherit;
+  font-weight: 800;
+  height: 32px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  width: 32px;
+}
+
+.zd-icon-button:hover,
+.zd-icon-button:focus {
+  border-color: var(--zd-accent);
+  box-shadow: 0 0 0 4px var(--zd-focus);
+  color: var(--zd-accent);
+  outline: none;
 }
 
 .zd-contract-fields {

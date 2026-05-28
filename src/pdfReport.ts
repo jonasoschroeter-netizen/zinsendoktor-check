@@ -466,13 +466,14 @@ function contractsTable(input: CheckInput, result: CheckResult): string {
   const rows = input.contracts
     .map((contract, index) => {
       const contractResult = result.contractResults.find((item) => item.id === contract.id);
+      const contractName = contract.name?.trim() || `Vertrag ${index + 1}`;
 
       if (!contractResult) {
         return "";
       }
 
       return `<tr>
-        <td>${index + 1}</td>
+        <td>${escapeHtml(contractName)}</td>
         <td>${escapeHtml(contractTypeLabels[contract.type])}</td>
         <td>${formatNumber(contract.yearsRunning)} Jahre</td>
         <td>${formatCurrency(contractResult.totalPaid)}</td>
@@ -486,7 +487,7 @@ function contractsTable(input: CheckInput, result: CheckResult): string {
   return `<table>
     <thead>
       <tr>
-        <th>#</th>
+        <th>Vertrag</th>
         <th>Art</th>
         <th>Laufzeit</th>
         <th>Selbst eingezahlt</th>

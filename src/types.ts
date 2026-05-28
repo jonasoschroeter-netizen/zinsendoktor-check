@@ -45,6 +45,7 @@ export interface InflationInput {
 
 export interface VorsorgeContractInput {
   id: string;
+  name?: string;
   type: ContractType;
   yearsRunning: number;
   currentBalance: number;

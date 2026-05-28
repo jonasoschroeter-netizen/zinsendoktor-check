@@ -377,9 +377,10 @@ export function generateResultText(input: CheckInput, result: CheckResult): stri
       ? ["Keine privaten Vorsorgeverträge angegeben."]
       : input.contracts.flatMap((contract, index) => {
           const contractResult = result.contractResults.find((item) => item.id === contract.id);
+          const contractName = contract.name?.trim() || `Vertrag ${index + 1}`;
 
           return [
-            `Vertrag ${index + 1}:`,
+            `${contractName}:`,
             `Art: ${contractTypeLabels[contract.type]}`,
             `Laufzeit: ${formatNumber(contract.yearsRunning)} Jahre`,
             `Jährlicher Beitrag: ${formatCurrency(contract.annualContribution)}`,

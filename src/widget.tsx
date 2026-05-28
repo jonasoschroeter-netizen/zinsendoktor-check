@@ -54,6 +54,7 @@ interface FormState {
 
 interface ContractFormState {
   id: string;
+  name: string;
   type: ContractType;
   yearsRunning: string;
   currentBalance: string;
@@ -162,6 +163,7 @@ export function ZinsendoktorWidget({
         ...current.contracts,
         {
           id: createId(),
+          name: "",
           type: "rentenversicherung",
           yearsRunning: "",
           currentBalance: "",
@@ -634,6 +636,17 @@ function ContractStep({
     value: string | ContractType | Satisfaction
   ) => void;
 }): React.ReactElement {
+  function renameContract(contract: ContractFormState, index: number): void {
+    const currentName = getContractDisplayName(contract, index);
+    const nextName = window.prompt("Vertragsnamen ändern", currentName);
+
+    if (nextName === null) {
+      return;
+    }
+
+    onUpdateContract(contract.id, "name", nextName.trim());
+  }
+
   return (
     <section className="zd-card" aria-labelledby="zd-contract-title">
       <h2 className="zd-card-title" id="zd-contract-title">
@@ -659,10 +672,24 @@ function ContractStep({
       )}
 
       <div className="zd-contract-list">
-        {formState.contracts.map((contract, index) => (
-          <div className="zd-contract-row" key={contract.id}>
+        {formState.contracts.map((contract, index) => {
+          const contractDisplayName = getContractDisplayName(contract, index);
+
+          return (
+            <div className="zd-contract-row" key={contract.id}>
             <div className="zd-contract-head">
-              <p className="zd-contract-title">Vertrag {index + 1}</p>
+              <div className="zd-contract-title-wrap">
+                <p className="zd-contract-title">{contractDisplayName}</p>
+                <button
+                  aria-label="Vertragsnamen ändern"
+                  className="zd-icon-button"
+                  title="Vertragsnamen ändern"
+                  type="button"
+                  onClick={() => renameContract(contract, index)}
+                >
+                  ✎
+                </button>
+              </div>
               <button
                 className="zd-button zd-button-danger"
                 type="button"
@@ -723,7 +750,8 @@ function ContractStep({
               />
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="zd-step-actions">
@@ -856,6 +884,7 @@ function ResultStep({
           <div className="zd-contract-list">
             {input.contracts.map((contract, index) => {
               const contractResult = result.contractResults.find((item) => item.id === contract.id);
+              const contractDisplayName = getContractDisplayName(contract, index);
 
               if (!contractResult) {
                 return null;
@@ -865,7 +894,7 @@ function ResultStep({
                 <div className="zd-contract-row" key={contract.id}>
                   <div className="zd-contract-head">
                     <p className="zd-contract-title">
-                      Vertrag {index + 1}: {contractTypeLabels[contract.type]}
+                      {contractDisplayName}: {contractTypeLabels[contract.type]}
                     </p>
                     <TrafficBadge value={contractResult.trafficLight} />
                   </div>
@@ -1308,9 +1337,14 @@ function validateStep(formState: FormState, step: StepId): { valid: true } | { v
   return { valid: true };
 }
 
+function getContractDisplayName(contract: { name?: string }, index: number): string {
+  return contract.name?.trim() || `Vertrag ${index + 1}`;
+}
+
 function buildCheckInput(formState: FormState): CheckInput {
   const contracts: VorsorgeContractInput[] = formState.contracts.map((contract) => ({
     id: contract.id,
+    name: contract.name.trim() || undefined,
     type: contract.type,
     yearsRunning: toNumber(contract.yearsRunning),
     currentBalance: toNumber(contract.currentBalance),
