@@ -685,7 +685,7 @@ function ContractStep({
               <SelectField
                 error={errors[`${contract.id}.yearsRunning`]}
                 id={`${contract.id}-yearsRunning`}
-                label="Laufzeit bisher in Jahren"
+                label="Wieviel Jahre läuft der Vertrag bereits?"
                 onChange={(value) => onUpdateContract(contract.id, "yearsRunning", value)}
                 options={contractYearsRunningOptions}
                 placeholder="Bitte auswählen"
