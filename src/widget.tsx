@@ -83,6 +83,13 @@ const retirementYearOptions: Record<string, string> = Object.fromEntries(
     return [value, value];
   })
 );
+const inflationRateOptions: Record<string, string> = Object.fromEntries(
+  Array.from({ length: 40 }, (_, index) => {
+    const value = (index + 1) / 2;
+    const optionValue = toDisplayDecimal(value);
+    return [optionValue, `${optionValue} %`];
+  })
+);
 
 export function ZinsendoktorWidget({
   options
@@ -571,12 +578,13 @@ function InflationStep({
           onChange={(value) => onUpdateField("currentWarmRent", value)}
           value={formState.currentWarmRent}
         />
-        <NumberField
+        <SelectField
           error={errors.expectedInflationPercent}
-          help="0,5 bis 20 Prozent; circa-Angabe ist ausreichend."
           id="expectedInflationPercent"
           label="Erwartete jährliche Inflationsrate in Prozent"
           onChange={(value) => onUpdateField("expectedInflationPercent", value)}
+          options={inflationRateOptions}
+          placeholder="Bitte auswählen"
           value={formState.expectedInflationPercent}
         />
         <NumberField
@@ -1370,6 +1378,10 @@ function toNumber(value: string): number {
     : trimmed;
 
   return Number(normalized);
+}
+
+function toDisplayDecimal(value: number): string {
+  return Number.isInteger(value) ? String(value) : String(value).replace(".", ",");
 }
 
 function createId(): string {
