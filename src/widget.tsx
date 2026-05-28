@@ -90,6 +90,12 @@ const inflationRateOptions: Record<string, string> = Object.fromEntries(
     return [optionValue, `${optionValue} %`];
   })
 );
+const contractYearsRunningOptions: Record<string, string> = Object.fromEntries(
+  Array.from({ length: 70 }, (_, index) => {
+    const value = String(index + 1);
+    return [value, value];
+  })
+);
 
 export function ZinsendoktorWidget({
   options
@@ -669,11 +675,13 @@ function ContractStep({
                 options={contractTypeLabels}
                 value={contract.type}
               />
-              <NumberField
+              <SelectField
                 error={errors[`${contract.id}.yearsRunning`]}
                 id={`${contract.id}-yearsRunning`}
                 label="Laufzeit bisher in Jahren"
                 onChange={(value) => onUpdateContract(contract.id, "yearsRunning", value)}
+                options={contractYearsRunningOptions}
+                placeholder="Bitte auswählen"
                 value={contract.yearsRunning}
               />
               <NumberField
@@ -1259,8 +1267,8 @@ function validateStep(formState: FormState, step: StepId): { valid: true } | { v
   if (step === 4) {
     formState.contracts.forEach((contract) => {
       requireNumber(errors, `${contract.id}.yearsRunning`, contract.yearsRunning, {
-        min: 0,
-        max: 80
+        min: 1,
+        max: 70
       });
       requireNumber(errors, `${contract.id}.currentBalance`, contract.currentBalance, {
         min: 0
