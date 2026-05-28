@@ -629,8 +629,9 @@ function ContractStep({
         Private Vorsorgeverträge
       </h2>
       <p className="zd-card-text">
-        Ergänzen Sie bestehende Verträge, wenn Sie eine grobe Ampelbewertung wünschen. Ohne
-        Vertrag können Sie direkt zur Auswertung gehen.
+        Wenn Sie noch keine Vorsorgeverträge oder Sparverträge haben, können Sie direkt auf{" "}
+        <span className="zd-inline-accent">Auswertung anzeigen</span> klicken. Anderenfalls
+        klicken Sie auf <em>Vertrag hinzufügen</em>.
       </p>
 
       <button className="zd-button zd-button-secondary" type="button" onClick={onAddContract}>

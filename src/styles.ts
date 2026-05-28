@@ -149,6 +149,10 @@ export const widgetStyles = `
   margin: 0 0 18px;
 }
 
+.zd-inline-accent {
+  color: var(--zd-accent);
+}
+
 .zd-trust {
   background: #eef8f4;
   border: 1px solid #c7eadf;
