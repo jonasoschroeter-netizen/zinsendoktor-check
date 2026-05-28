@@ -1411,7 +1411,7 @@ function toNumber(value: string): number {
 }
 
 function toDisplayDecimal(value: number): string {
-  return Number.isInteger(value) ? String(value) : String(value).replace(".", ",");
+  return value.toFixed(1).replace(".", ",");
 }
 
 function createId(): string {
