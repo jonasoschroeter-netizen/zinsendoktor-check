@@ -108,7 +108,7 @@ export function generateCustomerReportHtml(
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Finanz-Gesundheitscheck Bericht</title>
+    <title>Financial Care Preview</title>
     <style>
       :root {
         --primary: #0b1f3a;
@@ -143,29 +143,90 @@ export function generateCustomerReportHtml(
         box-shadow: 0 18px 55px rgba(11, 31, 58, 0.14);
       }
 
-      .hero {
-        background: var(--primary);
-        color: #ffffff;
-        padding: 34px 38px;
+      .report-progress {
+        background: #ffffff;
+        border-bottom: 1px solid var(--border);
+        padding: 22px 38px 16px;
       }
 
-      .brand {
-        color: rgba(255, 255, 255, 0.78);
-        font-size: 13px;
+      .progress-top {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      .progress-title {
+        color: var(--primary);
+        font-size: 15px;
         font-weight: 800;
-        margin: 0 0 10px;
-      }
-
-      h1 {
-        font-size: 34px;
-        line-height: 1.08;
         margin: 0;
       }
 
-      .hero-subline {
-        color: rgba(255, 255, 255, 0.82);
-        margin: 12px 0 0;
-        max-width: 720px;
+      .progress-count {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 0;
+      }
+
+      .progress-track {
+        background: #e7edf5;
+        border-radius: 999px;
+        height: 7px;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        background: var(--accent);
+        height: 100%;
+        width: 100%;
+      }
+
+      .progress-tabs {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0;
+        margin-top: 12px;
+      }
+
+      .progress-tab {
+        border-left: 2px solid var(--border);
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1;
+        padding: 0 10px;
+      }
+
+      .progress-tab:first-child {
+        padding-left: 0;
+      }
+
+      .progress-tab-active {
+        border-left-color: var(--accent);
+        color: var(--primary);
+        font-weight: 800;
+      }
+
+      .report-intro {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin: 0 0 18px;
+        padding: 24px 18px 18px;
+      }
+
+      .report-title {
+        color: #000000;
+        font-size: 22px;
+        font-weight: 500;
+        line-height: 1.18;
+        margin: 0;
+      }
+
+      .report-subline {
+        color: #000000;
+        font-size: 14px;
+        margin: 4px 0 0;
       }
 
       .meta-bar {
@@ -173,7 +234,7 @@ export function generateCustomerReportHtml(
         display: grid;
         gap: 12px;
         grid-template-columns: repeat(3, 1fr);
-        padding: 18px 38px;
+        padding: 0 0 18px;
       }
 
       .meta-label,
@@ -346,19 +407,33 @@ export function generateCustomerReportHtml(
   </head>
   <body>
     <article class="page">
-      <header class="hero">
-        <p class="brand">Zinsendoktor.de</p>
-        <h1>Finanz-Gesundheitscheck</h1>
-        <p class="hero-subline">Kundenbericht mit Steuerorientierung, Rentenperspektive, Inflationsrechnung und Vorsorge-Ampel.</p>
+      <header class="report-progress">
+        <div class="progress-top">
+          <p class="progress-title">Auswertung</p>
+          <p class="progress-count">Schritt 5 von 5</p>
+        </div>
+        <div class="progress-track"><div class="progress-bar"></div></div>
+        <div class="progress-tabs" aria-hidden="true">
+          <span class="progress-tab">Steuern</span>
+          <span class="progress-tab">Rente</span>
+          <span class="progress-tab">Inflation</span>
+          <span class="progress-tab">Vorsorge</span>
+          <span class="progress-tab progress-tab-active">Auswertung</span>
+        </div>
       </header>
 
-      <div class="meta-bar">
-        ${metaItem("Kunde", customerName)}
-        ${metaItem("Berater", advisorName)}
-        ${metaItem("Datum", date)}
-      </div>
-
       <main class="content">
+        <section class="report-intro">
+          <h1 class="report-title">Financial Care Preview</h1>
+          <p class="report-subline">Diese Vorschau ist nur eine Orientierung und ersetzt keine individuelle Steuer-, Renten- oder Vorsorgeberatung.</p>
+        </section>
+
+        <div class="meta-bar">
+          ${metaItem("Kunde", customerName)}
+          ${metaItem("Berater", advisorName)}
+          ${metaItem("Datum", date)}
+        </div>
+
         <div class="summary">
           <div class="score-panel">
             ${trafficBadge(result.globalTrafficLight)}
