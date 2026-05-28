@@ -302,6 +302,70 @@ export function generateCustomerReportHtml(
         padding: 3px 10px;
       }
 
+      .care-situation-panel {
+        background: #ffffff;
+        margin: 42px 38px 0;
+        padding: 0 14px 14px;
+      }
+
+      .care-situation-title {
+        color: #000000;
+        font-size: 22px;
+        font-weight: 500;
+        margin: 0 0 28px 58px;
+      }
+
+      .care-situation-subtitle {
+        color: #000000;
+        font-size: 13px;
+        line-height: 1.25;
+        margin: 0 0 12px;
+        max-width: 360px;
+      }
+
+      .care-situation-row {
+        align-items: center;
+        display: grid;
+        gap: 14px;
+        grid-template-columns: minmax(0, 1fr) 160px 120px;
+        margin-bottom: 7px;
+      }
+
+      .care-situation-row-wide {
+        grid-template-columns: minmax(0, 1fr) 190px 120px;
+      }
+
+      .care-situation-label {
+        color: #000000;
+        font-size: 13px;
+        margin: 0;
+        text-align: right;
+      }
+
+      .care-situation-label-strong {
+        font-weight: 800;
+      }
+
+      .care-situation-value {
+        align-items: center;
+        border: 1px solid #0a78b2;
+        color: #000000;
+        display: flex;
+        font-size: 13px;
+        justify-content: flex-end;
+        min-height: 26px;
+        padding: 3px 8px;
+      }
+
+      .care-situation-value-green {
+        border-color: var(--accent);
+        background: #eef8f4;
+      }
+
+      .care-spacer {
+        height: 14px;
+      }
+
       .meta-bar {
         border-bottom: 1px solid var(--border);
         display: grid;
@@ -485,6 +549,11 @@ export function generateCustomerReportHtml(
           margin-left: 0;
           margin-right: 0;
         }
+
+        .care-situation-panel {
+          margin-left: 0;
+          margin-right: 0;
+        }
       }
     </style>
   </head>
@@ -526,6 +595,49 @@ export function generateCustomerReportHtml(
         <div class="tax-situation-row">
           <p class="tax-situation-label">Geschätzte Steuerlast bis zum Rentenbeginn<br />unter Berücksichtigung der angegebenen Inflation</p>
           <div class="tax-situation-value">${formatCurrency(result.estimatedTaxUntilRetirement)}</div>
+        </div>
+      </div>
+
+      <div class="care-situation-panel">
+        <h2 class="care-situation-title">Versorgungs- Bedarfssituation</h2>
+        <p class="care-situation-subtitle">Voraussichtliche BezÃ¼ge aus gesetzlicher Rentenkasse<br />unter BerÃ¼cksichtigung der angegebenen Inflationsrate</p>
+        <div class="care-situation-row">
+          <span></span>
+          <p class="care-situation-label">Person 1</p>
+          <div class="care-situation-value">${formatCurrency(result.estimatedPensionPerson1)}</div>
+        </div>
+        <div class="care-situation-row">
+          <span></span>
+          <p class="care-situation-label">Person 2</p>
+          <div class="care-situation-value">${formatCurrency(result.estimatedPensionPerson2)}</div>
+        </div>
+        <div class="care-situation-row">
+          <span></span>
+          <p class="care-situation-label">Gesetzliche Gesamtversorgung</p>
+          <div class="care-situation-value">${formatCurrency(result.totalEstimatedPension)}</div>
+        </div>
+
+        <div class="care-spacer"></div>
+        <p class="care-situation-subtitle">Voraussichtlicher finanzieller Bedarf bei Rentenbeginn<br />unter BerÃ¼cksichtigung der angegebenen Inflationsrate</p>
+        <div class="care-situation-row care-situation-row-wide">
+          <span></span>
+          <p class="care-situation-label">Warmmiete hochgerechnet</p>
+          <div class="care-situation-value">${formatCurrency(result.futureRent)}</div>
+        </div>
+        <div class="care-situation-row care-situation-row-wide">
+          <span></span>
+          <p class="care-situation-label">Lebenshaltungskosten hochgerechnet</p>
+          <div class="care-situation-value">${formatCurrency(result.futureLivingCosts)}</div>
+        </div>
+        <div class="care-situation-row care-situation-row-wide">
+          <span></span>
+          <p class="care-situation-label">Voraussichtlicher Gesamtbedarf</p>
+          <div class="care-situation-value">${formatCurrency(result.futureTotalNeed)}</div>
+        </div>
+        <div class="care-situation-row care-situation-row-wide">
+          <span></span>
+          <p class="care-situation-label care-situation-label-strong">Ergebnis&nbsp;&nbsp; Bedarf vs. Versorgung</p>
+          <div class="care-situation-value care-situation-value-green">${formatCurrency(Math.max(0, result.monthlyGap))}</div>
         </div>
       </div>
 
