@@ -33,7 +33,8 @@ describe("customer PDF report", () => {
     expect(html).toContain("Finanz-Diagnose");
     expect(html).not.toContain("Financial Care Preview");
     expect(html).not.toContain("<h1 class=\"report-title\">Financial Care Preview</h1>");
-    expect(html).toContain("Auswertung");
+    expect(html).not.toContain("Schritt 5 von 5");
+    expect(html).not.toContain("progress-tabs");
     expect(html).toContain("PDF für den Kunden sichern");
     expect(html).toContain("PDF herunterladen / speichern");
     expect(html).toContain("Steuerliche Situation");
