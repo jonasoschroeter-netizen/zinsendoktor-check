@@ -31,6 +31,10 @@ export const widgetStyles = `
 .zd-combo-button,
 .zd-combo-menu,
 .zd-combo-option,
+.zd-select-shell,
+.zd-select-control,
+.zd-select-menu,
+.zd-select-option,
 .zd-button,
 .zd-progress,
 .zd-progress-track,
@@ -263,6 +267,81 @@ export const widgetStyles = `
 .zd-input,
 .zd-select {
   height: 46px;
+}
+
+.zd-select-shell {
+  position: relative;
+}
+
+.zd-select-control {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  color: var(--zd-text);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  gap: 12px;
+  height: 46px;
+  justify-content: space-between;
+  padding: 10px 11px;
+  text-align: left;
+  width: 100%;
+}
+
+.zd-select-control-placeholder {
+  color: var(--zd-muted);
+}
+
+.zd-select-arrow {
+  color: var(--zd-primary);
+  flex: 0 0 auto;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.zd-select-control:focus {
+  border-color: var(--zd-accent);
+  box-shadow: 0 0 0 4px var(--zd-focus);
+  outline: none;
+}
+
+.zd-select-control[aria-invalid="true"] {
+  border-color: var(--zd-danger);
+}
+
+.zd-select-menu {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 16px 32px rgba(11, 31, 58, 0.16);
+  display: grid;
+  left: 0;
+  max-height: 230px;
+  overflow: auto;
+  padding: 6px;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 30;
+}
+
+.zd-select-option {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--zd-text);
+  cursor: pointer;
+  font: inherit;
+  padding: 10px 11px;
+  text-align: left;
+}
+
+.zd-select-option:hover,
+.zd-select-option[aria-selected="true"] {
+  background: #eef8f4;
+  color: #0b5f49;
 }
 
 .zd-input-wrap {
