@@ -75,11 +75,12 @@ export const widgetStyles = `
   border: 1px solid var(--zd-border);
   border-radius: 8px;
   max-width: 980px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .zd-header {
   background: var(--zd-primary);
+  border-radius: 7px 7px 0 0;
   color: #ffffff;
   padding: 22px 18px;
 }
@@ -273,6 +274,11 @@ export const widgetStyles = `
   position: relative;
 }
 
+.zd-field-select-open {
+  position: relative;
+  z-index: 60;
+}
+
 .zd-select-control {
   align-items: center;
   background: #ffffff;
@@ -325,6 +331,11 @@ export const widgetStyles = `
   right: 0;
   top: calc(100% + 6px);
   z-index: 30;
+}
+
+.zd-select-menu-top {
+  bottom: calc(100% + 6px);
+  top: auto;
 }
 
 .zd-select-option {
@@ -397,6 +408,11 @@ export const widgetStyles = `
   right: 0;
   top: calc(100% + 6px);
   z-index: 30;
+}
+
+.zd-combo-menu-top {
+  bottom: calc(100% + 6px);
+  top: auto;
 }
 
 .zd-combo-option {

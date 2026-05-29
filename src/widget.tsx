@@ -1258,6 +1258,21 @@ function NumberField({
   );
 }
 
+type FloatingMenuPlacement = "bottom" | "top";
+
+function getFloatingMenuPlacement(trigger: HTMLElement | null): FloatingMenuPlacement {
+  if (!trigger || typeof window === "undefined") {
+    return "bottom";
+  }
+
+  const rect = trigger.getBoundingClientRect();
+  const preferredMenuHeight = 260;
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const spaceAbove = rect.top;
+
+  return spaceBelow < preferredMenuHeight && spaceAbove > 140 ? "top" : "bottom";
+}
+
 function SelectField({
   error,
   id,
@@ -1282,11 +1297,17 @@ function SelectField({
   const fieldRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [menuPlacement, setMenuPlacement] = useState<FloatingMenuPlacement>("bottom");
   const optionEntries = [
     ...(placeholder ? [["", placeholder] as [string, string]] : []),
     ...Object.entries(options)
   ];
   const selectedLabel = value ? options[value] ?? value : placeholder ?? "";
+
+  function openMenu(): void {
+    setMenuPlacement(getFloatingMenuPlacement(buttonRef.current));
+    setIsOpen(true);
+  }
 
   useEffect(() => {
     if (!isOpen) {
@@ -1299,13 +1320,23 @@ function SelectField({
       }
     }
 
-    document.addEventListener("pointerdown", handlePointerDown);
+    function handleReposition(): void {
+      setMenuPlacement(getFloatingMenuPlacement(buttonRef.current));
+    }
 
-    return () => document.removeEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("resize", handleReposition);
+    window.addEventListener("scroll", handleReposition, true);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("resize", handleReposition);
+      window.removeEventListener("scroll", handleReposition, true);
+    };
   }, [isOpen]);
 
   return (
-    <div className="zd-field" ref={fieldRef}>
+    <div className={`zd-field ${isOpen ? "zd-field-select-open" : ""}`} ref={fieldRef}>
       <label className="zd-label" htmlFor={id}>
         {label} {optional && <span className="zd-small">(optional)</span>}
       </label>
@@ -1318,11 +1349,18 @@ function SelectField({
           aria-invalid={error ? "true" : "false"}
           className={`zd-select-control ${!value ? "zd-select-control-placeholder" : ""}`}
           id={id}
-          onClick={() => setIsOpen((current) => !current)}
+          onClick={() => {
+            if (isOpen) {
+              setIsOpen(false);
+              return;
+            }
+
+            openMenu();
+          }}
           onKeyDown={(event) => {
             if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
               event.preventDefault();
-              setIsOpen(true);
+              openMenu();
             }
 
             if (event.key === "Escape") {
@@ -1336,7 +1374,11 @@ function SelectField({
           <span className="zd-select-arrow">{"\u25BE"}</span>
         </button>
         {isOpen && (
-          <div className="zd-select-menu" id={menuId} role="listbox">
+          <div
+            className={`zd-select-menu ${menuPlacement === "top" ? "zd-select-menu-top" : ""}`}
+            id={menuId}
+            role="listbox"
+          >
             {optionEntries.map(([optionValue, optionLabel]) => (
               <button
                 aria-selected={optionValue === value}
@@ -1383,7 +1425,13 @@ function DatalistField({
   const fieldRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [menuPlacement, setMenuPlacement] = useState<FloatingMenuPlacement>("bottom");
   const optionEntries = Object.entries(options);
+
+  function openMenu(): void {
+    setMenuPlacement(getFloatingMenuPlacement(inputRef.current));
+    setIsOpen(true);
+  }
 
   useEffect(() => {
     if (!isOpen) {
@@ -1396,13 +1444,23 @@ function DatalistField({
       }
     }
 
-    document.addEventListener("pointerdown", handlePointerDown);
+    function handleReposition(): void {
+      setMenuPlacement(getFloatingMenuPlacement(inputRef.current));
+    }
 
-    return () => document.removeEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("resize", handleReposition);
+    window.addEventListener("scroll", handleReposition, true);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("resize", handleReposition);
+      window.removeEventListener("scroll", handleReposition, true);
+    };
   }, [isOpen]);
 
   return (
-    <div className="zd-field" ref={fieldRef}>
+    <div className={`zd-field ${isOpen ? "zd-field-select-open" : ""}`} ref={fieldRef}>
       <label className="zd-label" htmlFor={id}>
         {label}
       </label>
@@ -1417,13 +1475,13 @@ function DatalistField({
           id={id}
           onChange={(event) => {
             onChange(event.target.value);
-            setIsOpen(true);
+            openMenu();
           }}
-          onFocus={() => setIsOpen(true)}
+          onFocus={openMenu}
           onKeyDown={(event) => {
             if (event.key === "ArrowDown") {
               event.preventDefault();
-              setIsOpen(true);
+              openMenu();
             }
 
             if (event.key === "Escape") {
@@ -1440,7 +1498,11 @@ function DatalistField({
           aria-label="Alle Vertragsarten anzeigen"
           className="zd-combo-button"
           onClick={() => {
-            setIsOpen((current) => !current);
+            if (isOpen) {
+              setIsOpen(false);
+            } else {
+              openMenu();
+            }
             inputRef.current?.focus();
           }}
           onMouseDown={(event) => event.preventDefault()}
@@ -1449,7 +1511,11 @@ function DatalistField({
           {"\u25BE"}
         </button>
         {isOpen && (
-          <div className="zd-combo-menu" id={menuId} role="listbox">
+          <div
+            className={`zd-combo-menu ${menuPlacement === "top" ? "zd-combo-menu-top" : ""}`}
+            id={menuId}
+            role="listbox"
+          >
             {optionEntries.map(([optionValue, optionLabel]) => (
               <button
                 aria-selected={optionLabel === value}
