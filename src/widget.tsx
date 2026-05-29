@@ -116,14 +116,7 @@ export function ZinsendoktorWidget({
     input: CheckInput;
     result: CheckResult;
   } | null>(null);
-  const [copyStatus, setCopyStatus] = useState("");
   const [pdfStatus, setPdfStatus] = useState("");
-  const [reportMeta, setReportMeta] = useState({
-    customerName: "",
-    advisorName: "",
-    note: ""
-  });
-  const resultTextRef = useRef<HTMLTextAreaElement | null>(null);
 
   const themeStyle = useMemo(
     () =>
@@ -233,22 +226,6 @@ export function ZinsendoktorWidget({
     setErrors({});
     setResultBundle({ input, result });
     setStep(5);
-    setCopyStatus("");
-  }
-
-  async function copyResultText(): Promise<void> {
-    if (!resultBundle) {
-      return;
-    }
-
-    try {
-      await navigator.clipboard.writeText(resultBundle.result.generatedText);
-      setCopyStatus("Ergebnis wurde kopiert.");
-    } catch {
-      resultTextRef.current?.focus();
-      resultTextRef.current?.select();
-      setCopyStatus("Text ist markiert und kann kopiert werden.");
-    }
   }
 
   function createPdfReport(): void {
@@ -256,11 +233,11 @@ export function ZinsendoktorWidget({
       return;
     }
 
-    const opened = openCustomerReportPdf(resultBundle.input, resultBundle.result, reportMeta);
+    const opened = openCustomerReportPdf(resultBundle.input, resultBundle.result, {});
     const reportPayload = buildCustomerReportPayload(
       resultBundle.input,
       resultBundle.result,
-      reportMeta,
+      {},
       options.integration?.currentUser
     );
 
@@ -351,18 +328,13 @@ export function ZinsendoktorWidget({
           )}
           {step === 5 && resultBundle && (
             <ResultStep
-              copyStatus={copyStatus}
               enableLeadForm={options.enableLeadForm === true}
               input={resultBundle.input}
               onBack={goBack}
-              onCopy={copyResultText}
               onCreatePdf={createPdfReport}
               onLeadSubmit={handleLeadSubmit}
-              onUpdateReportMeta={setReportMeta}
               pdfStatus={pdfStatus}
-              reportMeta={reportMeta}
               result={resultBundle.result}
-              textareaRef={resultTextRef}
             />
           )}
         </div>
@@ -799,31 +771,21 @@ function ContractStep({
 }
 
 function ResultStep({
-  copyStatus,
   enableLeadForm,
   input,
   onBack,
-  onCopy,
   onCreatePdf,
   onLeadSubmit,
-  onUpdateReportMeta,
   pdfStatus,
-  reportMeta,
-  result,
-  textareaRef
+  result
 }: {
-  copyStatus: string;
   enableLeadForm: boolean;
   input: CheckInput;
   onBack: () => void;
-  onCopy: () => void;
   onCreatePdf: () => void;
   onLeadSubmit: (lead: LeadInput) => void;
-  onUpdateReportMeta: (meta: { customerName: string; advisorName: string; note: string }) => void;
   pdfStatus: string;
-  reportMeta: { customerName: string; advisorName: string; note: string };
   result: CheckResult;
-  textareaRef: React.RefObject<HTMLTextAreaElement | null>;
 }): React.ReactElement {
   return (
     <section className="zd-card" aria-labelledby="zd-result-title">
@@ -864,74 +826,6 @@ function ResultStep({
         <p>
           <TrafficBadge value={result.globalTrafficLight} /> Prüfscore {formatNumber(result.globalScore)} / 100
         </p>
-      </ResultSection>
-
-      <ResultSection title="PDF-Kundenbericht">
-        <p className="zd-card-text">
-          Erstellen Sie einen übersichtlichen Bericht für das Kundengespräch. Die PDF-Ansicht wird
-          nur lokal im Browser erzeugt; es werden keine Daten gespeichert oder übertragen.
-        </p>
-        <div className="zd-grid zd-grid-two">
-          <TextField
-            id="report-customer-name"
-            label="Kundenname optional"
-            onChange={(value) =>
-              onUpdateReportMeta({
-                ...reportMeta,
-                customerName: value
-              })
-            }
-            value={reportMeta.customerName}
-          />
-          <TextField
-            id="report-advisor-name"
-            label="Beratername optional"
-            onChange={(value) =>
-              onUpdateReportMeta({
-                ...reportMeta,
-                advisorName: value
-              })
-            }
-            value={reportMeta.advisorName}
-          />
-        </div>
-        <div className="zd-field zd-pdf-note-field">
-          <label className="zd-label" htmlFor="report-note">
-            Notiz für den Bericht optional
-          </label>
-          <textarea
-            className="zd-input zd-pdf-note"
-            id="report-note"
-            onChange={(event) =>
-              onUpdateReportMeta({
-                ...reportMeta,
-                note: event.target.value
-              })
-            }
-            value={reportMeta.note}
-          />
-        </div>
-        <div className="zd-button-row">
-          <button className="zd-button zd-button-accent" type="button" onClick={onCreatePdf}>
-            PDF herunterladen / speichern
-          </button>
-        </div>
-        {pdfStatus && <p className="zd-copy-status">{pdfStatus}</p>}
-      </ResultSection>
-
-      <ResultSection title="Kopierbarer Ergebnistext">
-        <textarea
-          className="zd-textarea"
-          readOnly
-          ref={textareaRef}
-          value={result.generatedText}
-        />
-        <div className="zd-button-row">
-          <button className="zd-button zd-button-accent" type="button" onClick={onCopy}>
-            Ergebnis kopieren
-          </button>
-        </div>
-        {copyStatus && <p className="zd-copy-status">{copyStatus}</p>}
       </ResultSection>
 
       {enableLeadForm && <LeadPanel onSubmit={onLeadSubmit} />}
