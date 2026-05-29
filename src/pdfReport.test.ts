@@ -46,6 +46,12 @@ describe("customer PDF report", () => {
     expect(html).toContain("Prüfbedarf-Ampel");
     expect(html).toContain("PDF-Kundenbericht");
     expect(html).toContain("Kopierbarer Ergebnistext");
+    expect(html).not.toContain("<h2>1. Steuerdiagnose</h2>");
+    expect(html).not.toContain("<h2>2. Rente und Versorgung</h2>");
+    expect(html).not.toContain("<h2>3. Inflation und Bedarf</h2>");
+    expect(html).not.toContain("<h2>4. Gesamtbedarf vs. Gesamtversorgung</h2>");
+    expect(html).not.toContain("<h2>5. Private Vorsorge</h2>");
+    expect(html).not.toContain("<h2>Hinweis zur Einordnung</h2>");
     expect(html).toContain("Max &lt;Kunde&gt;");
     expect(html).toContain("Berater &amp; Partner");
     expect(html).toContain("§ 32a EStG");

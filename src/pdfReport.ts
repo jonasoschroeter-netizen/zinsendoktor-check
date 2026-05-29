@@ -2,19 +2,7 @@ import {
   formatCurrency,
   formatNumber,
   formatPercent,
-  getGapDiagnosis,
-  getGlobalSummaryText,
   getContractTypeLabel,
-  getIncomeTypesDiagnosis,
-  getInflationDiagnosis,
-  getPensionDiagnosis,
-  getPrivatePensionSummary,
-  getTaxComparisonText,
-  incomeTypeLabels,
-  maritalStatusLabels,
-  OFFICIAL_TAX_SOURCE_2026,
-  RENTEN_SCHAETZUNG_HINWEIS,
-  satisfactionLabels,
   trafficLightLabels
 } from "./calculations";
 import type { CheckInput, CheckResult, TrafficLight } from "./types";
@@ -80,29 +68,8 @@ export function generateCustomerReportHtml(
   result: CheckResult,
   meta: CustomerReportMeta = {}
 ): string {
-  const date = new Intl.DateTimeFormat("de-DE", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric"
-  }).format(new Date());
-  const selectedIncomeTypes =
-    input.tax.incomeTypes.length > 0
-      ? input.tax.incomeTypes.map((type) => incomeTypeLabels[type]).join(", ")
-      : "Keine Einkommensarten ausgewählt";
-  const inflationDiagnosis = getInflationDiagnosis(result.inflationFactor);
-  const gapDiagnosis = getGapDiagnosis(result.monthlyGap);
-  const privatePensionSummary = getPrivatePensionSummary(result.contractResults);
-  const customerName = meta.customerName?.trim() || "Kunde / Interessent";
-  const advisorName = meta.advisorName?.trim() || "Zinsendoktor.de";
   const note = meta.note?.trim();
   const privateCare = buildPrivateCarePreview(input, result);
-  const pensionMetrics = [
-    metric("Geschätzte Versorgung Person 1", formatCurrency(result.estimatedPensionPerson1)),
-    input.tax.maritalStatus === "verheiratet"
-      ? metric("Geschätzte Versorgung Person 2", formatCurrency(result.estimatedPensionPerson2))
-      : "",
-    metric("Geschätzte Gesamtversorgung", formatCurrency(result.totalEstimatedPension))
-  ].join("");
 
   return `<!doctype html>
 <html lang="de">
@@ -212,7 +179,7 @@ export function generateCustomerReportHtml(
       .report-intro {
         border: 1px solid var(--border);
         border-radius: 8px;
-        margin: 0 0 18px;
+        margin: 18px 38px 0;
         padding: 24px 18px 18px;
       }
 
@@ -733,6 +700,7 @@ export function generateCustomerReportHtml(
           max-width: none;
         }
 
+        .report-intro,
         .report-pdf-cta {
           margin-left: 0;
           margin-right: 0;
@@ -771,6 +739,11 @@ export function generateCustomerReportHtml(
           <span class="progress-tab progress-tab-active">Auswertung</span>
         </div>
       </header>
+
+      <section class="report-intro">
+        <h1 class="report-title">Financial Care Preview</h1>
+        <p class="report-subline">Diese Vorschau ist nur eine Orientierung und ersetzt keine individuelle Steuer-, Renten- oder Vorsorgeberatung.</p>
+      </section>
 
       <div class="report-pdf-cta">
         <div>
@@ -873,110 +846,6 @@ export function generateCustomerReportHtml(
       </div>
 
       <main class="content">
-        <section class="report-intro">
-          <h1 class="report-title">Financial Care Preview</h1>
-          <p class="report-subline">Diese Vorschau ist nur eine Orientierung und ersetzt keine individuelle Steuer-, Renten- oder Vorsorgeberatung.</p>
-        </section>
-
-        <div class="meta-bar">
-          ${metaItem("Kunde", customerName)}
-          ${metaItem("Berater", advisorName)}
-          ${metaItem("Datum", date)}
-        </div>
-
-        <div class="summary">
-          <div class="score-panel">
-            ${trafficBadge(result.globalTrafficLight)}
-            <p class="score">${formatNumber(result.globalScore)}</p>
-            <p class="meta-label">von 100 Punkten Prüfbedarf</p>
-          </div>
-          <div class="summary-text">
-            <h2>Gesamteinschätzung</h2>
-            <p>${escapeHtml(getGlobalSummaryText(result.globalTrafficLight))}</p>
-          </div>
-        </div>
-
-        <div class="metrics">
-          ${metric("Einkommensteuer 2026", formatCurrency(result.calculatedIncomeTax))}
-          ${metric("Zukünftiger Monatsbedarf", formatCurrency(result.futureTotalNeed))}
-          ${metric("Mögliche Monatslücke", formatCurrency(Math.max(0, result.monthlyGap)))}
-        </div>
-
-        ${note ? `<section><h2>Beraternotiz</h2><div class="note">${escapeHtml(note)}</div></section>` : ""}
-
-        <section>
-          <h2>1. Steuerdiagnose</h2>
-          <div class="two-col">
-            <div class="callout">
-              <p><strong>Familienstand:</strong> ${escapeHtml(maritalStatusLabels[input.tax.maritalStatus])}</p>
-              <p><strong>Einkommensarten:</strong> ${escapeHtml(selectedIncomeTypes)}</p>
-              <p><strong>Zu versteuerndes Einkommen:</strong> ${formatCurrency(input.tax.taxableIncome)}</p>
-              <p><strong>Angegebene Einkommensteuer:</strong> ${
-                typeof input.tax.paidIncomeTax === "number"
-                  ? formatCurrency(input.tax.paidIncomeTax)
-                  : "Nicht angegeben"
-              }</p>
-            </div>
-            <div class="callout">
-              <p><strong>Rechnerische Einkommensteuer:</strong> ${formatCurrency(result.calculatedIncomeTax)}</p>
-              <p><strong>Steuerlast bis Rentenbeginn:</strong> ${formatCurrency(result.estimatedTaxUntilRetirement)}</p>
-              <p><strong>Grundlage:</strong> ${escapeHtml(OFFICIAL_TAX_SOURCE_2026.label)}</p>
-            </div>
-          </div>
-          <p>${escapeHtml(getIncomeTypesDiagnosis(result.incomeTypeCount))}</p>
-          <p>${escapeHtml(getTaxComparisonText(input.tax, result.calculatedIncomeTax))}</p>
-          <p class="footer">Die Projektion bis Rentenbeginn nutzt modellhaft den 2026-Tarif und die angegebene Inflation.</p>
-        </section>
-
-        <section>
-          <h2>2. Rente und Versorgung</h2>
-          <div class="metrics">
-            ${pensionMetrics}
-          </div>
-          <p>${escapeHtml(getPensionDiagnosis(input, result))}</p>
-          <p class="footer">${escapeHtml(RENTEN_SCHAETZUNG_HINWEIS)} Die tatsächliche Rente kann abweichen.</p>
-        </section>
-
-        <section>
-          <h2>3. Inflation und Bedarf</h2>
-          <div class="metrics">
-            ${metric("Inflation", formatPercent(input.inflation.expectedInflationPercent))}
-            ${metric("Analysezeitraum", `${formatNumber(result.analysisYears)} Jahre`)}
-            ${metric("Inflationsfaktor", formatNumber(result.inflationFactor))}
-          </div>
-          <table>
-            <tbody>
-              ${row("Warmmiete heute", formatCurrency(input.inflation.currentWarmRent))}
-              ${row("Warmmiete hochgerechnet", formatCurrency(result.futureRent))}
-              ${row("Lebenshaltung heute", formatCurrency(input.inflation.currentLivingCosts))}
-              ${row("Lebenshaltung hochgerechnet", formatCurrency(result.futureLivingCosts))}
-            </tbody>
-          </table>
-          <p>${escapeHtml(inflationDiagnosis.text)}</p>
-        </section>
-
-        <section>
-          <h2>4. Gesamtbedarf vs. Gesamtversorgung</h2>
-          <div class="metrics">
-            ${metric("Geschätzte Versorgung", formatCurrency(result.totalEstimatedPension))}
-            ${metric("Zukünftiger Bedarf", formatCurrency(result.futureTotalNeed))}
-            ${metric("Monatliche Lücke", formatCurrency(Math.max(0, result.monthlyGap)))}
-          </div>
-          <p>${escapeHtml(gapDiagnosis.text)}</p>
-        </section>
-
-        <section>
-          <h2>5. Private Vorsorge</h2>
-          <p>${escapeHtml(privatePensionSummary.text)}</p>
-          ${contractsTable(input, result)}
-        </section>
-
-        <section>
-          <h2>Hinweis zur Einordnung</h2>
-          <p>${escapeHtml(OFFICIAL_TAX_SOURCE_2026.scope)}</p>
-          <p>Der Bericht ist eine vereinfachte Orientierung für das Kundengespräch. Er ersetzt keine individuelle Steuer-, Renten-, Versicherungs- oder Rechtsberatung.</p>
-          <p class="footer">Die Angaben wurden im Browser verarbeitet. Im anonymen Test werden keine Daten gespeichert oder an einen Server übertragen.</p>
-        </section>
         <section class="final-report-panel">
           <div class="final-report-divider"></div>
           <h2 class="final-report-title">Prüfbedarf-Ampel</h2>
@@ -1013,48 +882,6 @@ export function generateCustomerReportHtml(
     </article>
   </body>
 </html>`;
-}
-
-function contractsTable(input: CheckInput, result: CheckResult): string {
-  if (input.contracts.length === 0) {
-    return "<p>Keine privaten Vorsorgeverträge angegeben.</p>";
-  }
-
-  const rows = input.contracts
-    .map((contract, index) => {
-      const contractResult = result.contractResults.find((item) => item.id === contract.id);
-      const contractName = contract.name?.trim() || `Vertrag ${index + 1}`;
-
-      if (!contractResult) {
-        return "";
-      }
-
-      return `<tr>
-        <td>${escapeHtml(contractName)}</td>
-        <td>${escapeHtml(getContractTypeLabel(contract))}</td>
-        <td>${formatNumber(contract.yearsRunning)} Jahre</td>
-        <td>${formatCurrency(contractResult.totalPaid)}</td>
-        <td>${formatCurrency(contract.currentBalance)}</td>
-        <td>${escapeHtml(satisfactionLabels[contract.satisfaction])}</td>
-        <td>${trafficBadge(contractResult.trafficLight)}<br>${escapeHtml(contractResult.message)}</td>
-      </tr>`;
-    })
-    .join("");
-
-  return `<table>
-    <thead>
-      <tr>
-        <th>Vertrag</th>
-        <th>Art</th>
-        <th>Laufzeit</th>
-        <th>Selbst eingezahlt</th>
-        <th>Guthaben/Rückkaufswert</th>
-        <th>Erfüllt Erwartungen?</th>
-        <th>Bewertung</th>
-      </tr>
-    </thead>
-    <tbody>${rows}</tbody>
-  </table>`;
 }
 
 function buildPrivateCarePreview(input: CheckInput, result: CheckResult): {
@@ -1110,24 +937,6 @@ function buildPrivateCarePreview(input: CheckInput, result: CheckResult): {
     totalPossibleYield,
     totalSelfPaid
   };
-}
-
-function metaItem(label: string, value: string): string {
-  return `<div>
-    <p class="meta-label">${escapeHtml(label)}</p>
-    <p class="meta-value">${escapeHtml(value)}</p>
-  </div>`;
-}
-
-function metric(label: string, value: string): string {
-  return `<div class="metric">
-    <p class="metric-label">${escapeHtml(label)}</p>
-    <p class="metric-value">${escapeHtml(value)}</p>
-  </div>`;
-}
-
-function row(label: string, value: string): string {
-  return `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(value)}</td></tr>`;
 }
 
 function trafficBadge(value: TrafficLight): string {
