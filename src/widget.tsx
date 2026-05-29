@@ -522,11 +522,11 @@ export function ZinsendoktorWidget({
     <div className="zd-widget" style={themeStyle}>
       <div className="zd-shell">
         <header className="zd-header">
-          <p className="zd-brand">Zinsendoktor.de</p>
-          <h1 className="zd-title">Prüfen Sie Ihre finanzielle Gesundheit</h1>
+          <p className="zd-brand">Financial Care Preview</p>
+          <h1 className="zd-title">Kostenlos und Anonym</h1>
           <p className="zd-subline">
-            Checken Sie kostenlos, anonym und unverbindlich in wenigen Minuten, wie es um Ihre
-            Steuerlast, Altersversorgung, Kaufkraft und private Vorsorge steht.
+            Checken Sie als Maxi Mustermann in wenigen Minuten, wie es aktuell und
+            steuerfokussiert um Ihre Altersversorgung steht.
           </p>
         </header>
 
