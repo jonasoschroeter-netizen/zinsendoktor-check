@@ -49,7 +49,10 @@ describe("customer PDF report", () => {
     expect(html).toContain("Bedarf vs. Versorgung");
     expect(html).toContain("Private Vorsorge");
     expect(html).toContain("Mögliches Gesamtergebnis");
+    expect(html).toContain("Budget bis Rentenbeginn");
     expect(html).toContain("monatliche Versorgungslücke");
+    expect(html).not.toContain("Möglicher Ertrag");
+    expect(html).not.toContain("Nettorendite");
     expect(html).toContain("Voraussichtliche Bezüge");
     expect(html).not.toContain("Ã");
     expect(html).not.toContain("Prüfbedarf-Ampel");
@@ -109,7 +112,7 @@ describe("customer PDF report", () => {
     expect(payload.reportText).toContain("Rechnerische Einkommensteuer 2026");
   });
 
-  it("calculates covered months from contract yield instead of total balance", () => {
+  it("calculates covered months from retirement budget", () => {
     const input: CheckInput = {
       tax: {
         incomeTypes: ["nichtselbststaendig"],
@@ -143,8 +146,12 @@ describe("customer PDF report", () => {
     };
     const html = generateCustomerReportHtml(input, result);
 
-    expect(html).toContain("300,00");
-    expect(html).toContain('<div class="private-care-value">0,6</div>');
+    expect(html).toContain("6.300,00");
+    expect(html).toContain("6.000,00");
+    expect(html).toContain('<div class="private-care-value">12,6</div>');
+    expect(html).not.toContain("Möglicher Ertrag");
+    expect(html).not.toContain("Nettorendite");
+    expect(html).not.toContain('<div class="private-care-value">0,6</div>');
     expect(html).not.toContain('<div class="private-care-value">3,6</div>');
   });
 });

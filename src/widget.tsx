@@ -4,7 +4,6 @@ import {
   contractTypeLabels,
   formatCurrency,
   formatNumber,
-  formatPercent,
   getGapDiagnosis,
   getGlobalSummaryText,
   getContractTypeLabel,
@@ -1360,11 +1359,11 @@ function FinancialCarePreview({
                   {row.name} <strong>{row.typeLabel}</strong>
                 </p>
                 <div>
-                  <span className="zd-preview-mini-label">Möglicher Ertrag</span>
-                  <PreviewValue value={formatCurrency(row.possibleYield)} />
+                  <span className="zd-preview-mini-label">Budget bis Rentenbeginn</span>
+                  <PreviewValue value={formatCurrency(row.retirementBudget)} />
                 </div>
                 <div>
-                  <span className="zd-preview-mini-label">Davon selbst eingezahlt</span>
+                  <span className="zd-preview-mini-label">selbst eingezahlt bis Rentenbeginn</span>
                   <PreviewValue value={formatCurrency(row.totalPaid)} />
                 </div>
               </div>
@@ -1382,16 +1381,12 @@ function FinancialCarePreview({
             der privaten Verträge
           </p>
           <div>
-            <span className="zd-preview-mini-label">Möglicher Ertrag</span>
-            <PreviewValue value={formatCurrency(privatePreview.totalPossibleYield)} />
+            <span className="zd-preview-mini-label">Budget bis Rentenbeginn</span>
+            <PreviewValue value={formatCurrency(privatePreview.totalRetirementBudget)} />
           </div>
           <div>
-            <span className="zd-preview-mini-label">selbst eingezahlt</span>
+            <span className="zd-preview-mini-label">selbst eingezahlt bis Rentenbeginn</span>
             <PreviewValue value={formatCurrency(privatePreview.totalSelfPaid)} />
-          </div>
-          <div>
-            <span className="zd-preview-mini-label">Nettorendite</span>
-            <PreviewValue value={privatePreview.netReturn} />
           </div>
         </div>
         <div className="zd-preview-private-effect">
@@ -1441,47 +1436,45 @@ function buildPrivateCarePreview(input: CheckInput, result: CheckResult): {
   contractRows: Array<{
     id: string;
     name: string;
-    possibleYield: number;
+    retirementBudget: number;
     totalPaid: number;
     typeLabel: string;
   }>;
   coveredMonths: string;
-  netReturn: string;
-  totalPossibleYield: number;
+  totalRetirementBudget: number;
   totalSelfPaid: number;
 } {
-  let totalPossibleYield = 0;
+  let totalRetirementBudget = 0;
   let totalSelfPaid = 0;
+  const remainingYears = Math.max(0, result.analysisYears);
   const contractRows = input.contracts.slice(0, 3).map((contract, index) => {
     const contractResult = result.contractResults.find((item) => item.id === contract.id);
-    const totalPaid =
+    const historicalPaid =
       contractResult?.totalPaid ??
       (typeof contract.selfPaid === "number"
         ? contract.selfPaid
         : contract.annualContribution * contract.yearsRunning);
-    const possibleYield = contract.currentBalance - totalPaid;
-    totalPossibleYield += possibleYield;
+    const futureContributions = contract.annualContribution * remainingYears;
+    const retirementBudget = contract.currentBalance + futureContributions;
+    const totalPaid = historicalPaid + futureContributions;
+    totalRetirementBudget += retirementBudget;
     totalSelfPaid += totalPaid;
 
     return {
       id: contract.id,
       name: getContractDisplayName(contract, index),
-      possibleYield,
+      retirementBudget,
       totalPaid,
       typeLabel: getContractTypeLabel(contract)
     };
   });
-  const positivePossibleYield = Math.max(0, totalPossibleYield);
   const coveredMonths =
-    result.monthlyGap > 0 ? formatNumber(positivePossibleYield / result.monthlyGap) : "Keine Lücke";
-  const netReturn =
-    totalSelfPaid > 0 ? formatPercent((totalPossibleYield / totalSelfPaid) * 100) : "0 %";
+    result.monthlyGap > 0 ? formatNumber(totalRetirementBudget / result.monthlyGap) : "Keine Lücke";
 
   return {
     contractRows,
     coveredMonths,
-    netReturn,
-    totalPossibleYield,
+    totalRetirementBudget,
     totalSelfPaid
   };
 }

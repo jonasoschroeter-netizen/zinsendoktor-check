@@ -1,7 +1,6 @@
 import {
   formatCurrency,
   formatNumber,
-  formatPercent,
   getContractTypeLabel,
   getGlobalSummaryText,
   trafficLightLabels
@@ -458,7 +457,7 @@ export function generateCustomerReportHtml(
       }
 
       .private-care-summary-row {
-        grid-template-columns: minmax(135px, 1.15fr) minmax(0, 0.9fr) minmax(0, 0.9fr) minmax(0, 0.7fr);
+        grid-template-columns: minmax(135px, 1.15fr) minmax(0, 0.95fr) minmax(0, 0.95fr);
       }
 
       .private-care-total-label {
@@ -699,16 +698,12 @@ export function generateCustomerReportHtml(
         <div class="private-care-summary-row">
           <p class="private-care-total-label">Mögliches Gesamtergebnis<br />der privaten Verträge</p>
           <div>
-            <p class="private-care-inline-label">Möglicher Ertrag</p>
-            <div class="private-care-value">${formatCurrency(privateCare.totalPossibleYield)}</div>
+            <p class="private-care-inline-label">Budget bis Rentenbeginn</p>
+            <div class="private-care-value">${formatCurrency(privateCare.totalRetirementBudget)}</div>
           </div>
           <div>
-            <p class="private-care-inline-label">selbst eingezahlt</p>
+            <p class="private-care-inline-label">selbst eingezahlt bis Rentenbeginn</p>
             <div class="private-care-value">${formatCurrency(privateCare.totalSelfPaid)}</div>
-          </div>
-          <div>
-            <p class="private-care-field-label">Nettorendite</p>
-            <div class="private-care-value">${privateCare.netReturn}</div>
           </div>
         </div>
         <div class="private-care-effect-row">
@@ -731,21 +726,23 @@ export function generateCustomerReportHtml(
 function buildPrivateCarePreview(input: CheckInput, result: CheckResult): {
   contractRows: string;
   coveredMonths: string;
-  netReturn: string;
-  totalPossibleYield: number;
+  totalRetirementBudget: number;
   totalSelfPaid: number;
 } {
-  let totalPossibleYield = 0;
+  let totalRetirementBudget = 0;
   let totalSelfPaid = 0;
+  const remainingYears = Math.max(0, result.analysisYears);
   const rows = input.contracts.slice(0, 3).map((contract, index) => {
     const contractResult = result.contractResults.find((item) => item.id === contract.id);
-    const totalPaid =
+    const historicalPaid =
       contractResult?.totalPaid ??
       (typeof contract.selfPaid === "number"
         ? contract.selfPaid
         : contract.annualContribution * contract.yearsRunning);
-    const possibleYield = contract.currentBalance - totalPaid;
-    totalPossibleYield += possibleYield;
+    const futureContributions = contract.annualContribution * remainingYears;
+    const retirementBudget = contract.currentBalance + futureContributions;
+    const totalPaid = historicalPaid + futureContributions;
+    totalRetirementBudget += retirementBudget;
     totalSelfPaid += totalPaid;
 
     return `<div class="private-contract-row">
@@ -753,11 +750,11 @@ function buildPrivateCarePreview(input: CheckInput, result: CheckResult): {
         getContractTypeLabel(contract)
       )}</span></p>
       <div>
-        <p class="private-care-field-label">Möglicher Ertrag</p>
-        <div class="private-care-value">${formatCurrency(possibleYield)}</div>
+        <p class="private-care-field-label">Budget bis Rentenbeginn</p>
+        <div class="private-care-value">${formatCurrency(retirementBudget)}</div>
       </div>
       <div>
-        <p class="private-care-field-label">Davon selbst eingezahlt</p>
+        <p class="private-care-field-label">selbst eingezahlt bis Rentenbeginn</p>
         <div class="private-care-value">${formatCurrency(totalPaid)}</div>
       </div>
     </div>`;
@@ -767,17 +764,13 @@ function buildPrivateCarePreview(input: CheckInput, result: CheckResult): {
     rows.push('<p class="private-care-empty">Keine privaten Vorsorgeverträge angegeben.</p>');
   }
 
-  const netReturn =
-    totalSelfPaid > 0 ? formatPercent((totalPossibleYield / totalSelfPaid) * 100) : "0 %";
-  const positivePossibleYield = Math.max(0, totalPossibleYield);
   const coveredMonths =
-    result.monthlyGap > 0 ? formatNumber(positivePossibleYield / result.monthlyGap) : "Keine Lücke";
+    result.monthlyGap > 0 ? formatNumber(totalRetirementBudget / result.monthlyGap) : "Keine Lücke";
 
   return {
     contractRows: rows.join(""),
     coveredMonths,
-    netReturn,
-    totalPossibleYield,
+    totalRetirementBudget,
     totalSelfPaid
   };
 }

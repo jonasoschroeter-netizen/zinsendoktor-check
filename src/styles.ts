@@ -1172,7 +1172,7 @@ export const widgetStyles = `
 }
 
 .zd-preview-private-summary {
-  grid-template-columns: minmax(160px, 260px) minmax(140px, 170px) minmax(140px, 170px) minmax(100px, 130px);
+  grid-template-columns: minmax(160px, 260px) minmax(170px, 220px) minmax(170px, 220px);
   justify-content: start;
 }
 
