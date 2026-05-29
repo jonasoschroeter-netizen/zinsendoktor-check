@@ -275,6 +275,7 @@ export const widgetStyles = `
 }
 
 .zd-field-select-open {
+  grid-template-rows: auto auto auto !important;
   position: relative;
   z-index: 60;
 }
@@ -323,18 +324,19 @@ export const widgetStyles = `
   border-radius: 8px;
   box-shadow: 0 16px 32px rgba(11, 31, 58, 0.16);
   display: grid;
-  left: 0;
+  left: auto;
+  margin-top: 6px;
   max-height: 230px;
   overflow: auto;
   padding: 6px;
-  position: absolute;
-  right: 0;
-  top: calc(100% + 6px);
+  position: static;
+  right: auto;
+  top: auto;
   z-index: 30;
 }
 
 .zd-select-menu-top {
-  bottom: calc(100% + 6px);
+  bottom: auto;
   top: auto;
 }
 
@@ -400,18 +402,19 @@ export const widgetStyles = `
   border-radius: 8px;
   box-shadow: 0 16px 32px rgba(11, 31, 58, 0.16);
   display: grid;
-  left: 0;
+  left: auto;
+  margin-top: 6px;
   max-height: 230px;
   overflow: auto;
   padding: 6px;
-  position: absolute;
-  right: 0;
-  top: calc(100% + 6px);
+  position: static;
+  right: auto;
+  top: auto;
   z-index: 30;
 }
 
 .zd-combo-menu-top {
-  bottom: calc(100% + 6px);
+  bottom: auto;
   top: auto;
 }
 

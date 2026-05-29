@@ -1309,6 +1309,12 @@ function SelectField({
     setIsOpen(true);
   }
 
+  function selectOption(optionValue: string): void {
+    onChange(optionValue);
+    setIsOpen(false);
+    window.requestAnimationFrame(() => buttonRef.current?.focus());
+  }
+
   useEffect(() => {
     if (!isOpen) {
       return;
@@ -1384,10 +1390,11 @@ function SelectField({
                 aria-selected={optionValue === value}
                 className="zd-select-option"
                 key={`${id}-${optionValue}`}
-                onClick={() => {
-                  onChange(optionValue);
-                  setIsOpen(false);
-                  buttonRef.current?.focus();
+                onClick={() => selectOption(optionValue)}
+                onPointerDown={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  selectOption(optionValue);
                 }}
                 role="option"
                 type="button"
@@ -1431,6 +1438,12 @@ function DatalistField({
   function openMenu(): void {
     setMenuPlacement(getFloatingMenuPlacement(inputRef.current));
     setIsOpen(true);
+  }
+
+  function selectOption(optionLabel: string): void {
+    onChange(optionLabel);
+    setIsOpen(false);
+    window.requestAnimationFrame(() => inputRef.current?.focus());
   }
 
   useEffect(() => {
@@ -1521,10 +1534,11 @@ function DatalistField({
                 aria-selected={optionLabel === value}
                 className="zd-combo-option"
                 key={optionValue}
-                onClick={() => {
-                  onChange(optionLabel);
-                  setIsOpen(false);
-                  inputRef.current?.focus();
+                onClick={() => selectOption(optionLabel)}
+                onPointerDown={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  selectOption(optionLabel);
                 }}
                 role="option"
                 type="button"
