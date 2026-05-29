@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   buildVmsPdfFileName,
   buildVmsResultPayload,
+  buildVmsResultRequestUrl,
   buildVmsResultUrl,
+  buildVmsSessionRequestUrl,
   buildVmsSessionUrl,
   getVmsLaunchContext
 } from "./vmsIntegration";
@@ -16,9 +18,26 @@ describe("VMS integration", () => {
 
     expect(launch).toEqual({
       isVms: true,
+      resultApiUrl: "",
+      sessionApiUrl: "",
       sessionId: "session-123"
     });
     expect(launch).not.toHaveProperty("customerName");
+  });
+
+  it("reads direct Supabase session and result endpoints from the VMS launch URL", () => {
+    const launch = getVmsLaunchContext(
+      "?source=vms&session=session-123&session_api=https%3A%2F%2Fexample.functions.supabase.co%2Fvms-product-session&result_api=https%3A%2F%2Fexample.functions.supabase.co%2Fvms-product-session"
+    );
+
+    expect(launch.sessionApiUrl).toBe("https://example.functions.supabase.co/vms-product-session");
+    expect(launch.resultApiUrl).toBe("https://example.functions.supabase.co/vms-product-session");
+    expect(buildVmsSessionRequestUrl({ baseUrl: "", sessionApiUrl: launch.sessionApiUrl, sessionId: "abc 123" })).toBe(
+      "https://example.functions.supabase.co/vms-product-session?session=abc+123"
+    );
+    expect(buildVmsResultRequestUrl({ baseUrl: "", resultApiUrl: launch.resultApiUrl })).toBe(
+      "https://example.functions.supabase.co/vms-product-session"
+    );
   });
 
   it("builds the expected local partnerportal endpoints", () => {

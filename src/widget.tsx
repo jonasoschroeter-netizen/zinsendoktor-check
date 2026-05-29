@@ -43,8 +43,8 @@ import type {
 import {
   buildVmsPdfFileName,
   buildVmsResultPayload,
-  buildVmsResultUrl,
-  buildVmsSessionUrl,
+  buildVmsResultRequestUrl,
+  buildVmsSessionRequestUrl,
   DEFAULT_VMS_BASE_URL,
   getVmsLaunchContext
 } from "./vmsIntegration";
@@ -63,7 +63,9 @@ interface VmsState {
   baseUrl: string;
   error: string;
   isVms: boolean;
+  resultApiUrl: string;
   session?: VmsProductSession;
+  sessionApiUrl: string;
   sessionId: string;
   status: VmsStatus;
 }
@@ -140,6 +142,8 @@ function createInitialVmsState(baseUrl: string): VmsState {
       baseUrl,
       error: "",
       isVms: false,
+      resultApiUrl: "",
+      sessionApiUrl: "",
       sessionId: "",
       status: "inactive"
     };
@@ -151,6 +155,8 @@ function createInitialVmsState(baseUrl: string): VmsState {
     baseUrl,
     error: launch.isVms && !launch.sessionId ? "VMS-Aufruf ohne Session-ID." : "",
     isVms: launch.isVms,
+    resultApiUrl: launch.resultApiUrl,
+    sessionApiUrl: launch.sessionApiUrl,
     sessionId: launch.sessionId,
     status: launch.isVms ? (launch.sessionId ? "loading" : "error") : "inactive"
   };
@@ -201,6 +207,8 @@ export function ZinsendoktorWidget({
         baseUrl: vmsBaseUrl,
         error: "",
         isVms: false,
+        resultApiUrl: "",
+        sessionApiUrl: "",
         sessionId: "",
         status: "inactive"
       });
@@ -212,6 +220,8 @@ export function ZinsendoktorWidget({
         baseUrl: vmsBaseUrl,
         error: "VMS-Aufruf ohne Session-ID.",
         isVms: true,
+        resultApiUrl: launch.resultApiUrl,
+        sessionApiUrl: launch.sessionApiUrl,
         sessionId: "",
         status: "error"
       });
@@ -224,6 +234,8 @@ export function ZinsendoktorWidget({
       baseUrl: vmsBaseUrl,
       error: "",
       isVms: true,
+      resultApiUrl: launch.resultApiUrl,
+      sessionApiUrl: launch.sessionApiUrl,
       sessionId: launch.sessionId,
       status: "loading"
     });
@@ -232,12 +244,19 @@ export function ZinsendoktorWidget({
 
     async function loadSession(): Promise<void> {
       try {
-        const response = await fetch(buildVmsSessionUrl(vmsBaseUrl, launch.sessionId), {
-          headers: {
-            Accept: "application/json"
-          },
-          signal: controller.signal
-        });
+        const response = await fetch(
+          buildVmsSessionRequestUrl({
+            baseUrl: vmsBaseUrl,
+            sessionApiUrl: launch.sessionApiUrl,
+            sessionId: launch.sessionId
+          }),
+          {
+            headers: {
+              Accept: "application/json"
+            },
+            signal: controller.signal
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`VMS-Session konnte nicht geladen werden (${response.status}).`);
@@ -253,7 +272,9 @@ export function ZinsendoktorWidget({
           baseUrl: vmsBaseUrl,
           error: "",
           isVms: true,
+          resultApiUrl: launch.resultApiUrl,
           session: payload.session,
+          sessionApiUrl: launch.sessionApiUrl,
           sessionId: launch.sessionId,
           status: "ready"
         });
@@ -270,6 +291,8 @@ export function ZinsendoktorWidget({
           baseUrl: vmsBaseUrl,
           error: error instanceof Error ? error.message : "VMS-Session konnte nicht geladen werden.",
           isVms: true,
+          resultApiUrl: launch.resultApiUrl,
+          sessionApiUrl: launch.sessionApiUrl,
           sessionId: launch.sessionId,
           status: "error"
         });
@@ -432,7 +455,7 @@ export function ZinsendoktorWidget({
         result: resultBundle.result,
         session: sessionForSave
       });
-      const response = await fetch(buildVmsResultUrl(vmsState.baseUrl), {
+      const response = await fetch(buildVmsResultRequestUrl(vmsState), {
         body: JSON.stringify(payload),
         headers: {
           "Content-Type": "application/json"

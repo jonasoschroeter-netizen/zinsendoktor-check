@@ -6,6 +6,8 @@ export const VMS_PRODUCT_NAME = "Finanzdoktor";
 
 export interface VmsLaunchContext {
   isVms: boolean;
+  resultApiUrl: string;
+  sessionApiUrl: string;
   sessionId: string;
 }
 
@@ -51,6 +53,8 @@ export function getVmsLaunchContext(search: string): VmsLaunchContext {
 
   return {
     isVms: source === "vms" || utmSource === "vms",
+    resultApiUrl: params.get("result_api")?.trim() || params.get("resultApi")?.trim() || "",
+    sessionApiUrl: params.get("session_api")?.trim() || params.get("sessionApi")?.trim() || "",
     sessionId: params.get("session")?.trim() ?? ""
   };
 }
@@ -62,11 +66,42 @@ export function buildVmsSessionUrl(baseUrl: string, sessionId: string): string {
   return url.toString();
 }
 
+export function buildVmsSessionRequestUrl({
+  baseUrl,
+  sessionApiUrl,
+  sessionId
+}: {
+  baseUrl: string;
+  sessionApiUrl?: string;
+  sessionId: string;
+}): string {
+  const directUrl = sessionApiUrl?.trim();
+
+  if (!directUrl) {
+    return buildVmsSessionUrl(baseUrl, sessionId);
+  }
+
+  const url = new URL(directUrl);
+  url.searchParams.set("session", sessionId);
+
+  return url.toString();
+}
+
 export function buildVmsResultUrl(baseUrl: string): string {
   const normalizedBase = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
   const url = new URL(`api/product-results/${VMS_PRODUCT_ID}`, normalizedBase);
 
   return url.toString();
+}
+
+export function buildVmsResultRequestUrl({
+  baseUrl,
+  resultApiUrl
+}: {
+  baseUrl: string;
+  resultApiUrl?: string;
+}): string {
+  return resultApiUrl?.trim() || buildVmsResultUrl(baseUrl);
 }
 
 export function buildVmsPdfFileName(session: VmsProductSession): string {
