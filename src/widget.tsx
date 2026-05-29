@@ -1008,6 +1008,7 @@ function ContractStep({
       <div className="zd-contract-list">
         {formState.contracts.map((contract, index) => {
           const contractDisplayName = getContractDisplayName(contract, index);
+          const calculatedSelfPaid = getCalculatedSelfPaid(contract);
 
           return (
             <div className="zd-contract-row" key={contract.id}>
@@ -1062,18 +1063,21 @@ function ContractStep({
                 value={contract.currentBalance}
               />
               <NumberField
-                error={errors[`${contract.id}.selfPaid`]}
-                id={`${contract.id}-selfPaid`}
-                label="Davon haben Sie selbst einbezahlt:"
-                onChange={(value) => onUpdateContract(contract.id, "selfPaid", value)}
-                value={contract.selfPaid}
-              />
-              <NumberField
                 error={errors[`${contract.id}.annualContribution`]}
                 id={`${contract.id}-annualContribution`}
                 label="Wie viel zahlen Sie jährlich in den Vertrag ein?"
                 onChange={(value) => onUpdateContract(contract.id, "annualContribution", value)}
                 value={contract.annualContribution}
+              />
+              <CalculatedField
+                id={`${contract.id}-selfPaid`}
+                label="Davon haben Sie selbst einbezahlt:"
+                value={
+                  calculatedSelfPaid === null
+                    ? "Wird automatisch berechnet"
+                    : formatCurrency(calculatedSelfPaid)
+                }
+                muted={calculatedSelfPaid === null}
               />
               <SatisfactionField
                 id={`${contract.id}-satisfaction`}
@@ -1562,6 +1566,33 @@ function NumberField({
         </p>
       )}
       <ErrorMessage error={error} id={errorId} />
+    </div>
+  );
+}
+
+function CalculatedField({
+  id,
+  label,
+  muted = false,
+  value
+}: {
+  id: string;
+  label: string;
+  muted?: boolean;
+  value: string;
+}): React.ReactElement {
+  return (
+    <div className="zd-field">
+      <span className="zd-label" id={`${id}-label`}>
+        {label}
+      </span>
+      <output
+        aria-labelledby={`${id}-label`}
+        className={`zd-calculated-value${muted ? " zd-calculated-value-muted" : ""}`}
+        id={id}
+      >
+        {value}
+      </output>
     </div>
   );
 }
@@ -2069,9 +2100,6 @@ function validateStep(formState: FormState, step: StepId): { valid: true } | { v
       requireNumber(errors, `${contract.id}.currentBalance`, contract.currentBalance, {
         min: 0
       });
-      requireNumber(errors, `${contract.id}.selfPaid`, contract.selfPaid, {
-        min: 0
-      });
       requireNumber(errors, `${contract.id}.annualContribution`, contract.annualContribution, {
         min: 0
       });
@@ -2111,7 +2139,7 @@ function buildCheckInput(formState: FormState): CheckInput {
     yearsRunning: toNumber(contract.yearsRunning),
     currentBalance: toNumber(contract.currentBalance),
     annualContribution: toNumber(contract.annualContribution),
-    selfPaid: toNumber(contract.selfPaid),
+    selfPaid: getCalculatedSelfPaid(contract) ?? undefined,
     satisfaction: contract.satisfaction
   }));
 
@@ -2140,6 +2168,17 @@ function buildCheckInput(formState: FormState): CheckInput {
     },
     contracts
   };
+}
+
+function getCalculatedSelfPaid(contract: ContractFormState): number | null {
+  const yearsRunning = toNumber(contract.yearsRunning);
+  const annualContribution = toNumber(contract.annualContribution);
+
+  if (!Number.isFinite(yearsRunning) || !Number.isFinite(annualContribution)) {
+    return null;
+  }
+
+  return yearsRunning * annualContribution;
 }
 
 function requireNumber(

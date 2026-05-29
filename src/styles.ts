@@ -328,6 +328,27 @@ export const widgetStyles = `
   height: 46px;
 }
 
+.zd-calculated-value {
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  color: var(--zd-text);
+  display: flex;
+  font: inherit;
+  font-weight: 800;
+  height: 46px;
+  justify-content: flex-end;
+  padding: 10px 11px;
+  width: 100%;
+}
+
+.zd-calculated-value-muted {
+  color: var(--zd-muted);
+  font-weight: 650;
+  justify-content: flex-start;
+}
+
 .zd-select {
   appearance: none;
   background-image:
