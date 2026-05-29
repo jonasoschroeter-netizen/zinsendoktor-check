@@ -774,13 +774,10 @@ function ContractStep({
                 onChange={(value) => onUpdateContract(contract.id, "annualContribution", value)}
                 value={contract.annualContribution}
               />
-              <SelectField
+              <SatisfactionField
                 id={`${contract.id}-satisfaction`}
                 label="Erfüllt der Vertrag Ihre Erwartungen?"
-                onChange={(value) =>
-                  onUpdateContract(contract.id, "satisfaction", value as Satisfaction)
-                }
-                options={satisfactionLabels}
+                onChange={(value) => onUpdateContract(contract.id, "satisfaction", value)}
                 value={contract.satisfaction}
               />
             </div>
@@ -1318,6 +1315,42 @@ function SelectField({
         ))}
       </select>
       <ErrorMessage error={error} id={errorId} />
+    </div>
+  );
+}
+
+function SatisfactionField({
+  id,
+  label,
+  onChange,
+  value
+}: {
+  id: string;
+  label: string;
+  onChange: (value: Satisfaction) => void;
+  value: Satisfaction;
+}): React.ReactElement {
+  const options = Object.entries(satisfactionLabels) as Array<[Satisfaction, string]>;
+
+  return (
+    <div className="zd-field">
+      <span className="zd-label" id={`${id}-label`}>
+        {label}
+      </span>
+      <div aria-labelledby={`${id}-label`} className="zd-choice-row" role="radiogroup">
+        {options.map(([optionValue, optionLabel]) => (
+          <button
+            aria-checked={optionValue === value}
+            className={`zd-choice-button ${optionValue === value ? "zd-choice-button-active" : ""}`}
+            key={`${id}-${optionValue}`}
+            onClick={() => onChange(optionValue)}
+            role="radio"
+            type="button"
+          >
+            {optionLabel}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

@@ -66,7 +66,9 @@ export const widgetStyles = `
 .zd-contract-list,
 .zd-contract-fields,
 .zd-contract-title-wrap,
-.zd-icon-button {
+.zd-icon-button,
+.zd-choice-row,
+.zd-choice-button {
   box-sizing: border-box;
 }
 
@@ -267,6 +269,10 @@ export const widgetStyles = `
 
 .zd-input,
 .zd-select {
+  height: 46px;
+}
+
+.zd-select {
   appearance: none;
   background-image:
     linear-gradient(45deg, transparent 50%, var(--zd-primary) 50%),
@@ -277,7 +283,6 @@ export const widgetStyles = `
   background-repeat: no-repeat;
   background-size: 6px 6px;
   cursor: pointer;
-  height: 46px;
   padding-right: 42px;
 }
 
@@ -365,6 +370,42 @@ export const widgetStyles = `
 .zd-select-option:hover,
 .zd-select-option[aria-selected="true"] {
   background: #eef8f4;
+  color: #0b5f49;
+}
+
+.zd-choice-row {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-height: 46px;
+}
+
+.zd-choice-button {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  color: var(--zd-text);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-weight: 700;
+  justify-content: center;
+  min-height: 46px;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.zd-choice-button:hover,
+.zd-choice-button:focus {
+  border-color: var(--zd-accent);
+  box-shadow: 0 0 0 4px var(--zd-focus);
+  outline: none;
+}
+
+.zd-choice-button-active {
+  background: #eef8f4;
+  border-color: var(--zd-accent);
   color: #0b5f49;
 }
 
