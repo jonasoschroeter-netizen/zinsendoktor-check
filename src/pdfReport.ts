@@ -3,6 +3,7 @@ import {
   formatNumber,
   formatPercent,
   getContractTypeLabel,
+  getGlobalSummaryText,
   trafficLightLabels
 } from "./calculations";
 import type { CheckInput, CheckResult, TrafficLight } from "./types";
@@ -109,6 +110,69 @@ export function generateCustomerReportHtml(
         max-width: 920px;
         overflow: hidden;
         box-shadow: 0 18px 55px rgba(11, 31, 58, 0.14);
+      }
+
+      .report-diagnosis-header {
+        padding: 28px 38px 0;
+      }
+
+      .report-diagnosis-title {
+        color: var(--primary);
+        font-size: 26px;
+        font-weight: 900;
+        line-height: 1.15;
+        margin: 0;
+      }
+
+      .report-diagnosis-copy {
+        color: var(--muted);
+        font-size: 17px;
+        margin: 14px 0 22px;
+      }
+
+      .report-diagnosis-alert {
+        align-items: center;
+        background: ${getReportBackground(result.globalTrafficLight)};
+        border: 1px solid ${getReportColor(result.globalTrafficLight)};
+        border-radius: 9px;
+        color: ${getReportTextColor(result.globalTrafficLight)};
+        display: flex;
+        font-size: 16px;
+        gap: 14px;
+        line-height: 1.55;
+        margin-bottom: 18px;
+        padding: 15px 18px;
+      }
+
+      .report-diagnosis-alert .badge {
+        flex: 0 0 auto;
+      }
+
+      .report-diagnosis-metrics {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .report-diagnosis-metric {
+        background: var(--soft);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+      }
+
+      .report-diagnosis-metric-label {
+        color: var(--muted);
+        font-size: 14px;
+        margin: 0 0 12px;
+      }
+
+      .report-diagnosis-metric-value {
+        color: var(--primary);
+        font-size: 24px;
+        font-weight: 900;
+        line-height: 1.1;
+        margin: 0;
       }
 
       .tax-situation-panel {
@@ -626,6 +690,11 @@ export function generateCustomerReportHtml(
           max-width: none;
         }
 
+        .report-diagnosis-header {
+          padding-left: 0;
+          padding-right: 0;
+        }
+
         .tax-situation-panel {
           margin-left: 0;
           margin-right: 0;
@@ -645,6 +714,29 @@ export function generateCustomerReportHtml(
   </head>
   <body>
     <article class="page">
+      <header class="report-diagnosis-header">
+        <h1 class="report-diagnosis-title">Ihre Finanz-Diagnose</h1>
+        <p class="report-diagnosis-copy">Die Auswertung ist eine vereinfachte Orientierung und ersetzt keine individuelle Steuer-, Renten- oder Vertragsberatung.</p>
+        <div class="report-diagnosis-alert">
+          ${trafficBadge(result.globalTrafficLight)}
+          <span>${escapeHtml(getGlobalSummaryText(result.globalTrafficLight))}</span>
+        </div>
+        <div class="report-diagnosis-metrics">
+          <div class="report-diagnosis-metric">
+            <p class="report-diagnosis-metric-label">Prüfscore</p>
+            <p class="report-diagnosis-metric-value">${formatNumber(result.globalScore)} / 100</p>
+          </div>
+          <div class="report-diagnosis-metric">
+            <p class="report-diagnosis-metric-label">Rechnerische Einkommensteuer 2026</p>
+            <p class="report-diagnosis-metric-value">${formatCurrency(result.calculatedIncomeTax)}</p>
+          </div>
+          <div class="report-diagnosis-metric">
+            <p class="report-diagnosis-metric-label">Mögliche monatliche Lücke</p>
+            <p class="report-diagnosis-metric-value">${formatCurrency(Math.max(0, result.monthlyGap))}</p>
+          </div>
+        </div>
+      </header>
+
       <div class="tax-situation-panel">
         <h2 class="tax-situation-title">Steuerliche Situation</h2>
         <div class="tax-situation-row">
@@ -850,6 +942,18 @@ function getReportBackground(value: TrafficLight): string {
   }
 
   return "#e8f7f1";
+}
+
+function getReportTextColor(value: TrafficLight): string {
+  if (value === "red") {
+    return "#8f1f1f";
+  }
+
+  if (value === "yellow") {
+    return "#6f4b00";
+  }
+
+  return "#0b5f49";
 }
 
 function escapeHtml(value: string): string {

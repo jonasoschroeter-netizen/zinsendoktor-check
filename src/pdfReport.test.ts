@@ -31,6 +31,9 @@ describe("customer PDF report", () => {
     });
 
     expect(html).toContain("Finanz-Diagnose");
+    expect(html).toContain("Ihre Finanz-Diagnose");
+    expect(html).toContain("vereinfachte Orientierung");
+    expect(html).toContain("Mögliche monatliche Lücke");
     expect(html).not.toContain("Financial Care Preview");
     expect(html).not.toContain("<h1 class=\"report-title\">Financial Care Preview</h1>");
     expect(html).not.toContain("Schritt 5 von 5");
