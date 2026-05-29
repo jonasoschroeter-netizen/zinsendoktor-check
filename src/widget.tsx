@@ -1289,30 +1289,118 @@ function SelectField({
   value: string;
 }): React.ReactElement {
   const errorId = `${id}-error`;
+  const menuId = `${id}-options`;
+  const fieldRef = useRef<HTMLDivElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [menuPlacement, setMenuPlacement] = useState<FloatingMenuPlacement>("bottom");
   const optionEntries = [
     ...(placeholder ? [["", placeholder] as [string, string]] : []),
     ...Object.entries(options)
   ];
+  const selectedLabel = value ? options[value] ?? value : placeholder ?? "";
+
+  function openMenu(): void {
+    setMenuPlacement(getFloatingMenuPlacement(buttonRef.current));
+    setIsOpen(true);
+  }
+
+  function selectOption(optionValue: string): void {
+    onChange(optionValue);
+    setIsOpen(false);
+    window.requestAnimationFrame(() => buttonRef.current?.focus());
+  }
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    function handlePointerDown(event: PointerEvent): void {
+      if (!fieldRef.current?.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    function handleReposition(): void {
+      setMenuPlacement(getFloatingMenuPlacement(buttonRef.current));
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("resize", handleReposition);
+    window.addEventListener("scroll", handleReposition, true);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("resize", handleReposition);
+      window.removeEventListener("scroll", handleReposition, true);
+    };
+  }, [isOpen]);
 
   return (
-    <div className="zd-field">
+    <div className={`zd-field ${isOpen ? "zd-field-select-open" : ""}`} ref={fieldRef}>
       <label className="zd-label" htmlFor={id}>
         {label} {optional && <span className="zd-small">(optional)</span>}
       </label>
-      <select
-        aria-describedby={error ? errorId : undefined}
-        aria-invalid={error ? "true" : "false"}
-        className="zd-select"
-        id={id}
-        onChange={(event) => onChange(event.target.value)}
-        value={value}
-      >
-        {optionEntries.map(([optionValue, optionLabel]) => (
-          <option key={`${id}-${optionValue}`} value={optionValue}>
-            {optionLabel}
-          </option>
-        ))}
-      </select>
+      <div className="zd-select-shell">
+        <button
+          aria-controls={menuId}
+          aria-describedby={error ? errorId : undefined}
+          aria-expanded={isOpen}
+          aria-haspopup="listbox"
+          aria-invalid={error ? "true" : "false"}
+          className={`zd-select-control ${!value ? "zd-select-control-placeholder" : ""}`}
+          id={id}
+          onClick={() => {
+            if (isOpen) {
+              setIsOpen(false);
+              return;
+            }
+
+            openMenu();
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              openMenu();
+            }
+
+            if (event.key === "Escape") {
+              setIsOpen(false);
+            }
+          }}
+          ref={buttonRef}
+          type="button"
+        >
+          <span>{selectedLabel}</span>
+          <span className="zd-select-arrow">{"\u25BE"}</span>
+        </button>
+        {isOpen && (
+          <div
+            className={`zd-select-menu ${menuPlacement === "top" ? "zd-select-menu-top" : ""}`}
+            id={menuId}
+            role="listbox"
+          >
+            {optionEntries.map(([optionValue, optionLabel]) => (
+              <button
+                aria-selected={optionValue === value}
+                className="zd-select-option"
+                key={`${id}-${optionValue}`}
+                onClick={() => selectOption(optionValue)}
+                onPointerDown={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  selectOption(optionValue);
+                }}
+                role="option"
+                type="button"
+              >
+                {optionLabel}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
       <ErrorMessage error={error} id={errorId} />
     </div>
   );
