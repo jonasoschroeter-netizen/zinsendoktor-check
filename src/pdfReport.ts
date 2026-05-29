@@ -737,7 +737,6 @@ function buildPrivateCarePreview(input: CheckInput, result: CheckResult): {
 } {
   let totalPossibleYield = 0;
   let totalSelfPaid = 0;
-  let totalCurrentBalance = 0;
   const rows = input.contracts.slice(0, 3).map((contract, index) => {
     const contractResult = result.contractResults.find((item) => item.id === contract.id);
     const totalPaid =
@@ -748,7 +747,6 @@ function buildPrivateCarePreview(input: CheckInput, result: CheckResult): {
     const possibleYield = contract.currentBalance - totalPaid;
     totalPossibleYield += possibleYield;
     totalSelfPaid += totalPaid;
-    totalCurrentBalance += contract.currentBalance;
 
     return `<div class="private-contract-row">
       <p class="private-contract-name">Vertrag ${index + 1}<span class="private-contract-type">${escapeHtml(
@@ -771,8 +769,9 @@ function buildPrivateCarePreview(input: CheckInput, result: CheckResult): {
 
   const netReturn =
     totalSelfPaid > 0 ? formatPercent((totalPossibleYield / totalSelfPaid) * 100) : "0 %";
+  const positivePossibleYield = Math.max(0, totalPossibleYield);
   const coveredMonths =
-    result.monthlyGap > 0 ? formatNumber(totalCurrentBalance / result.monthlyGap) : "Keine Lücke";
+    result.monthlyGap > 0 ? formatNumber(positivePossibleYield / result.monthlyGap) : "Keine Lücke";
 
   return {
     contractRows: rows.join(""),

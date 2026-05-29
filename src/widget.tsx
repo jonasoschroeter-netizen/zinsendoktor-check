@@ -1450,7 +1450,6 @@ function buildPrivateCarePreview(input: CheckInput, result: CheckResult): {
   totalPossibleYield: number;
   totalSelfPaid: number;
 } {
-  let totalCurrentBalance = 0;
   let totalPossibleYield = 0;
   let totalSelfPaid = 0;
   const contractRows = input.contracts.slice(0, 3).map((contract, index) => {
@@ -1461,7 +1460,6 @@ function buildPrivateCarePreview(input: CheckInput, result: CheckResult): {
         ? contract.selfPaid
         : contract.annualContribution * contract.yearsRunning);
     const possibleYield = contract.currentBalance - totalPaid;
-    totalCurrentBalance += contract.currentBalance;
     totalPossibleYield += possibleYield;
     totalSelfPaid += totalPaid;
 
@@ -1473,8 +1471,9 @@ function buildPrivateCarePreview(input: CheckInput, result: CheckResult): {
       typeLabel: getContractTypeLabel(contract)
     };
   });
+  const positivePossibleYield = Math.max(0, totalPossibleYield);
   const coveredMonths =
-    result.monthlyGap > 0 ? formatNumber(totalCurrentBalance / result.monthlyGap) : "Keine Lücke";
+    result.monthlyGap > 0 ? formatNumber(positivePossibleYield / result.monthlyGap) : "Keine Lücke";
   const netReturn =
     totalSelfPaid > 0 ? formatPercent((totalPossibleYield / totalSelfPaid) * 100) : "0 %";
 

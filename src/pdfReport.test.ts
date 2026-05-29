@@ -108,4 +108,43 @@ describe("customer PDF report", () => {
     expect(payload.reportHtml).toContain("Steuerliche Situation");
     expect(payload.reportText).toContain("Rechnerische Einkommensteuer 2026");
   });
+
+  it("calculates covered months from contract yield instead of total balance", () => {
+    const input: CheckInput = {
+      tax: {
+        incomeTypes: ["nichtselbststaendig"],
+        maritalStatus: "ledig",
+        taxableIncome: 50000
+      },
+      pension: {
+        monthlyNetIncomePerson1: 2600,
+        yearsToRetirementPerson1: 30
+      },
+      inflation: {
+        expectedInflationPercent: 2.5,
+        currentWarmRent: 900,
+        currentLivingCosts: 1300
+      },
+      contracts: [
+        {
+          id: "contract-1",
+          type: "bausparvertrag",
+          yearsRunning: 10,
+          currentBalance: 1800,
+          annualContribution: 150,
+          selfPaid: 1500,
+          satisfaction: "unsicher"
+        }
+      ]
+    };
+    const result = {
+      ...calculateCheck(input),
+      monthlyGap: 500
+    };
+    const html = generateCustomerReportHtml(input, result);
+
+    expect(html).toContain("300,00");
+    expect(html).toContain('<div class="private-care-value">0,6</div>');
+    expect(html).not.toContain('<div class="private-care-value">3,6</div>');
+  });
 });
