@@ -133,7 +133,8 @@ export function generateCustomerReportHtml(
         border-radius: 8px;
         display: grid;
         gap: 24px;
-        grid-template-columns: minmax(0, 1fr) 210px;
+        grid-template-columns: minmax(0, 420px) 210px;
+        justify-content: start;
         margin-bottom: 10px;
         padding: 10px 12px;
       }
@@ -154,11 +155,11 @@ export function generateCustomerReportHtml(
         display: flex;
         font-size: 14px;
         font-weight: 800;
-        justify-content: flex-end;
+        justify-content: flex-start;
         min-height: 34px;
         overflow-wrap: anywhere;
         padding: 5px 10px;
-        text-align: right;
+        text-align: left;
       }
 
       .care-situation-panel {
@@ -191,20 +192,21 @@ export function generateCustomerReportHtml(
         border-radius: 8px;
         display: grid;
         gap: 14px;
-        grid-template-columns: minmax(0, 1fr) 160px 120px;
+        grid-template-columns: minmax(0, 320px) 150px;
+        justify-content: start;
         margin-bottom: 8px;
         padding: 8px 10px;
       }
 
       .care-situation-row-wide {
-        grid-template-columns: minmax(0, 1fr) 190px 120px;
+        grid-template-columns: minmax(0, 320px) 150px;
       }
 
       .care-situation-label {
         color: #000000;
         font-size: 13px;
         margin: 0;
-        text-align: right;
+        text-align: left;
       }
 
       .care-situation-label-strong {
@@ -220,11 +222,11 @@ export function generateCustomerReportHtml(
         display: flex;
         font-size: 13px;
         font-weight: 800;
-        justify-content: flex-end;
+        justify-content: flex-start;
         min-height: 30px;
         overflow-wrap: anywhere;
         padding: 4px 8px;
-        text-align: right;
+        text-align: left;
       }
 
       .care-situation-value-green {
@@ -310,12 +312,12 @@ export function generateCustomerReportHtml(
         display: flex;
         font-size: 12px;
         font-weight: 800;
-        justify-content: flex-end;
+        justify-content: flex-start;
         min-height: 30px;
         min-width: 0;
         overflow-wrap: anywhere;
         padding: 4px 8px;
-        text-align: right;
+        text-align: left;
       }
 
       .private-care-divider {
@@ -663,17 +665,14 @@ export function generateCustomerReportHtml(
         <h2 class="care-situation-title">Versorgungs- Bedarfssituation</h2>
         <p class="care-situation-subtitle">Voraussichtliche Bezüge aus gesetzlicher Rentenkasse<br />unter Berücksichtigung der angegebenen Inflationsrate</p>
         <div class="care-situation-row">
-          <span></span>
           <p class="care-situation-label">Person 1</p>
           <div class="care-situation-value">${formatCurrency(result.estimatedPensionPerson1)}</div>
         </div>
         <div class="care-situation-row">
-          <span></span>
           <p class="care-situation-label">Person 2</p>
           <div class="care-situation-value">${formatCurrency(result.estimatedPensionPerson2)}</div>
         </div>
         <div class="care-situation-row">
-          <span></span>
           <p class="care-situation-label">Gesetzliche Gesamtversorgung</p>
           <div class="care-situation-value">${formatCurrency(result.totalEstimatedPension)}</div>
         </div>
@@ -681,22 +680,18 @@ export function generateCustomerReportHtml(
         <div class="care-spacer"></div>
         <p class="care-situation-subtitle">Voraussichtlicher finanzieller Bedarf bei Rentenbeginn<br />unter Berücksichtigung der angegebenen Inflationsrate</p>
         <div class="care-situation-row care-situation-row-wide">
-          <span></span>
           <p class="care-situation-label">Warmmiete hochgerechnet</p>
           <div class="care-situation-value">${formatCurrency(result.futureRent)}</div>
         </div>
         <div class="care-situation-row care-situation-row-wide">
-          <span></span>
           <p class="care-situation-label">Lebenshaltungskosten hochgerechnet</p>
           <div class="care-situation-value">${formatCurrency(result.futureLivingCosts)}</div>
         </div>
         <div class="care-situation-row care-situation-row-wide">
-          <span></span>
           <p class="care-situation-label">Voraussichtlicher Gesamtbedarf</p>
           <div class="care-situation-value">${formatCurrency(result.futureTotalNeed)}</div>
         </div>
         <div class="care-situation-row care-situation-row-wide">
-          <span></span>
           <p class="care-situation-label care-situation-label-strong">Ergebnis&nbsp;&nbsp; Bedarf vs. Versorgung</p>
           <div class="care-situation-value care-situation-value-green">${formatCurrency(Math.max(0, result.monthlyGap))}</div>
         </div>
