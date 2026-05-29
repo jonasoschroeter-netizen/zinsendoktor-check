@@ -42,7 +42,7 @@ describe("customer PDF report", () => {
     expect(html).not.toContain("Erstellt eine übersichtliche PDF-/Druckansicht");
     expect(html).not.toContain("PDF herunterladen / speichern");
     expect(html).toContain("Steuerliche Situation");
-    expect(html).toContain("Angenommenes zu versteuerndes Einkommen");
+    expect(html).toContain("Angegebenes zu versteuerndes Einkommen");
     expect(html).toContain("50.000,00");
     expect(html).toContain("Versorgungs- Bedarfssituation");
     expect(html).toContain("Person 1");

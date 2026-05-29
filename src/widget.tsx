@@ -1290,7 +1290,7 @@ function FinancialCarePreview({
       <section className="zd-preview-panel">
         <h4 className="zd-preview-title">Steuerliche Situation</h4>
         <div className="zd-preview-line">
-          <p>Angenommenes zu versteuerndes Einkommen</p>
+          <p>Angegebenes zu versteuerndes Einkommen</p>
           <PreviewValue value={formatCurrency(input.tax.taxableIncome)} />
         </div>
         <div className="zd-preview-line">

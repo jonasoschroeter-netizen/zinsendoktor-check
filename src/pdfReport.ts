@@ -642,7 +642,7 @@ export function generateCustomerReportHtml(
       <div class="tax-situation-panel">
         <h2 class="tax-situation-title">Steuerliche Situation</h2>
         <div class="tax-situation-row">
-          <p class="tax-situation-label">Angenommenes zu versteuerndes Einkommen</p>
+          <p class="tax-situation-label">Angegebenes zu versteuerndes Einkommen</p>
           <div class="tax-situation-value">${formatCurrency(input.tax.taxableIncome)}</div>
         </div>
         <div class="tax-situation-row">
