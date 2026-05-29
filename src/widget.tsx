@@ -1105,7 +1105,6 @@ function PreviewCompactLine({
 }): React.ReactElement {
   return (
     <div className={`zd-preview-compact-line ${emphasis ? "zd-preview-compact-line-emphasis" : ""}`}>
-      <span />
       <p>{label}</p>
       <PreviewValue emphasis={emphasis} value={value} />
     </div>

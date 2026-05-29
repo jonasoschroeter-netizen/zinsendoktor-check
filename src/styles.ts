@@ -866,7 +866,8 @@ export const widgetStyles = `
 }
 
 .zd-preview-line {
-  grid-template-columns: minmax(0, 1fr) minmax(160px, 230px);
+  grid-template-columns: minmax(0, 420px) minmax(160px, 230px);
+  justify-content: start;
 }
 
 .zd-preview-line p,
@@ -878,11 +879,12 @@ export const widgetStyles = `
 }
 
 .zd-preview-compact-line {
-  grid-template-columns: minmax(0, 1fr) minmax(180px, 230px) minmax(120px, 160px);
+  grid-template-columns: minmax(0, 420px) minmax(160px, 230px);
+  justify-content: start;
 }
 
 .zd-preview-compact-line p {
-  text-align: right;
+  text-align: left;
 }
 
 .zd-preview-compact-line-emphasis p,
@@ -900,9 +902,10 @@ export const widgetStyles = `
   display: flex;
   font-size: 0.92rem;
   font-weight: 800;
-  justify-content: flex-end;
+  justify-content: flex-start;
   min-height: 38px;
   padding: 6px 12px;
+  text-align: left;
 }
 
 .zd-preview-value-emphasis {
@@ -934,7 +937,8 @@ export const widgetStyles = `
 }
 
 .zd-preview-private-row {
-  grid-template-columns: minmax(190px, 1fr) minmax(150px, 180px) minmax(150px, 180px);
+  grid-template-columns: minmax(190px, 260px) minmax(150px, 180px) minmax(150px, 180px);
+  justify-content: start;
 }
 
 .zd-preview-contract-name,
@@ -958,11 +962,13 @@ export const widgetStyles = `
 }
 
 .zd-preview-private-summary {
-  grid-template-columns: minmax(160px, 1fr) minmax(140px, 170px) minmax(140px, 170px) minmax(100px, 130px);
+  grid-template-columns: minmax(160px, 260px) minmax(140px, 170px) minmax(140px, 170px) minmax(100px, 130px);
+  justify-content: start;
 }
 
 .zd-preview-private-effect {
-  grid-template-columns: minmax(190px, 1fr) minmax(160px, 200px) minmax(160px, 200px);
+  grid-template-columns: minmax(190px, 260px) minmax(160px, 200px) minmax(160px, 200px);
+  justify-content: start;
   margin-top: 28px;
 }
 
