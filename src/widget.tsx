@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   calculateCheck,
   contractTypeLabels,
@@ -1330,29 +1330,96 @@ function DatalistField({
   value: string;
 }): React.ReactElement {
   const errorId = `${id}-error`;
-  const listId = `${id}-options`;
+  const menuId = `${id}-options`;
+  const fieldRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const optionEntries = Object.entries(options);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    function handlePointerDown(event: PointerEvent): void {
+      if (!fieldRef.current?.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [isOpen]);
 
   return (
-    <div className="zd-field">
+    <div className="zd-field" ref={fieldRef}>
       <label className="zd-label" htmlFor={id}>
         {label}
       </label>
-      <input
-        aria-describedby={error ? errorId : undefined}
-        aria-invalid={error ? "true" : "false"}
-        className="zd-input"
-        id={id}
-        list={listId}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={placeholder}
-        type="text"
-        value={value}
-      />
-      <datalist id={listId}>
-        {Object.entries(options).map(([optionValue, optionLabel]) => (
-          <option key={optionValue} value={optionLabel} />
-        ))}
-      </datalist>
+      <div className="zd-combo">
+        <input
+          aria-controls={menuId}
+          aria-describedby={error ? errorId : undefined}
+          aria-expanded={isOpen}
+          aria-haspopup="listbox"
+          aria-invalid={error ? "true" : "false"}
+          className="zd-input zd-combo-input"
+          id={id}
+          onChange={(event) => {
+            onChange(event.target.value);
+            setIsOpen(true);
+          }}
+          onFocus={() => setIsOpen(true)}
+          onKeyDown={(event) => {
+            if (event.key === "ArrowDown") {
+              event.preventDefault();
+              setIsOpen(true);
+            }
+
+            if (event.key === "Escape") {
+              setIsOpen(false);
+            }
+          }}
+          placeholder={placeholder}
+          ref={inputRef}
+          role="combobox"
+          type="text"
+          value={value}
+        />
+        <button
+          aria-label="Alle Vertragsarten anzeigen"
+          className="zd-combo-button"
+          onClick={() => {
+            setIsOpen((current) => !current);
+            inputRef.current?.focus();
+          }}
+          onMouseDown={(event) => event.preventDefault()}
+          type="button"
+        >
+          {"\u25BE"}
+        </button>
+        {isOpen && (
+          <div className="zd-combo-menu" id={menuId} role="listbox">
+            {optionEntries.map(([optionValue, optionLabel]) => (
+              <button
+                aria-selected={optionLabel === value}
+                className="zd-combo-option"
+                key={optionValue}
+                onClick={() => {
+                  onChange(optionLabel);
+                  setIsOpen(false);
+                  inputRef.current?.focus();
+                }}
+                role="option"
+                type="button"
+              >
+                {optionLabel}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
       <ErrorMessage error={error} id={errorId} />
     </div>
   );

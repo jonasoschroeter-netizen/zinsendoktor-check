@@ -26,6 +26,11 @@ export const widgetStyles = `
 .zd-input,
 .zd-input-wrap,
 .zd-input-suffix,
+.zd-combo,
+.zd-combo-input,
+.zd-combo-button,
+.zd-combo-menu,
+.zd-combo-option,
 .zd-button,
 .zd-progress,
 .zd-progress-track,
@@ -267,6 +272,69 @@ export const widgetStyles = `
 
 .zd-input-has-suffix {
   padding-right: 42px;
+}
+
+.zd-combo {
+  position: relative;
+}
+
+.zd-combo-input {
+  padding-right: 48px;
+}
+
+.zd-combo-button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--zd-primary);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-size: 1.05rem;
+  height: 44px;
+  justify-content: center;
+  padding: 0;
+  position: absolute;
+  right: 1px;
+  top: 1px;
+  width: 44px;
+}
+
+.zd-combo-button:hover {
+  color: var(--zd-accent);
+}
+
+.zd-combo-menu {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 16px 32px rgba(11, 31, 58, 0.16);
+  display: grid;
+  left: 0;
+  max-height: 230px;
+  overflow: auto;
+  padding: 6px;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 30;
+}
+
+.zd-combo-option {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--zd-text);
+  cursor: pointer;
+  font: inherit;
+  padding: 10px 11px;
+  text-align: left;
+}
+
+.zd-combo-option:hover,
+.zd-combo-option[aria-selected="true"] {
+  background: #eef8f4;
+  color: #0b5f49;
 }
 
 .zd-input-suffix {
