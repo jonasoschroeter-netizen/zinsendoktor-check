@@ -76,7 +76,7 @@ export function generateCustomerReportHtml(
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Financial Care Preview</title>
+    <title>Finanz-Diagnose</title>
     <style>
       :root {
         --primary: #0b1f3a;
@@ -174,27 +174,6 @@ export function generateCustomerReportHtml(
         border-left-color: var(--accent);
         color: var(--primary);
         font-weight: 800;
-      }
-
-      .report-intro {
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        margin: 18px 38px 0;
-        padding: 24px 18px 18px;
-      }
-
-      .report-title {
-        color: #000000;
-        font-size: 22px;
-        font-weight: 500;
-        line-height: 1.18;
-        margin: 0;
-      }
-
-      .report-subline {
-        color: #000000;
-        font-size: 14px;
-        margin: 4px 0 0;
       }
 
       .report-pdf-cta {
@@ -745,7 +724,6 @@ export function generateCustomerReportHtml(
           max-width: none;
         }
 
-        .report-intro,
         .report-pdf-cta {
           margin-left: 0;
           margin-right: 0;
@@ -784,11 +762,6 @@ export function generateCustomerReportHtml(
           <span class="progress-tab progress-tab-active">Auswertung</span>
         </div>
       </header>
-
-      <div class="report-intro">
-        <h1 class="report-title">Financial Care Preview</h1>
-        <p class="report-subline">Diese Vorschau ist nur eine Orientierung und ersetzt keine individuelle Steuer-, Renten- oder Vorsorgeberatung.</p>
-      </div>
 
       <div class="report-pdf-cta">
         <div>

@@ -973,15 +973,7 @@ function FinancialCarePreview({
   const privatePreview = buildPrivateCarePreview(input, result);
 
   return (
-    <div className="zd-financial-preview" aria-label="Financial Care Preview">
-      <div className="zd-preview-intro">
-        <h3 className="zd-preview-main-title">Financial Care Preview</h3>
-        <p className="zd-preview-copy">
-          Diese Vorschau ist nur eine Orientierung und ersetzt keine individuelle Steuer-, Renten-
-          oder Vorsorgeberatung.
-        </p>
-      </div>
-
+    <div className="zd-financial-preview">
       <section className="zd-preview-panel">
         <h4 className="zd-preview-title">Steuerliche Situation</h4>
         <div className="zd-preview-line">

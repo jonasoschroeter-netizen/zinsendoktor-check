@@ -753,29 +753,10 @@ export const widgetStyles = `
 }
 
 .zd-financial-preview {
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-  border: 1px solid var(--zd-border);
-  border-radius: 8px;
-  box-shadow: 0 14px 36px rgba(11, 31, 58, 0.06);
   display: grid;
   gap: 16px;
   margin: 18px 0;
-  padding: 20px;
-}
-
-.zd-preview-intro {
-  background: #f8fbfe;
-  border: 1px solid #e7edf5;
-  border-radius: 8px;
-  padding: 16px;
-}
-
-.zd-preview-main-title {
-  color: #000000;
-  font-size: 1.45rem;
-  font-weight: 500;
-  line-height: 1.18;
-  margin: 0;
+  padding: 0;
 }
 
 .zd-preview-copy,

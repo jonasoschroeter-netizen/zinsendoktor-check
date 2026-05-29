@@ -30,7 +30,9 @@ describe("customer PDF report", () => {
       note: "Termin: Vertragscheck"
     });
 
-    expect(html).toContain("Financial Care Preview");
+    expect(html).toContain("Finanz-Diagnose");
+    expect(html).not.toContain("Financial Care Preview");
+    expect(html).not.toContain("<h1 class=\"report-title\">Financial Care Preview</h1>");
     expect(html).toContain("Auswertung");
     expect(html).toContain("PDF für den Kunden sichern");
     expect(html).toContain("PDF herunterladen / speichern");
@@ -58,7 +60,6 @@ describe("customer PDF report", () => {
     expect(html).toContain("Berater &amp; Partner");
     expect(html).toContain("§ 32a EStG");
     expect(html).toContain("10.548,00");
-    expect(html).toContain("ersetzt keine individuelle Steuer-, Renten- oder Vorsorgeberatung");
   });
 
   it("builds a hidden integration payload for future Odoo persistence", () => {
@@ -96,7 +97,7 @@ describe("customer PDF report", () => {
     expect(payload.source).toBe("zinsendoktor-check");
     expect(payload.customer?.name).toBe("Kunde");
     expect(payload.advisor?.userId).toBe("odoo-user-1");
-    expect(payload.reportHtml).toContain("Financial Care Preview");
+    expect(payload.reportHtml).toContain("Steuerliche Situation");
     expect(payload.reportText).toContain("Rechnerische Einkommensteuer 2026");
   });
 });
