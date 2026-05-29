@@ -111,41 +111,6 @@ export function generateCustomerReportHtml(
         box-shadow: 0 18px 55px rgba(11, 31, 58, 0.14);
       }
 
-      .report-pdf-cta {
-        align-items: center;
-        background: #eef8f4;
-        border: 1px solid #c7eadf;
-        border-radius: 8px;
-        display: flex;
-        gap: 18px;
-        justify-content: space-between;
-        margin: 16px 38px 0;
-        padding: 14px 16px;
-      }
-
-      .report-pdf-title {
-        color: #0b3b2f;
-        font-size: 13px;
-        font-weight: 800;
-        margin: 0 0 3px;
-      }
-
-      .report-pdf-text {
-        color: #27705d;
-        font-size: 13px;
-        margin: 0;
-      }
-
-      .report-pdf-button {
-        background: var(--accent);
-        border-radius: 6px;
-        color: #ffffff;
-        flex: 0 0 auto;
-        font-size: 13px;
-        font-weight: 800;
-        padding: 11px 18px;
-      }
-
       .tax-situation-panel {
         background: #fbfdff;
         border: 1px solid var(--border);
@@ -659,11 +624,6 @@ export function generateCustomerReportHtml(
           max-width: none;
         }
 
-        .report-pdf-cta {
-          margin-left: 0;
-          margin-right: 0;
-        }
-
         .tax-situation-panel {
           margin-left: 0;
           margin-right: 0;
@@ -683,14 +643,6 @@ export function generateCustomerReportHtml(
   </head>
   <body>
     <article class="page">
-      <div class="report-pdf-cta">
-        <div>
-          <p class="report-pdf-title">PDF für den Kunden sichern</p>
-          <p class="report-pdf-text">Erstellt eine übersichtliche PDF-/Druckansicht für das Kundengespräch.</p>
-        </div>
-        <div class="report-pdf-button">PDF herunterladen / speichern</div>
-      </div>
-
       <div class="tax-situation-panel">
         <h2 class="tax-situation-title">Steuerliche Situation</h2>
         <div class="tax-situation-row">
