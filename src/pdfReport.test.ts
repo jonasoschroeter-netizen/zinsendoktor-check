@@ -41,8 +41,10 @@ describe("customer PDF report", () => {
     expect(html).toContain("Person 1");
     expect(html).toContain("Bedarf vs. Versorgung");
     expect(html).toContain("Private Vorsorge");
-    expect(html).toContain("MÃ¶gliches Gesamtergebnis");
-    expect(html).toContain("monatliche VersorgungslÃ¼cke");
+    expect(html).toContain("Mögliches Gesamtergebnis");
+    expect(html).toContain("monatliche Versorgungslücke");
+    expect(html).toContain("Voraussichtliche Bezüge");
+    expect(html).not.toContain("Ã");
     expect(html).toContain("Prüfbedarf-Ampel");
     expect(html).toContain("PDF-Kundenbericht");
     expect(html).toContain("Kopierbarer Ergebnistext");

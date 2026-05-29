@@ -277,7 +277,9 @@ export function generateCustomerReportHtml(
         font-weight: 800;
         justify-content: flex-end;
         min-height: 34px;
+        overflow-wrap: anywhere;
         padding: 5px 10px;
+        text-align: right;
       }
 
       .care-situation-panel {
@@ -341,7 +343,9 @@ export function generateCustomerReportHtml(
         font-weight: 800;
         justify-content: flex-end;
         min-height: 30px;
+        overflow-wrap: anywhere;
         padding: 4px 8px;
+        text-align: right;
       }
 
       .care-situation-value-green {
@@ -385,10 +389,16 @@ export function generateCustomerReportHtml(
         border: 1px solid #edf2f7;
         border-radius: 8px;
         display: grid;
-        gap: 18px;
-        grid-template-columns: 285px 170px 170px;
+        gap: 12px;
+        grid-template-columns: minmax(145px, 1.25fr) minmax(0, 0.9fr) minmax(0, 0.9fr);
         margin-bottom: 10px;
         padding: 10px 12px;
+      }
+
+      .private-contract-row > *,
+      .private-care-summary-row > *,
+      .private-care-effect-row > * {
+        min-width: 0;
       }
 
       .private-contract-name {
@@ -396,6 +406,7 @@ export function generateCustomerReportHtml(
         font-size: 13px;
         font-weight: 800;
         margin: 0;
+        overflow-wrap: anywhere;
       }
 
       .private-contract-type {
@@ -418,11 +429,14 @@ export function generateCustomerReportHtml(
         border-radius: 6px;
         color: var(--primary);
         display: flex;
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 800;
         justify-content: flex-end;
         min-height: 30px;
+        min-width: 0;
+        overflow-wrap: anywhere;
         padding: 4px 8px;
+        text-align: right;
       }
 
       .private-care-divider {
@@ -433,7 +447,7 @@ export function generateCustomerReportHtml(
       }
 
       .private-care-summary-row {
-        grid-template-columns: 185px 170px 170px 120px;
+        grid-template-columns: minmax(135px, 1.15fr) minmax(0, 0.9fr) minmax(0, 0.9fr) minmax(0, 0.7fr);
       }
 
       .private-care-total-label {
@@ -442,6 +456,7 @@ export function generateCustomerReportHtml(
         font-weight: 800;
         line-height: 1.15;
         margin: 0;
+        overflow-wrap: anywhere;
       }
 
       .private-care-inline-label {
@@ -453,7 +468,7 @@ export function generateCustomerReportHtml(
       }
 
       .private-care-effect-row {
-        grid-template-columns: 285px 170px 170px;
+        grid-template-columns: minmax(145px, 1.25fr) minmax(0, 0.9fr) minmax(0, 0.9fr);
         margin-top: 18px;
       }
 
@@ -801,7 +816,7 @@ export function generateCustomerReportHtml(
 
       <div class="care-situation-panel">
         <h2 class="care-situation-title">Versorgungs- Bedarfssituation</h2>
-        <p class="care-situation-subtitle">Voraussichtliche BezÃ¼ge aus gesetzlicher Rentenkasse<br />unter BerÃ¼cksichtigung der angegebenen Inflationsrate</p>
+        <p class="care-situation-subtitle">Voraussichtliche Bezüge aus gesetzlicher Rentenkasse<br />unter Berücksichtigung der angegebenen Inflationsrate</p>
         <div class="care-situation-row">
           <span></span>
           <p class="care-situation-label">Person 1</p>
@@ -819,7 +834,7 @@ export function generateCustomerReportHtml(
         </div>
 
         <div class="care-spacer"></div>
-        <p class="care-situation-subtitle">Voraussichtlicher finanzieller Bedarf bei Rentenbeginn<br />unter BerÃ¼cksichtigung der angegebenen Inflationsrate</p>
+        <p class="care-situation-subtitle">Voraussichtlicher finanzieller Bedarf bei Rentenbeginn<br />unter Berücksichtigung der angegebenen Inflationsrate</p>
         <div class="care-situation-row care-situation-row-wide">
           <span></span>
           <p class="care-situation-label">Warmmiete hochgerechnet</p>
@@ -844,13 +859,13 @@ export function generateCustomerReportHtml(
 
       <div class="private-care-panel">
         <h2 class="private-care-title">Private Vorsorge</h2>
-        <p class="private-care-intro">Bei den privaten VertrÃ¤gen kÃ¶nnte nach Hochrechnung der angegebenen aktuellen Entwicklung mit folgenden Ergebnissen gerechnet werden</p>
+        <p class="private-care-intro">Bei den privaten Verträgen könnte nach Hochrechnung der angegebenen aktuellen Entwicklung mit folgenden Ergebnissen gerechnet werden</p>
         ${privateCare.contractRows}
         <div class="private-care-divider"></div>
         <div class="private-care-summary-row">
-          <p class="private-care-total-label">MÃ¶gliches Gesamtergebnis<br />Der Privaten VertrÃ¤ge</p>
+          <p class="private-care-total-label">Mögliches Gesamtergebnis<br />der privaten Verträge</p>
           <div>
-            <p class="private-care-inline-label">MÃ¶glicher Ertrag</p>
+            <p class="private-care-inline-label">Möglicher Ertrag</p>
             <div class="private-care-value">${formatCurrency(privateCare.totalPossibleYield)}</div>
           </div>
           <div>
@@ -865,7 +880,7 @@ export function generateCustomerReportHtml(
         <div class="private-care-effect-row">
           <p class="private-care-total-label">Altersversorgungseffekt</p>
           <div>
-            <p class="private-care-field-label">monatliche VersorgungslÃ¼cke</p>
+            <p class="private-care-field-label">monatliche Versorgungslücke</p>
             <div class="private-care-value">${formatCurrency(Math.max(0, result.monthlyGap))}</div>
           </div>
           <div>
