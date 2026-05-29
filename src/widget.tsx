@@ -866,6 +866,8 @@ function ResultStep({
       </div>
       {pdfStatus && <p className="zd-copy-status">{pdfStatus}</p>}
 
+      <FinancialCarePreview input={input} result={result} />
+
       <ResultSection title="Steuerdiagnose">
         <p>{getIncomeTypesDiagnosis(result.incomeTypeCount)}</p>
         <p>
@@ -1053,6 +1055,226 @@ function ResultSection({
       {children}
     </div>
   );
+}
+
+function FinancialCarePreview({
+  input,
+  result
+}: {
+  input: CheckInput;
+  result: CheckResult;
+}): React.ReactElement {
+  const privatePreview = buildPrivateCarePreview(input, result);
+
+  return (
+    <div className="zd-financial-preview" aria-label="Financial Care Preview">
+      <div className="zd-preview-intro">
+        <h3 className="zd-preview-main-title">Financial Care Preview</h3>
+        <p className="zd-preview-copy">
+          Diese Vorschau ist nur eine Orientierung und ersetzt keine individuelle Steuer-, Renten-
+          oder Vorsorgeberatung.
+        </p>
+      </div>
+
+      <section className="zd-preview-panel">
+        <h4 className="zd-preview-title">Steuerliche Situation</h4>
+        <div className="zd-preview-line">
+          <p>Angenommenes zu versteuerndes Einkommen</p>
+          <PreviewValue value={formatCurrency(input.tax.taxableIncome)} />
+        </div>
+        <div className="zd-preview-line">
+          <p>
+            Rechnerische Einkommensteuer 2026
+            <br />
+            nach § 32a EStG
+          </p>
+          <PreviewValue value={formatCurrency(result.calculatedIncomeTax)} />
+        </div>
+        <div className="zd-preview-line">
+          <p>
+            Geschätzte Steuerlast bis zum Rentenbeginn
+            <br />
+            unter Berücksichtigung der angegebenen Inflation
+          </p>
+          <PreviewValue value={formatCurrency(result.estimatedTaxUntilRetirement)} />
+        </div>
+      </section>
+
+      <section className="zd-preview-panel">
+        <h4 className="zd-preview-title">Versorgungs- Bedarfssituation</h4>
+        <p className="zd-preview-subtitle">
+          Voraussichtliche Bezüge aus gesetzlicher Rentenkasse
+          <br />
+          unter Berücksichtigung der angegebenen Inflationsrate
+        </p>
+        <PreviewCompactLine label="Person 1" value={formatCurrency(result.estimatedPensionPerson1)} />
+        <PreviewCompactLine label="Person 2" value={formatCurrency(result.estimatedPensionPerson2)} />
+        <PreviewCompactLine
+          label="Gesetzliche Gesamtversorgung"
+          value={formatCurrency(result.totalEstimatedPension)}
+        />
+
+        <p className="zd-preview-subtitle zd-preview-subtitle-spaced">
+          Voraussichtlicher finanzieller Bedarf bei Rentenbeginn
+          <br />
+          unter Berücksichtigung der angegebenen Inflationsrate
+        </p>
+        <PreviewCompactLine label="Warmmiete hochgerechnet" value={formatCurrency(result.futureRent)} />
+        <PreviewCompactLine
+          label="Lebenshaltungskosten hochgerechnet"
+          value={formatCurrency(result.futureLivingCosts)}
+        />
+        <PreviewCompactLine
+          label="Voraussichtlicher Gesamtbedarf"
+          value={formatCurrency(result.futureTotalNeed)}
+        />
+        <PreviewCompactLine
+          emphasis
+          label="Ergebnis  Bedarf vs. Versorgung"
+          value={formatCurrency(Math.max(0, result.monthlyGap))}
+        />
+      </section>
+
+      <section className="zd-preview-panel">
+        <h4 className="zd-preview-title">Private Vorsorge</h4>
+        <p className="zd-preview-subtitle">
+          Bei den privaten Verträgen könnte nach Hochrechnung der angegebenen aktuellen Entwicklung
+          mit folgenden Ergebnissen gerechnet werden.
+        </p>
+        {privatePreview.contractRows.length > 0 ? (
+          <div className="zd-preview-private-list">
+            {privatePreview.contractRows.map((row) => (
+              <div className="zd-preview-private-row" key={row.id}>
+                <p className="zd-preview-contract-name">
+                  {row.name} <strong>{row.typeLabel}</strong>
+                </p>
+                <div>
+                  <span className="zd-preview-mini-label">Möglicher Ertrag</span>
+                  <PreviewValue value={formatCurrency(row.possibleYield)} />
+                </div>
+                <div>
+                  <span className="zd-preview-mini-label">Davon selbst eingezahlt</span>
+                  <PreviewValue value={formatCurrency(row.totalPaid)} />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="zd-preview-copy">Keine privaten Vorsorgeverträge angegeben.</p>
+        )}
+
+        <div className="zd-preview-divider" />
+        <div className="zd-preview-private-summary">
+          <p className="zd-preview-summary-title">
+            Mögliches Gesamtergebnis
+            <br />
+            der privaten Verträge
+          </p>
+          <div>
+            <span className="zd-preview-mini-label">Möglicher Ertrag</span>
+            <PreviewValue value={formatCurrency(privatePreview.totalPossibleYield)} />
+          </div>
+          <div>
+            <span className="zd-preview-mini-label">selbst eingezahlt</span>
+            <PreviewValue value={formatCurrency(privatePreview.totalSelfPaid)} />
+          </div>
+          <div>
+            <span className="zd-preview-mini-label">Nettorendite</span>
+            <PreviewValue value={privatePreview.netReturn} />
+          </div>
+        </div>
+        <div className="zd-preview-private-effect">
+          <p className="zd-preview-summary-title">Altersversorgungseffekt</p>
+          <div>
+            <span className="zd-preview-mini-label">monatliche Versorgungslücke</span>
+            <PreviewValue value={formatCurrency(Math.max(0, result.monthlyGap))} />
+          </div>
+          <div>
+            <span className="zd-preview-mini-label">ausgeglichene Monate</span>
+            <PreviewValue value={privatePreview.coveredMonths} />
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function PreviewCompactLine({
+  emphasis = false,
+  label,
+  value
+}: {
+  emphasis?: boolean;
+  label: string;
+  value: string;
+}): React.ReactElement {
+  return (
+    <div className={`zd-preview-compact-line ${emphasis ? "zd-preview-compact-line-emphasis" : ""}`}>
+      <span />
+      <p>{label}</p>
+      <PreviewValue emphasis={emphasis} value={value} />
+    </div>
+  );
+}
+
+function PreviewValue({
+  emphasis = false,
+  value
+}: {
+  emphasis?: boolean;
+  value: string;
+}): React.ReactElement {
+  return <div className={`zd-preview-value ${emphasis ? "zd-preview-value-emphasis" : ""}`}>{value}</div>;
+}
+
+function buildPrivateCarePreview(input: CheckInput, result: CheckResult): {
+  contractRows: Array<{
+    id: string;
+    name: string;
+    possibleYield: number;
+    totalPaid: number;
+    typeLabel: string;
+  }>;
+  coveredMonths: string;
+  netReturn: string;
+  totalPossibleYield: number;
+  totalSelfPaid: number;
+} {
+  let totalCurrentBalance = 0;
+  let totalPossibleYield = 0;
+  let totalSelfPaid = 0;
+  const contractRows = input.contracts.slice(0, 3).map((contract, index) => {
+    const contractResult = result.contractResults.find((item) => item.id === contract.id);
+    const totalPaid =
+      contractResult?.totalPaid ??
+      (typeof contract.selfPaid === "number"
+        ? contract.selfPaid
+        : contract.annualContribution * contract.yearsRunning);
+    const possibleYield = contract.currentBalance - totalPaid;
+    totalCurrentBalance += contract.currentBalance;
+    totalPossibleYield += possibleYield;
+    totalSelfPaid += totalPaid;
+
+    return {
+      id: contract.id,
+      name: getContractDisplayName(contract, index),
+      possibleYield,
+      totalPaid,
+      typeLabel: getContractTypeLabel(contract)
+    };
+  });
+  const coveredMonths =
+    result.monthlyGap > 0 ? formatNumber(totalCurrentBalance / result.monthlyGap) : "Keine Lücke";
+  const netReturn =
+    totalSelfPaid > 0 ? formatPercent((totalPossibleYield / totalSelfPaid) * 100) : "0 %";
+
+  return {
+    contractRows,
+    coveredMonths,
+    netReturn,
+    totalPossibleYield,
+    totalSelfPaid
+  };
 }
 
 function Metric({ label, value }: { label: string; value: string }): React.ReactElement {

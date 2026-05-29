@@ -41,6 +41,14 @@ export const widgetStyles = `
 .zd-pdf-note-field,
 .zd-pdf-note,
 .zd-pdf-cta,
+.zd-financial-preview,
+.zd-preview-panel,
+.zd-preview-line,
+.zd-preview-value,
+.zd-preview-compact-line,
+.zd-preview-private-row,
+.zd-preview-private-summary,
+.zd-preview-private-effect,
 .zd-actions,
 .zd-step-actions,
 .zd-tax-layout,
@@ -595,6 +603,163 @@ export const widgetStyles = `
 .zd-pdf-cta-text {
   color: #165f4b;
   margin: 0;
+}
+
+.zd-financial-preview {
+  background: #ffffff;
+  border: 1px solid var(--zd-border);
+  border-radius: 8px;
+  display: grid;
+  gap: 22px;
+  margin: 18px 0;
+  padding: 20px;
+}
+
+.zd-preview-intro {
+  border-bottom: 1px solid var(--zd-border);
+  padding-bottom: 16px;
+}
+
+.zd-preview-main-title {
+  color: #000000;
+  font-size: 1.45rem;
+  font-weight: 500;
+  line-height: 1.18;
+  margin: 0;
+}
+
+.zd-preview-copy,
+.zd-preview-subtitle {
+  color: #000000;
+  font-size: 0.92rem;
+  line-height: 1.35;
+  margin: 6px 0 0;
+}
+
+.zd-preview-panel {
+  border-top: 1px solid var(--zd-border);
+  padding-top: 20px;
+}
+
+.zd-preview-title {
+  color: #000000;
+  font-size: 1.28rem;
+  font-weight: 500;
+  margin: 0 0 20px;
+}
+
+.zd-preview-line,
+.zd-preview-compact-line {
+  align-items: center;
+  display: grid;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.zd-preview-line {
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 230px);
+}
+
+.zd-preview-line p,
+.zd-preview-compact-line p,
+.zd-preview-contract-name,
+.zd-preview-summary-title {
+  color: #000000;
+  margin: 0;
+}
+
+.zd-preview-compact-line {
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 230px) minmax(120px, 160px);
+}
+
+.zd-preview-compact-line p {
+  text-align: right;
+}
+
+.zd-preview-compact-line-emphasis p,
+.zd-preview-summary-title {
+  font-weight: 800;
+}
+
+.zd-preview-value {
+  align-items: center;
+  border: 2px solid #0b3144;
+  color: #000000;
+  display: flex;
+  font-size: 0.92rem;
+  justify-content: flex-end;
+  min-height: 32px;
+  padding: 4px 10px;
+}
+
+.zd-preview-value-emphasis {
+  background: #eef8f4;
+  border-color: var(--zd-accent);
+}
+
+.zd-preview-subtitle-spaced {
+  margin-top: 22px;
+}
+
+.zd-preview-private-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.zd-preview-private-row,
+.zd-preview-private-summary,
+.zd-preview-private-effect {
+  align-items: end;
+  display: grid;
+  gap: 16px;
+}
+
+.zd-preview-private-row {
+  grid-template-columns: minmax(190px, 1fr) minmax(150px, 180px) minmax(150px, 180px);
+}
+
+.zd-preview-contract-name,
+.zd-preview-summary-title {
+  font-size: 0.92rem;
+}
+
+.zd-preview-mini-label {
+  color: #000000;
+  display: block;
+  font-size: 0.82rem;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.zd-preview-divider {
+  background: #0a6188;
+  height: 2px;
+  margin: 18px 0;
+}
+
+.zd-preview-private-summary {
+  grid-template-columns: minmax(160px, 1fr) minmax(140px, 170px) minmax(140px, 170px) minmax(100px, 130px);
+}
+
+.zd-preview-private-effect {
+  grid-template-columns: minmax(190px, 1fr) minmax(160px, 200px) minmax(160px, 200px);
+  margin-top: 28px;
+}
+
+@media (max-width: 719px) {
+  .zd-preview-line,
+  .zd-preview-compact-line,
+  .zd-preview-private-row,
+  .zd-preview-private-summary,
+  .zd-preview-private-effect {
+    grid-template-columns: 1fr;
+  }
+
+  .zd-preview-compact-line p,
+  .zd-preview-mini-label {
+    text-align: left;
+  }
 }
 
 .zd-lead-panel {
