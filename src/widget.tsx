@@ -21,7 +21,11 @@ import {
   satisfactionLabels,
   trafficLightLabels
 } from "./calculations";
-import { buildCustomerReportPayload, openCustomerReportPdf } from "./pdfReport";
+import {
+  buildCustomerReportPayload,
+  generateCustomerReportPdfDataUrl,
+  openCustomerReportPdf
+} from "./pdfReport";
 import type {
   CheckInput,
   CheckResult,
@@ -31,12 +35,38 @@ import type {
   MaritalStatus,
   Satisfaction,
   TrafficLight,
+  VmsProductSession,
+  VmsProductSessionResponse,
   VorsorgeContractInput,
   ZinsendoktorOptions
 } from "./types";
+import {
+  buildVmsPdfFileName,
+  buildVmsResultPayload,
+  buildVmsResultUrl,
+  buildVmsSessionUrl,
+  DEFAULT_VMS_BASE_URL,
+  getVmsLaunchContext
+} from "./vmsIntegration";
 
 type StepId = 0 | 1 | 2 | 3 | 4 | 5;
 type Errors = Record<string, string>;
+type VmsStatus = "inactive" | "loading" | "ready" | "error";
+type VmsSaveStatus = "idle" | "saving" | "saved" | "error";
+
+interface ReportMetaState {
+  advisorName: string;
+  customerName: string;
+}
+
+interface VmsState {
+  baseUrl: string;
+  error: string;
+  isVms: boolean;
+  session?: VmsProductSession;
+  sessionId: string;
+  status: VmsStatus;
+}
 
 interface FormState {
   incomeTypes: IncomeType[];
@@ -104,6 +134,28 @@ const contractTypeInputOptions = Object.fromEntries(
   Object.values(contractTypeLabels).map((label) => [label, label])
 );
 
+function createInitialVmsState(baseUrl: string): VmsState {
+  if (typeof window === "undefined") {
+    return {
+      baseUrl,
+      error: "",
+      isVms: false,
+      sessionId: "",
+      status: "inactive"
+    };
+  }
+
+  const launch = getVmsLaunchContext(window.location.search);
+
+  return {
+    baseUrl,
+    error: launch.isVms && !launch.sessionId ? "VMS-Aufruf ohne Session-ID." : "",
+    isVms: launch.isVms,
+    sessionId: launch.sessionId,
+    status: launch.isVms ? (launch.sessionId ? "loading" : "error") : "inactive"
+  };
+}
+
 export function ZinsendoktorWidget({
   options
 }: {
@@ -117,6 +169,14 @@ export function ZinsendoktorWidget({
     result: CheckResult;
   } | null>(null);
   const [pdfStatus, setPdfStatus] = useState("");
+  const [reportMeta, setReportMeta] = useState<ReportMetaState>({
+    advisorName: "",
+    customerName: ""
+  });
+  const vmsBaseUrl = options.vms?.baseUrl ?? DEFAULT_VMS_BASE_URL;
+  const [vmsState, setVmsState] = useState<VmsState>(() => createInitialVmsState(vmsBaseUrl));
+  const [vmsSaveStatus, setVmsSaveStatus] = useState<VmsSaveStatus>("idle");
+  const [vmsSaveMessage, setVmsSaveMessage] = useState("");
 
   const themeStyle = useMemo(
     () =>
@@ -128,6 +188,98 @@ export function ZinsendoktorWidget({
       }) as React.CSSProperties,
     [options.theme]
   );
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const launch = getVmsLaunchContext(window.location.search);
+
+    if (!launch.isVms) {
+      setVmsState({
+        baseUrl: vmsBaseUrl,
+        error: "",
+        isVms: false,
+        sessionId: "",
+        status: "inactive"
+      });
+      return;
+    }
+
+    if (!launch.sessionId) {
+      setVmsState({
+        baseUrl: vmsBaseUrl,
+        error: "VMS-Aufruf ohne Session-ID.",
+        isVms: true,
+        sessionId: "",
+        status: "error"
+      });
+      return;
+    }
+
+    const controller = new AbortController();
+
+    setVmsState({
+      baseUrl: vmsBaseUrl,
+      error: "",
+      isVms: true,
+      sessionId: launch.sessionId,
+      status: "loading"
+    });
+    setVmsSaveStatus("idle");
+    setVmsSaveMessage("");
+
+    async function loadSession(): Promise<void> {
+      try {
+        const response = await fetch(buildVmsSessionUrl(vmsBaseUrl, launch.sessionId), {
+          headers: {
+            Accept: "application/json"
+          },
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          throw new Error(`VMS-Session konnte nicht geladen werden (${response.status}).`);
+        }
+
+        const payload = (await response.json()) as VmsProductSessionResponse;
+
+        if (!payload.ok || !payload.session) {
+          throw new Error(payload.error || "VMS-Session wurde nicht gefunden.");
+        }
+
+        setVmsState({
+          baseUrl: vmsBaseUrl,
+          error: "",
+          isVms: true,
+          session: payload.session,
+          sessionId: launch.sessionId,
+          status: "ready"
+        });
+        setReportMeta({
+          advisorName: payload.session.advisorName ?? "",
+          customerName: payload.session.customerName ?? ""
+        });
+      } catch (error) {
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        setVmsState({
+          baseUrl: vmsBaseUrl,
+          error: error instanceof Error ? error.message : "VMS-Session konnte nicht geladen werden.",
+          isVms: true,
+          sessionId: launch.sessionId,
+          status: "error"
+        });
+      }
+    }
+
+    void loadSession();
+
+    return () => controller.abort();
+  }, [vmsBaseUrl]);
 
   function updateField(field: keyof FormState, value: string): void {
     setFormState((current) => ({
@@ -233,11 +385,11 @@ export function ZinsendoktorWidget({
       return;
     }
 
-    const opened = openCustomerReportPdf(resultBundle.input, resultBundle.result, {});
+    const opened = openCustomerReportPdf(resultBundle.input, resultBundle.result, reportMeta);
     const reportPayload = buildCustomerReportPayload(
       resultBundle.input,
       resultBundle.result,
-      {},
+      reportMeta,
       options.integration?.currentUser
     );
 
@@ -248,6 +400,58 @@ export function ZinsendoktorWidget({
         ? "PDF-Ansicht wurde geöffnet. Im Druckdialog bitte „Als PDF speichern“ wählen."
         : "Die PDF-Ansicht konnte nicht geöffnet werden. Bitte Pop-ups für diese Seite erlauben."
     );
+  }
+
+  async function saveVmsResult(): Promise<void> {
+    if (!resultBundle || vmsState.status !== "ready" || !vmsState.session) {
+      setVmsSaveStatus("error");
+      setVmsSaveMessage("Die VMS-Session ist noch nicht bereit.");
+      return;
+    }
+
+    const sessionForSave: VmsProductSession = {
+      ...vmsState.session,
+      advisorName: reportMeta.advisorName || vmsState.session.advisorName,
+      customerName: reportMeta.customerName || vmsState.session.customerName
+    };
+    const fileName = buildVmsPdfFileName(sessionForSave);
+
+    setVmsSaveStatus("saving");
+    setVmsSaveMessage("Auswertung wird gespeichert...");
+
+    try {
+      const pdfDataUrl = await generateCustomerReportPdfDataUrl(
+        resultBundle.input,
+        resultBundle.result,
+        reportMeta,
+        fileName
+      );
+      const payload = buildVmsResultPayload({
+        input: resultBundle.input,
+        pdfBase64: extractBase64FromDataUrl(pdfDataUrl),
+        result: resultBundle.result,
+        session: sessionForSave
+      });
+      const response = await fetch(buildVmsResultUrl(vmsState.baseUrl), {
+        body: JSON.stringify(payload),
+        headers: {
+          "Content-Type": "application/json"
+        },
+        method: "POST"
+      });
+
+      if (!response.ok) {
+        throw new Error(`Speichern fehlgeschlagen (${response.status}).`);
+      }
+
+      setVmsSaveStatus("saved");
+      setVmsSaveMessage("Auswertung gespeichert.");
+    } catch (error) {
+      setVmsSaveStatus("error");
+      setVmsSaveMessage(
+        error instanceof Error ? error.message : "Auswertung konnte nicht gespeichert werden."
+      );
+    }
   }
 
   function handleLeadSubmit(lead: LeadInput): void {
@@ -283,6 +487,11 @@ export function ZinsendoktorWidget({
         </header>
 
         <Progress onStepSelect={jumpToStep} step={step} />
+        <VmsContextPanel
+          reportMeta={reportMeta}
+          state={vmsState}
+          onUpdateReportMeta={setReportMeta}
+        />
 
         <div className="zd-content">
           {step === 0 && <StartStep onStart={() => setStep(1)} />}
@@ -330,11 +539,16 @@ export function ZinsendoktorWidget({
             <ResultStep
               enableLeadForm={options.enableLeadForm === true}
               input={resultBundle.input}
+              isVmsMode={vmsState.isVms}
+              isVmsReady={vmsState.status === "ready"}
               onBack={goBack}
               onCreatePdf={createPdfReport}
               onLeadSubmit={handleLeadSubmit}
+              onSaveVmsResult={saveVmsResult}
               pdfStatus={pdfStatus}
               result={resultBundle.result}
+              vmsSaveMessage={vmsSaveMessage}
+              vmsSaveStatus={vmsSaveStatus}
             />
           )}
         </div>
@@ -379,6 +593,84 @@ function Progress({
         })}
       </nav>
     </div>
+  );
+}
+
+function VmsContextPanel({
+  onUpdateReportMeta,
+  reportMeta,
+  state
+}: {
+  onUpdateReportMeta: (meta: ReportMetaState) => void;
+  reportMeta: ReportMetaState;
+  state: VmsState;
+}): React.ReactElement | null {
+  if (!state.isVms) {
+    return null;
+  }
+
+  if (state.status === "loading") {
+    return (
+      <div className="zd-vms-panel">
+        <strong>VMS-Auftrag wird geladen.</strong>
+        <span>Die Kundendaten werden sicher per API aus dem Partnerportal abgerufen.</span>
+      </div>
+    );
+  }
+
+  if (state.status === "error") {
+    return (
+      <div className="zd-vms-panel zd-vms-panel-error">
+        <strong>VMS-Auftrag konnte nicht geladen werden.</strong>
+        <span>{state.error}</span>
+      </div>
+    );
+  }
+
+  const session = state.session;
+
+  return (
+    <section className="zd-vms-panel" aria-label="VMS-Auftragsdaten">
+      <div className="zd-vms-head">
+        <div>
+          <strong>VMS-Auftrag verbunden</strong>
+          <span>
+            {session?.partnerCompany || "Partnerportal"} ·{" "}
+            {session?.contractNumber || session?.orderId || session?.customerNumber || state.sessionId}
+          </span>
+        </div>
+        <span className="zd-vms-pill">Partnerportal</span>
+      </div>
+      <div className="zd-grid zd-grid-two">
+        <TextField
+          id="vms-customer-name"
+          label="Kundenname"
+          onChange={(value) =>
+            onUpdateReportMeta({
+              ...reportMeta,
+              customerName: value
+            })
+          }
+          value={reportMeta.customerName}
+        />
+        <TextField
+          id="vms-advisor-name"
+          label="Beratername"
+          onChange={(value) =>
+            onUpdateReportMeta({
+              ...reportMeta,
+              advisorName: value
+            })
+          }
+          value={reportMeta.advisorName}
+        />
+      </div>
+      <div className="zd-vms-details">
+        {session?.customerEmail && <span>{session.customerEmail}</span>}
+        {session?.customerPhone && <span>{session.customerPhone}</span>}
+        {session?.customerAddress && <span>{session.customerAddress}</span>}
+      </div>
+    </section>
   );
 }
 
@@ -773,19 +1065,29 @@ function ContractStep({
 function ResultStep({
   enableLeadForm,
   input,
+  isVmsMode,
+  isVmsReady,
   onBack,
   onCreatePdf,
   onLeadSubmit,
+  onSaveVmsResult,
   pdfStatus,
-  result
+  result,
+  vmsSaveMessage,
+  vmsSaveStatus
 }: {
   enableLeadForm: boolean;
   input: CheckInput;
+  isVmsMode: boolean;
+  isVmsReady: boolean;
   onBack: () => void;
   onCreatePdf: () => void;
   onLeadSubmit: (lead: LeadInput) => void;
+  onSaveVmsResult: () => void;
   pdfStatus: string;
   result: CheckResult;
+  vmsSaveMessage: string;
+  vmsSaveStatus: VmsSaveStatus;
 }): React.ReactElement {
   return (
     <section className="zd-card" aria-labelledby="zd-result-title">
@@ -814,11 +1116,31 @@ function ResultStep({
             Erstellt eine übersichtliche PDF-/Druckansicht für das Kundengespräch.
           </p>
         </div>
-        <button className="zd-button zd-button-accent" type="button" onClick={onCreatePdf}>
-          PDF herunterladen / speichern
-        </button>
+        <div className="zd-button-row zd-pdf-actions">
+          <button className="zd-button zd-button-accent" type="button" onClick={onCreatePdf}>
+            PDF herunterladen
+          </button>
+          {isVmsMode && (
+            <button
+              className="zd-button"
+              disabled={!isVmsReady || vmsSaveStatus === "saving"}
+              type="button"
+              onClick={onSaveVmsResult}
+            >
+              {vmsSaveStatus === "saving" ? "Speichern..." : "Speichern"}
+            </button>
+          )}
+        </div>
       </div>
       {pdfStatus && <p className="zd-copy-status">{pdfStatus}</p>}
+      {vmsSaveMessage && (
+        <p className={`zd-copy-status zd-save-status-${vmsSaveStatus}`}>{vmsSaveMessage}</p>
+      )}
+      {isVmsMode && vmsSaveStatus === "saved" && (
+        <button className="zd-button zd-button-secondary" type="button" onClick={() => window.close()}>
+          Fenster schließen
+        </button>
+      )}
 
       <FinancialCarePreview input={input} result={result} />
 
@@ -1789,6 +2111,12 @@ function toNumber(value: string): number {
     : trimmed;
 
   return Number(normalized);
+}
+
+function extractBase64FromDataUrl(dataUrl: string): string {
+  const separatorIndex = dataUrl.indexOf(",");
+
+  return separatorIndex >= 0 ? dataUrl.slice(separatorIndex + 1) : dataUrl;
 }
 
 function toDisplayDecimal(value: number): string {

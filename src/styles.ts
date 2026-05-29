@@ -68,7 +68,12 @@ export const widgetStyles = `
 .zd-contract-title-wrap,
 .zd-icon-button,
 .zd-choice-row,
-.zd-choice-button {
+.zd-choice-button,
+.zd-vms-panel,
+.zd-vms-head,
+.zd-vms-details,
+.zd-vms-pill,
+.zd-pdf-actions {
   box-sizing: border-box;
 }
 
@@ -153,6 +158,57 @@ export const widgetStyles = `
 
 .zd-content {
   padding: 16px;
+}
+
+.zd-vms-panel {
+  background: #ffffff;
+  border-top: 1px solid var(--zd-border);
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.zd-vms-panel > strong,
+.zd-vms-head strong {
+  color: var(--zd-primary);
+  display: block;
+  font-weight: 850;
+}
+
+.zd-vms-panel > span,
+.zd-vms-head span,
+.zd-vms-details {
+  color: var(--zd-muted);
+  font-size: 0.92rem;
+}
+
+.zd-vms-panel-error {
+  background: #fdecec;
+  color: #8f1f1f;
+}
+
+.zd-vms-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.zd-vms-pill {
+  background: #e8f7f1;
+  border: 1px solid #c5eadc;
+  border-radius: 999px;
+  color: #12664e;
+  font-size: 0.78rem;
+  font-weight: 850;
+  padding: 6px 10px;
+}
+
+.zd-vms-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
 }
 
 .zd-card {
@@ -571,6 +627,12 @@ export const widgetStyles = `
   filter: brightness(1.05);
 }
 
+.zd-button:disabled {
+  cursor: not-allowed;
+  filter: none;
+  opacity: 0.58;
+}
+
 .zd-button:focus {
   box-shadow: 0 0 0 4px var(--zd-focus);
   outline: none;
@@ -796,6 +858,14 @@ export const widgetStyles = `
   font-size: 0.92rem;
   font-weight: 700;
   margin: 8px 0 0;
+}
+
+.zd-save-status-error {
+  color: var(--zd-danger);
+}
+
+.zd-save-status-saving {
+  color: var(--zd-muted);
 }
 
 .zd-pdf-cta {

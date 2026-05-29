@@ -64,6 +64,73 @@ export function openCustomerReportPdf(
   return true;
 }
 
+export async function generateCustomerReportPdfDataUrl(
+  input: CheckInput,
+  result: CheckResult,
+  meta: CustomerReportMeta = {},
+  fileName = "finanzdoktor-auswertung.pdf"
+): Promise<string> {
+  if (typeof document === "undefined") {
+    throw new Error("PDF-Erzeugung ist nur im Browser verfügbar.");
+  }
+
+  const html = generateCustomerReportHtml(input, result, meta);
+  const parsed = new DOMParser().parseFromString(html, "text/html");
+  const reportPage = parsed.querySelector(".page");
+
+  if (!(reportPage instanceof HTMLElement)) {
+    throw new Error("PDF-Bericht konnte nicht vorbereitet werden.");
+  }
+
+  const host = document.createElement("div");
+  host.setAttribute("aria-hidden", "true");
+  host.style.background = "#ffffff";
+  host.style.left = "-10000px";
+  host.style.position = "fixed";
+  host.style.top = "0";
+  host.style.width = "920px";
+  host.style.zIndex = "-1";
+
+  const style = document.createElement("style");
+  style.textContent = Array.from(parsed.querySelectorAll("style"))
+    .map((item) => item.textContent ?? "")
+    .join("\n");
+
+  const pageClone = reportPage.cloneNode(true) as HTMLElement;
+  host.append(style, pageClone);
+  document.body.append(host);
+
+  try {
+    const { default: html2pdf } = await import("html2pdf.js");
+    const pdfOptions = {
+      filename: fileName,
+      image: { quality: 0.98, type: "jpeg" },
+      html2canvas: {
+        backgroundColor: "#ffffff",
+        logging: false,
+        scale: 2,
+        useCORS: true,
+        windowWidth: 920
+      },
+      jsPDF: {
+        format: "a4",
+        orientation: "portrait",
+        unit: "mm"
+      },
+      margin: [0, 0, 0, 0],
+      pagebreak: { mode: ["css", "legacy"] }
+    } as Record<string, unknown>;
+    const dataUrl = await html2pdf()
+      .set(pdfOptions)
+      .from(pageClone)
+      .outputPdf("datauristring");
+
+    return dataUrl;
+  } finally {
+    host.remove();
+  }
+}
+
 export function generateCustomerReportHtml(
   input: CheckInput,
   result: CheckResult,

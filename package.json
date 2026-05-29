@@ -16,6 +16,7 @@
     "check": "npm run typecheck && npm run test && npm run build"
   },
   "dependencies": {
+    "html2pdf.js": "^0.14.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },

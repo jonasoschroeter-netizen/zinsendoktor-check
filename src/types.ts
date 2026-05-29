@@ -125,6 +125,35 @@ export interface CustomerReportPayload {
   note?: string;
 }
 
+export interface VmsProductSession {
+  id: string;
+  partnerNumber?: string;
+  partnerCompany?: string;
+  advisorName?: string;
+  advisorEmail?: string;
+  customerId?: string;
+  customerNumber?: string;
+  customerName?: string;
+  customerEmail?: string;
+  customerAddress?: string;
+  customerPhone?: string;
+  contractNumber?: string;
+  orderId?: string;
+  callbackUrl?: string;
+  returnUrl?: string;
+}
+
+export interface VmsProductSessionResponse {
+  ok: boolean;
+  provider?: string;
+  session?: VmsProductSession;
+  error?: string;
+}
+
+export interface VmsIntegrationOptions {
+  baseUrl?: string;
+}
+
 export interface FutureOdooIntegrationOptions {
   provider?: IntegrationProvider;
   enabled?: false;
@@ -153,6 +182,7 @@ export interface ZinsendoktorOptions {
   enableLeadForm?: boolean;
   storage?: false;
   integration?: FutureOdooIntegrationOptions;
+  vms?: VmsIntegrationOptions;
   theme?: ZinsendoktorTheme;
   onResult?: ((result: CheckResult, input: CheckInput, lead?: LeadInput) => void) | null;
   onCustomerReportGenerated?: ((payload: CustomerReportPayload) => void) | null;
