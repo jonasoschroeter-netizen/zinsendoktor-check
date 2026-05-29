@@ -4,6 +4,7 @@ import {
   contractTypeLabels,
   formatCurrency,
   formatNumber,
+  formatPercent,
   getContractTypeLabel,
   incomeTypeLabels,
   maritalStatusLabels,
@@ -1175,6 +1176,7 @@ function ResultStep({
       )}
 
       <FinancialCarePreview input={input} result={result} />
+      <SalesSummaryPanel input={input} result={result} />
 
       {enableLeadForm && <LeadPanel onSubmit={onLeadSubmit} />}
 
@@ -1369,6 +1371,35 @@ function FinancialCarePreview({
   );
 }
 
+function SalesSummaryPanel({
+  input,
+  result
+}: {
+  input: CheckInput;
+  result: CheckResult;
+}): React.ReactElement {
+  const salesSummary = buildSalesSummaryText(input, result);
+
+  return (
+    <section className="zd-sales-summary" aria-labelledby="zd-sales-summary-title">
+      <div>
+        <h3 className="zd-sales-summary-title" id="zd-sales-summary-title">
+          Vertriebsnotiz
+        </h3>
+        <p className="zd-sales-summary-copy">
+          Kompakte Eckdaten für das Kundengespräch.
+        </p>
+      </div>
+      <textarea
+        aria-label="Vertriebsnotiz mit Eckdaten"
+        className="zd-textarea zd-sales-summary-text"
+        readOnly
+        value={salesSummary}
+      />
+    </section>
+  );
+}
+
 function PreviewCompactLine({
   emphasis = false,
   label,
@@ -1441,6 +1472,58 @@ function buildPrivateCarePreview(input: CheckInput, result: CheckResult): {
     totalRetirementBudget,
     totalSelfPaid
   };
+}
+
+function buildSalesSummaryText(input: CheckInput, result: CheckResult): string {
+  const privatePreview = buildPrivateCarePreview(input, result);
+  const incomeTypes =
+    input.tax.incomeTypes.length > 0
+      ? input.tax.incomeTypes.map((type) => incomeTypeLabels[type]).join(", ")
+      : "keine Einkommensarten angegeben";
+  const pensionPerson2 =
+    input.tax.maritalStatus === "verheiratet" && typeof input.pension.monthlyNetIncomePerson2 === "number"
+      ? ` Person 2: ${formatCurrency(input.pension.monthlyNetIncomePerson2)} Nettoeinkommen, ${
+          typeof input.pension.yearsToRetirementPerson2 === "number"
+            ? `${formatNumber(input.pension.yearsToRetirementPerson2)} Jahre bis zur Rente`
+            : "keine eigene Restlaufzeit angegeben"
+        }.`
+      : "";
+  const contractCountText =
+    input.contracts.length === 1 ? "1 Vertrag angegeben" : `${input.contracts.length} Verträge angegeben`;
+  const contractText =
+    input.contracts.length > 0
+      ? `Private Vorsorge: ${contractCountText}. Budget bis Rentenbeginn: ${formatCurrency(
+          privatePreview.totalRetirementBudget
+        )}; selbst eingezahlt bis Rentenbeginn: ${formatCurrency(
+          privatePreview.totalSelfPaid
+        )}; rechnerisch abgedeckte Monate: ${privatePreview.coveredMonths}.`
+      : "Private Vorsorge: keine Verträge angegeben.";
+
+  return [
+    `Familienstand: ${maritalStatusLabels[input.tax.maritalStatus]}. Einkommensarten: ${incomeTypes}.`,
+    `Angegebenes zu versteuerndes Einkommen: ${formatCurrency(
+      input.tax.taxableIncome
+    )}. Rechnerische Einkommensteuer 2026: ${formatCurrency(
+      result.calculatedIncomeTax
+    )}. Geschätzte Steuerlast bis Rentenbeginn: ${formatCurrency(result.estimatedTaxUntilRetirement)}.`,
+    `Rente: Person 1 mit ${formatCurrency(input.pension.monthlyNetIncomePerson1)} monatlichem Nettoeinkommen und ${formatNumber(
+      input.pension.yearsToRetirementPerson1
+    )} Jahren bis zur Rente.${pensionPerson2} Geschätzte gesetzliche Gesamtversorgung: ${formatCurrency(
+      result.totalEstimatedPension
+    )} monatlich.`,
+    `Inflation und Bedarf: ${formatPercent(
+      input.inflation.expectedInflationPercent
+    )} angenommene jährliche Inflation, Analysezeitraum ${formatNumber(
+      result.analysisYears
+    )} Jahre. Warmmiete bei Rentenbeginn ${formatCurrency(
+      result.futureRent
+    )}, Lebenshaltungskosten ${formatCurrency(result.futureLivingCosts)}, Gesamtbedarf ${formatCurrency(
+      result.futureTotalNeed
+    )}. Daraus ergibt sich eine monatliche Versorgungslücke von ${formatCurrency(
+      Math.max(0, result.monthlyGap)
+    )}.`,
+    contractText
+  ].join("\n");
 }
 
 function Metric({ label, value }: { label: string; value: string }): React.ReactElement {

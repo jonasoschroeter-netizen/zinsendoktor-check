@@ -1182,6 +1182,39 @@ export const widgetStyles = `
   margin-top: 28px;
 }
 
+.zd-sales-summary {
+  background: #fbfdff;
+  border: 1px solid #dce7f2;
+  border-radius: 8px;
+  box-shadow: 0 8px 22px rgba(11, 31, 58, 0.04);
+  display: grid;
+  gap: 12px;
+  margin: 18px 0;
+  padding: 18px;
+}
+
+.zd-sales-summary-title {
+  color: var(--zd-primary);
+  font-size: 1.16rem;
+  font-weight: 850;
+  margin: 0;
+}
+
+.zd-sales-summary-copy {
+  color: var(--zd-muted);
+  font-size: 0.92rem;
+  margin: 4px 0 0;
+}
+
+.zd-sales-summary-text {
+  background: #ffffff;
+  color: var(--zd-text);
+  font-size: 0.93rem;
+  line-height: 1.5;
+  min-height: 190px;
+  resize: vertical;
+}
+
 @media (max-width: 719px) {
   .zd-preview-line,
   .zd-preview-compact-line,
