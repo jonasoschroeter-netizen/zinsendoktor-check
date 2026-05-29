@@ -69,7 +69,6 @@ export function generateCustomerReportHtml(
   result: CheckResult,
   meta: CustomerReportMeta = {}
 ): string {
-  const note = meta.note?.trim();
   const privateCare = buildPrivateCarePreview(input, result);
 
   return `<!doctype html>
@@ -423,152 +422,6 @@ export function generateCustomerReportHtml(
         margin: 0 0 16px 28px;
       }
 
-      .final-report-panel {
-        border-left: 8px solid #eef3f8;
-        padding-left: 16px;
-      }
-
-      .final-report-divider {
-        border-top: 1px solid var(--border);
-        margin: 18px 0;
-      }
-
-      .final-report-title {
-        color: var(--primary);
-        font-size: 15px;
-        font-weight: 800;
-        margin: 0 0 12px;
-      }
-
-      .final-report-line {
-        align-items: center;
-        display: flex;
-        gap: 10px;
-        margin-bottom: 12px;
-      }
-
-      .final-report-copy {
-        color: var(--muted);
-        font-size: 13px;
-        margin: 0 0 16px;
-      }
-
-      .final-report-grid {
-        display: grid;
-        gap: 12px;
-        grid-template-columns: 1fr 1fr;
-        margin-bottom: 14px;
-      }
-
-      .final-report-field-full {
-        margin-bottom: 14px;
-      }
-
-      .final-report-label {
-        color: var(--primary);
-        display: block;
-        font-size: 12px;
-        font-weight: 800;
-        margin-bottom: 6px;
-      }
-
-      .final-report-box,
-      .final-report-note-box,
-      .final-report-text-box {
-        background: #f8fbff;
-        border: 1px solid #c6d3e2;
-        border-radius: 8px;
-        color: var(--text);
-        font-size: 13px;
-        padding: 10px;
-      }
-
-      .final-report-box {
-        min-height: 36px;
-      }
-
-      .final-report-note-box {
-        min-height: 84px;
-        white-space: pre-wrap;
-      }
-
-      .final-report-save-button {
-        background: var(--accent);
-        border-radius: 6px;
-        color: #ffffff;
-        display: inline-block;
-        font-size: 13px;
-        font-weight: 800;
-        margin-bottom: 8px;
-        padding: 10px 16px;
-      }
-
-      .final-report-status {
-        color: #0b7d60;
-        font-size: 12px;
-        font-weight: 800;
-        margin: 0;
-      }
-
-      .final-report-text-box {
-        max-height: 230px;
-        overflow: hidden;
-        white-space: pre-wrap;
-      }
-
-      .meta-bar {
-        border-bottom: 1px solid var(--border);
-        display: grid;
-        gap: 12px;
-        grid-template-columns: repeat(3, 1fr);
-        padding: 0 0 18px;
-      }
-
-      .meta-label,
-      .metric-label {
-        color: var(--muted);
-        font-size: 12px;
-        margin: 0 0 4px;
-      }
-
-      .meta-value,
-      .metric-value {
-        color: var(--primary);
-        font-weight: 800;
-        margin: 0;
-      }
-
-      .content {
-        padding: 28px 38px 38px;
-      }
-
-      .summary {
-        border: 1px solid ${getReportColor(result.globalTrafficLight)};
-        border-radius: 10px;
-        display: grid;
-        gap: 18px;
-        grid-template-columns: 190px 1fr;
-        margin-bottom: 22px;
-        overflow: hidden;
-      }
-
-      .score-panel {
-        background: ${getReportBackground(result.globalTrafficLight)};
-        padding: 20px;
-      }
-
-      .score {
-        color: var(--primary);
-        font-size: 38px;
-        font-weight: 900;
-        line-height: 1;
-        margin: 8px 0 8px;
-      }
-
-      .summary-text {
-        padding: 20px 20px 20px 0;
-      }
-
       .badge {
         border-radius: 999px;
         display: inline-flex;
@@ -590,24 +443,6 @@ export function generateCustomerReportHtml(
       .badge-red {
         background: #fde9e9;
         color: #9f2222;
-      }
-
-      .metrics {
-        display: grid;
-        gap: 12px;
-        grid-template-columns: repeat(3, 1fr);
-        margin: 20px 0;
-      }
-
-      .metric {
-        background: var(--soft);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 15px;
-      }
-
-      .metric-value {
-        font-size: 22px;
       }
 
       section {
@@ -821,41 +656,6 @@ export function generateCustomerReportHtml(
           </div>
         </div>
       </div>
-
-      <main class="content">
-        <section class="final-report-panel">
-          <div class="final-report-divider"></div>
-          <h2 class="final-report-title">Prüfbedarf-Ampel</h2>
-          <div class="final-report-line">
-            ${trafficBadge(result.globalTrafficLight)}
-            <span>Prüfscore ${formatNumber(result.globalScore)} / 100</span>
-          </div>
-
-          <div class="final-report-divider"></div>
-          <h2 class="final-report-title">PDF-Kundenbericht</h2>
-          <p class="final-report-copy">Erstellen Sie einen übersichtlichen Bericht für das Kundengespräch. Die PDF-Ansicht wird nur lokal im Browser erzeugt; es werden keine Daten gespeichert oder übertragen.</p>
-          <div class="final-report-grid">
-            <div>
-              <span class="final-report-label">Kundenname optional</span>
-              <div class="final-report-box">${escapeHtml(meta.customerName?.trim() || "")}</div>
-            </div>
-            <div>
-              <span class="final-report-label">Beratername optional</span>
-              <div class="final-report-box">${escapeHtml(meta.advisorName?.trim() || "")}</div>
-            </div>
-          </div>
-          <div class="final-report-field-full">
-            <span class="final-report-label">Notiz für den Bericht optional</span>
-            <div class="final-report-note-box">${escapeHtml(note || "")}</div>
-          </div>
-          <div class="final-report-save-button">PDF herunterladen / speichern</div>
-          <p class="final-report-status">PDF-Ansicht wurde geöffnet. Im Druckdialog bitte „Als PDF speichern“ wählen.</p>
-
-          <div class="final-report-divider"></div>
-          <h2 class="final-report-title">Kopierbarer Ergebnistext</h2>
-          <div class="final-report-text-box">${escapeHtml(result.generatedText)}</div>
-        </section>
-      </main>
     </article>
   </body>
 </html>`;
