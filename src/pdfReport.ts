@@ -233,9 +233,11 @@ export function generateCustomerReportHtml(
       }
 
       .tax-situation-panel {
-        background: #ffffff;
+        background: #fbfdff;
+        border: 1px solid var(--border);
+        border-radius: 10px;
         margin: 18px 38px 0;
-        padding: 28px 14px 10px;
+        padding: 24px;
       }
 
       .tax-situation-title {
@@ -247,10 +249,14 @@ export function generateCustomerReportHtml(
 
       .tax-situation-row {
         align-items: center;
+        background: #ffffff;
+        border: 1px solid #edf2f7;
+        border-radius: 8px;
         display: grid;
-        gap: 30px;
+        gap: 24px;
         grid-template-columns: minmax(0, 1fr) 210px;
-        margin-bottom: 28px;
+        margin-bottom: 10px;
+        padding: 10px 12px;
       }
 
       .tax-situation-label {
@@ -262,25 +268,31 @@ export function generateCustomerReportHtml(
 
       .tax-situation-value {
         align-items: center;
-        border: 2px solid #0b3144;
-        color: #000000;
+        background: #f8fbff;
+        border: 1px solid #c6d3e2;
+        border-radius: 6px;
+        color: var(--primary);
         display: flex;
         font-size: 14px;
-        min-height: 28px;
-        padding: 3px 10px;
+        font-weight: 800;
+        justify-content: flex-end;
+        min-height: 34px;
+        padding: 5px 10px;
       }
 
       .care-situation-panel {
-        background: #ffffff;
-        margin: 42px 38px 0;
-        padding: 0 14px 14px;
+        background: #fbfdff;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        margin: 22px 38px 0;
+        padding: 24px;
       }
 
       .care-situation-title {
         color: #000000;
         font-size: 22px;
         font-weight: 500;
-        margin: 0 0 28px 58px;
+        margin: 0 0 20px;
       }
 
       .care-situation-subtitle {
@@ -293,10 +305,14 @@ export function generateCustomerReportHtml(
 
       .care-situation-row {
         align-items: center;
+        background: #ffffff;
+        border: 1px solid #edf2f7;
+        border-radius: 8px;
         display: grid;
         gap: 14px;
         grid-template-columns: minmax(0, 1fr) 160px 120px;
-        margin-bottom: 7px;
+        margin-bottom: 8px;
+        padding: 8px 10px;
       }
 
       .care-situation-row-wide {
@@ -316,18 +332,22 @@ export function generateCustomerReportHtml(
 
       .care-situation-value {
         align-items: center;
-        border: 1px solid #0a78b2;
-        color: #000000;
+        background: #f8fbff;
+        border: 1px solid #c6d3e2;
+        border-radius: 6px;
+        color: var(--primary);
         display: flex;
         font-size: 13px;
+        font-weight: 800;
         justify-content: flex-end;
-        min-height: 26px;
-        padding: 3px 8px;
+        min-height: 30px;
+        padding: 4px 8px;
       }
 
       .care-situation-value-green {
-        border-color: var(--accent);
         background: #eef8f4;
+        border-color: #80d0b4;
+        color: #0b5f49;
       }
 
       .care-spacer {
@@ -335,23 +355,25 @@ export function generateCustomerReportHtml(
       }
 
       .private-care-panel {
-        background: #ffffff;
-        margin: 58px 38px 0;
-        padding: 0 14px 22px;
+        background: #fbfdff;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        margin: 22px 38px 0;
+        padding: 24px;
       }
 
       .private-care-title {
         color: #000000;
         font-size: 22px;
         font-weight: 500;
-        margin: 0 0 18px 28px;
+        margin: 0 0 18px;
       }
 
       .private-care-intro {
         color: #000000;
         font-size: 13px;
         line-height: 1.25;
-        margin: 0 0 46px;
+        margin: 0 0 18px;
         max-width: 520px;
       }
 
@@ -359,10 +381,14 @@ export function generateCustomerReportHtml(
       .private-care-summary-row,
       .private-care-effect-row {
         align-items: center;
+        background: #ffffff;
+        border: 1px solid #edf2f7;
+        border-radius: 8px;
         display: grid;
         gap: 18px;
         grid-template-columns: 285px 170px 170px;
-        margin-bottom: 16px;
+        margin-bottom: 10px;
+        padding: 10px 12px;
       }
 
       .private-contract-name {
@@ -378,33 +404,36 @@ export function generateCustomerReportHtml(
       }
 
       .private-care-field-label {
-        color: #000000;
+        color: var(--muted);
         font-size: 12px;
+        font-weight: 700;
         margin: 0 0 7px;
-        text-align: center;
+        text-align: left;
       }
 
       .private-care-value {
         align-items: center;
-        border: 2px solid #0b3144;
-        color: #000000;
+        background: #f8fbff;
+        border: 1px solid #c6d3e2;
+        border-radius: 6px;
+        color: var(--primary);
         display: flex;
         font-size: 13px;
+        font-weight: 800;
         justify-content: flex-end;
-        min-height: 26px;
-        padding: 3px 8px;
+        min-height: 30px;
+        padding: 4px 8px;
       }
 
       .private-care-divider {
-        background: #0a6188;
-        height: 2px;
-        margin: 10px 0 22px 20px;
-        width: calc(100% - 40px);
+        background: linear-gradient(90deg, transparent, #c9d7e7, transparent);
+        height: 1px;
+        margin: 14px 0;
+        width: 100%;
       }
 
       .private-care-summary-row {
         grid-template-columns: 185px 170px 170px 120px;
-        margin-left: 14px;
       }
 
       .private-care-total-label {
@@ -416,15 +445,16 @@ export function generateCustomerReportHtml(
       }
 
       .private-care-inline-label {
-        color: #000000;
+        color: var(--muted);
         font-size: 12px;
+        font-weight: 700;
         margin: 0 0 7px;
         text-align: left;
       }
 
       .private-care-effect-row {
         grid-template-columns: 285px 170px 170px;
-        margin-top: 58px;
+        margin-top: 18px;
       }
 
       .private-care-empty {
@@ -485,9 +515,9 @@ export function generateCustomerReportHtml(
       .final-report-box,
       .final-report-note-box,
       .final-report-text-box {
-        background: #ffffff;
-        border: 1px solid var(--border);
-        border-radius: 6px;
+        background: #f8fbff;
+        border: 1px solid #c6d3e2;
+        border-radius: 8px;
         color: var(--text);
         font-size: 13px;
         padding: 10px;
@@ -740,10 +770,10 @@ export function generateCustomerReportHtml(
         </div>
       </header>
 
-      <section class="report-intro">
+      <div class="report-intro">
         <h1 class="report-title">Financial Care Preview</h1>
         <p class="report-subline">Diese Vorschau ist nur eine Orientierung und ersetzt keine individuelle Steuer-, Renten- oder Vorsorgeberatung.</p>
-      </section>
+      </div>
 
       <div class="report-pdf-cta">
         <div>

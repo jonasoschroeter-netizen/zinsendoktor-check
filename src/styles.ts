@@ -606,18 +606,21 @@ export const widgetStyles = `
 }
 
 .zd-financial-preview {
-  background: #ffffff;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
   border: 1px solid var(--zd-border);
   border-radius: 8px;
+  box-shadow: 0 14px 36px rgba(11, 31, 58, 0.06);
   display: grid;
-  gap: 22px;
+  gap: 16px;
   margin: 18px 0;
   padding: 20px;
 }
 
 .zd-preview-intro {
-  border-bottom: 1px solid var(--zd-border);
-  padding-bottom: 16px;
+  background: #f8fbfe;
+  border: 1px solid #e7edf5;
+  border-radius: 8px;
+  padding: 16px;
 }
 
 .zd-preview-main-title {
@@ -637,8 +640,11 @@ export const widgetStyles = `
 }
 
 .zd-preview-panel {
-  border-top: 1px solid var(--zd-border);
-  padding-top: 20px;
+  background: #ffffff;
+  border: 1px solid #e4ebf4;
+  border-radius: 8px;
+  box-shadow: 0 8px 22px rgba(11, 31, 58, 0.04);
+  padding: 18px;
 }
 
 .zd-preview-title {
@@ -651,9 +657,13 @@ export const widgetStyles = `
 .zd-preview-line,
 .zd-preview-compact-line {
   align-items: center;
+  background: #f9fbfe;
+  border: 1px solid #edf2f7;
+  border-radius: 8px;
   display: grid;
   gap: 16px;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
+  padding: 10px 12px;
 }
 
 .zd-preview-line {
@@ -683,18 +693,23 @@ export const widgetStyles = `
 
 .zd-preview-value {
   align-items: center;
-  border: 2px solid #0b3144;
-  color: #000000;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+  border: 1px solid #c6d3e2;
+  border-radius: 7px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  color: var(--zd-primary);
   display: flex;
   font-size: 0.92rem;
+  font-weight: 800;
   justify-content: flex-end;
-  min-height: 32px;
-  padding: 4px 10px;
+  min-height: 38px;
+  padding: 6px 12px;
 }
 
 .zd-preview-value-emphasis {
   background: #eef8f4;
-  border-color: var(--zd-accent);
+  border-color: #80d0b4;
+  color: #0b5f49;
 }
 
 .zd-preview-subtitle-spaced {
@@ -711,8 +726,12 @@ export const widgetStyles = `
 .zd-preview-private-summary,
 .zd-preview-private-effect {
   align-items: end;
+  background: #f9fbfe;
+  border: 1px solid #edf2f7;
+  border-radius: 8px;
   display: grid;
   gap: 16px;
+  padding: 12px;
 }
 
 .zd-preview-private-row {
@@ -725,17 +744,18 @@ export const widgetStyles = `
 }
 
 .zd-preview-mini-label {
-  color: #000000;
+  color: var(--zd-muted);
   display: block;
   font-size: 0.82rem;
+  font-weight: 700;
   margin-bottom: 6px;
-  text-align: center;
+  text-align: left;
 }
 
 .zd-preview-divider {
-  background: #0a6188;
-  height: 2px;
-  margin: 18px 0;
+  background: linear-gradient(90deg, transparent, #c9d7e7, transparent);
+  height: 1px;
+  margin: 6px 0;
 }
 
 .zd-preview-private-summary {
