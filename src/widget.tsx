@@ -54,6 +54,11 @@ type Errors = Record<string, string>;
 type VmsStatus = "inactive" | "loading" | "ready" | "error";
 type VmsSaveStatus = "idle" | "saving" | "saved" | "error";
 
+interface SavedVmsPdf {
+  dataUrl: string;
+  fileName: string;
+}
+
 interface ReportMetaState {
   advisorName: string;
   customerName: string;
@@ -74,7 +79,6 @@ interface FormState {
   incomeTypes: IncomeType[];
   maritalStatus: MaritalStatus | "";
   taxableIncome: string;
-  paidIncomeTax: string;
   monthlyNetIncomePerson1: string;
   yearsToRetirementPerson1: string;
   monthlyNetIncomePerson2: string;
@@ -101,7 +105,6 @@ const initialFormState: FormState = {
   incomeTypes: [],
   maritalStatus: "",
   taxableIncome: "",
-  paidIncomeTax: "",
   monthlyNetIncomePerson1: "",
   yearsToRetirementPerson1: "",
   monthlyNetIncomePerson2: "",
@@ -183,6 +186,7 @@ export function ZinsendoktorWidget({
   const [vmsState, setVmsState] = useState<VmsState>(() => createInitialVmsState(vmsBaseUrl));
   const [vmsSaveStatus, setVmsSaveStatus] = useState<VmsSaveStatus>("idle");
   const [vmsSaveMessage, setVmsSaveMessage] = useState("");
+  const [vmsSavedPdf, setVmsSavedPdf] = useState<SavedVmsPdf | null>(null);
 
   const themeStyle = useMemo(
     () =>
@@ -241,6 +245,7 @@ export function ZinsendoktorWidget({
     });
     setVmsSaveStatus("idle");
     setVmsSaveMessage("");
+    setVmsSavedPdf(null);
 
     async function loadSession(): Promise<void> {
       try {
@@ -441,6 +446,7 @@ export function ZinsendoktorWidget({
 
     setVmsSaveStatus("saving");
     setVmsSaveMessage("Auswertung wird gespeichert...");
+    setVmsSavedPdf(null);
 
     try {
       const pdfDataUrl = await generateCustomerReportPdfDataUrl(
@@ -467,14 +473,29 @@ export function ZinsendoktorWidget({
         throw new Error(`Speichern fehlgeschlagen (${response.status}).`);
       }
 
+      setVmsSavedPdf({ dataUrl: pdfDataUrl, fileName });
       setVmsSaveStatus("saved");
       setVmsSaveMessage("Auswertung gespeichert.");
     } catch (error) {
+      setVmsSavedPdf(null);
       setVmsSaveStatus("error");
       setVmsSaveMessage(
         error instanceof Error ? error.message : "Auswertung konnte nicht gespeichert werden."
       );
     }
+  }
+
+  function downloadSavedVmsPdf(): void {
+    if (!vmsSavedPdf) {
+      return;
+    }
+
+    const link = document.createElement("a");
+    link.href = vmsSavedPdf.dataUrl;
+    link.download = vmsSavedPdf.fileName;
+    document.body.append(link);
+    link.click();
+    link.remove();
   }
 
   function handleLeadSubmit(lead: LeadInput): void {
@@ -566,12 +587,14 @@ export function ZinsendoktorWidget({
               isVmsReady={vmsState.status === "ready"}
               onBack={goBack}
               onCreatePdf={createPdfReport}
+              onDownloadSavedVmsPdf={downloadSavedVmsPdf}
               onLeadSubmit={handleLeadSubmit}
               onSaveVmsResult={saveVmsResult}
               pdfStatus={pdfStatus}
               result={resultBundle.result}
               vmsSaveMessage={vmsSaveMessage}
               vmsSaveStatus={vmsSaveStatus}
+              vmsSavedPdfReady={Boolean(vmsSavedPdf)}
             />
           )}
         </div>
@@ -790,15 +813,6 @@ function TaxStep({
             onChange={(value) => onUpdateField("taxableIncome", value)}
             suffix="€"
             value={formState.taxableIncome}
-          />
-          <NumberField
-            error={errors.paidIncomeTax}
-            id="paidIncomeTax"
-            label="Wie viel Einkommensteuer haben Sie darauf ungefähr gezahlt?"
-            onChange={(value) => onUpdateField("paidIncomeTax", value)}
-            optional
-            suffix="€"
-            value={formState.paidIncomeTax}
           />
         </div>
       </div>
@@ -1092,12 +1106,14 @@ function ResultStep({
   isVmsReady,
   onBack,
   onCreatePdf,
+  onDownloadSavedVmsPdf,
   onLeadSubmit,
   onSaveVmsResult,
   pdfStatus,
   result,
   vmsSaveMessage,
-  vmsSaveStatus
+  vmsSaveStatus,
+  vmsSavedPdfReady
 }: {
   enableLeadForm: boolean;
   input: CheckInput;
@@ -1105,12 +1121,14 @@ function ResultStep({
   isVmsReady: boolean;
   onBack: () => void;
   onCreatePdf: () => void;
+  onDownloadSavedVmsPdf: () => void;
   onLeadSubmit: (lead: LeadInput) => void;
   onSaveVmsResult: () => void;
   pdfStatus: string;
   result: CheckResult;
   vmsSaveMessage: string;
   vmsSaveStatus: VmsSaveStatus;
+  vmsSavedPdfReady: boolean;
 }): React.ReactElement {
   return (
     <section className="zd-card" aria-labelledby="zd-result-title">
@@ -1159,10 +1177,13 @@ function ResultStep({
       {vmsSaveMessage && (
         <p className={`zd-copy-status zd-save-status-${vmsSaveStatus}`}>{vmsSaveMessage}</p>
       )}
-      {isVmsMode && vmsSaveStatus === "saved" && (
-        <button className="zd-button zd-button-secondary" type="button" onClick={() => window.close()}>
-          Fenster schließen
-        </button>
+      {isVmsMode && (vmsSaveStatus === "saving" || vmsSaveStatus === "saved") && (
+        <VmsSaveDialog
+          canDownloadPdf={vmsSavedPdfReady}
+          status={vmsSaveStatus}
+          onClosePage={() => window.close()}
+          onDownloadPdf={onDownloadSavedVmsPdf}
+        />
       )}
 
       <FinancialCarePreview input={input} result={result} />
@@ -1181,6 +1202,58 @@ function ResultStep({
         </button>
       </div>
     </section>
+  );
+}
+
+function VmsSaveDialog({
+  canDownloadPdf,
+  onClosePage,
+  onDownloadPdf,
+  status
+}: {
+  canDownloadPdf: boolean;
+  onClosePage: () => void;
+  onDownloadPdf: () => void;
+  status: Extract<VmsSaveStatus, "saving" | "saved">;
+}): React.ReactElement {
+  const isSaved = status === "saved";
+
+  return (
+    <div className="zd-save-dialog-backdrop" role="status" aria-live="polite">
+      <div className="zd-save-dialog" aria-label="Speicherstatus">
+        <div className={`zd-save-dialog-icon ${isSaved ? "zd-save-dialog-icon-done" : ""}`}>
+          {isSaved ? "✓" : <span className="zd-save-spinner" aria-hidden="true" />}
+        </div>
+        <p className="zd-save-dialog-kicker">{isSaved ? "Auswertung gespeichert" : "Speichern läuft"}</p>
+        <h3 className="zd-save-dialog-title">
+          {isSaved ? "Der Finanzdoktor wurde dem Auftrag hinzugefügt." : "Die Auswertung wird übertragen."}
+        </h3>
+        <p className="zd-save-dialog-text">
+          {isSaved
+            ? "Die PDF liegt jetzt im Partnerportal beim Vorgang. Sie können sie zusätzlich herunterladen oder diese Seite schließen."
+            : "Bitte warten Sie kurz, die PDF wird erzeugt und an den Auftrag übergeben."}
+        </p>
+        {isSaved ? (
+          <div className="zd-save-dialog-actions">
+            <button
+              className="zd-button zd-button-secondary"
+              disabled={!canDownloadPdf}
+              type="button"
+              onClick={onDownloadPdf}
+            >
+              PDF herunterladen
+            </button>
+            <button className="zd-button" type="button" onClick={onClosePage}>
+              Seite schließen
+            </button>
+          </div>
+        ) : (
+          <div className="zd-save-dialog-progress" aria-hidden="true">
+            <span />
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -1958,7 +2031,6 @@ function validateStep(formState: FormState, step: StepId): { valid: true } | { v
     }
 
     requireNumber(errors, "taxableIncome", formState.taxableIncome, { min: 0 });
-    optionalNumber(errors, "paidIncomeTax", formState.paidIncomeTax, { min: 0 });
   }
 
   if (step === 2) {
@@ -2047,9 +2119,7 @@ function buildCheckInput(formState: FormState): CheckInput {
     tax: {
       incomeTypes: formState.incomeTypes,
       maritalStatus: formState.maritalStatus || "ledig",
-      taxableIncome: toNumber(formState.taxableIncome),
-      paidIncomeTax:
-        formState.paidIncomeTax.trim() === "" ? undefined : toNumber(formState.paidIncomeTax)
+      taxableIncome: toNumber(formState.taxableIncome)
     },
     pension: {
       monthlyNetIncomePerson1: toNumber(formState.monthlyNetIncomePerson1),

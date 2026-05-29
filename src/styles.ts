@@ -892,6 +892,126 @@ export const widgetStyles = `
   margin: 0;
 }
 
+.zd-save-dialog-backdrop {
+  align-items: center;
+  background: rgba(15, 23, 42, 0.42);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 20px;
+  position: fixed;
+  z-index: 1000;
+}
+
+.zd-save-dialog {
+  background: #ffffff;
+  border: 1px solid var(--zd-border);
+  border-radius: 8px;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.24);
+  max-width: 520px;
+  padding: 28px;
+  text-align: center;
+  width: min(100%, 520px);
+}
+
+.zd-save-dialog-icon {
+  align-items: center;
+  background: #eaf1f8;
+  border-radius: 999px;
+  color: var(--zd-primary);
+  display: inline-flex;
+  font-size: 2.2rem;
+  font-weight: 900;
+  height: 92px;
+  justify-content: center;
+  margin-bottom: 14px;
+  width: 92px;
+}
+
+.zd-save-dialog-icon-done {
+  background: #e7f6ef;
+  color: #146c54;
+}
+
+.zd-save-spinner {
+  animation: zd-spin 0.85s linear infinite;
+  border: 5px solid #cbd5e1;
+  border-top-color: var(--zd-accent);
+  border-radius: 999px;
+  display: block;
+  height: 42px;
+  width: 42px;
+}
+
+.zd-save-dialog-kicker {
+  color: var(--zd-muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+.zd-save-dialog-title {
+  color: var(--zd-primary);
+  font-size: clamp(1.45rem, 3vw, 2rem);
+  line-height: 1.15;
+  margin: 0;
+}
+
+.zd-save-dialog-text {
+  color: var(--zd-muted);
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 14px 0 0;
+}
+
+.zd-save-dialog-actions {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr;
+  margin-top: 22px;
+}
+
+.zd-save-dialog-progress {
+  background: #e7edf4;
+  border-radius: 999px;
+  height: 8px;
+  margin-top: 24px;
+  overflow: hidden;
+}
+
+.zd-save-dialog-progress span {
+  animation: zd-progress 1.3s ease-in-out infinite;
+  background: var(--zd-accent);
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+  width: 45%;
+}
+
+@media (min-width: 560px) {
+  .zd-save-dialog-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@keyframes zd-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes zd-progress {
+  0% {
+    transform: translateX(-120%);
+  }
+
+  100% {
+    transform: translateX(240%);
+  }
+}
+
 .zd-financial-preview {
   display: grid;
   gap: 16px;
