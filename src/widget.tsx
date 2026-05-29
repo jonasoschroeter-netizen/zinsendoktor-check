@@ -828,11 +828,6 @@ function ResultStep({
   result: CheckResult;
   textareaRef: React.RefObject<HTMLTextAreaElement | null>;
 }): React.ReactElement {
-  const taxComparisonLight = getTaxComparisonLight(input.tax, result.calculatedIncomeTax);
-  const inflationDiagnosis = getInflationDiagnosis(result.inflationFactor);
-  const gapDiagnosis = getGapDiagnosis(result.monthlyGap);
-  const privatePensionSummary = getPrivatePensionSummary(result.contractResults);
-
   return (
     <section className="zd-card" aria-labelledby="zd-result-title">
       <h2 className="zd-card-title" id="zd-result-title">
@@ -867,95 +862,6 @@ function ResultStep({
       {pdfStatus && <p className="zd-copy-status">{pdfStatus}</p>}
 
       <FinancialCarePreview input={input} result={result} />
-
-      <ResultSection title="Steuerdiagnose">
-        <p>{getIncomeTypesDiagnosis(result.incomeTypeCount)}</p>
-        <p>
-          Rechnerische Einkommensteuer 2026: <strong>{formatCurrency(result.calculatedIncomeTax)}</strong>.
-          Geschätzte Steuerlast bis Rentenbeginn:{" "}
-          <strong>{formatCurrency(result.estimatedTaxUntilRetirement)}</strong>.
-        </p>
-        <p className="zd-small">
-          Berechnungsgrundlage: {OFFICIAL_TAX_SOURCE_2026.label}.{" "}
-          {OFFICIAL_TAX_SOURCE_2026.scope}
-        </p>
-        <div className={`zd-alert zd-alert-${taxComparisonLight}`}>
-          {getTaxComparisonText(input.tax, result.calculatedIncomeTax)}
-        </div>
-        <p>
-          Bis zum Rentenbeginn kann aus der jährlichen Steuerlast ein erheblicher Betrag entstehen.
-          Die Projektion nutzt modellhaft den 2026-Tarif und die angegebene Inflation.
-        </p>
-      </ResultSection>
-
-      <ResultSection title="Rentendiagnose">
-        <div className="zd-result-grid">
-          <Metric label="Versorgung Person 1" value={formatCurrency(result.estimatedPensionPerson1)} />
-          <Metric label="Geschätzte Gesamtversorgung" value={formatCurrency(result.totalEstimatedPension)} />
-        </div>
-        <p>{getPensionDiagnosis(input, result)}</p>
-        <p className="zd-small">
-          {RENTEN_SCHAETZUNG_HINWEIS} Die tatsächliche Rente kann abweichen.
-        </p>
-      </ResultSection>
-
-      <ResultSection title="Inflationsdiagnose">
-        <div className="zd-result-grid">
-          <Metric label="Analysezeitraum" value={`${formatNumber(result.analysisYears)} Jahre`} />
-          <Metric label="Inflationsfaktor" value={formatNumber(result.inflationFactor)} />
-          <Metric label="Hochgerechnete Warmmiete" value={formatCurrency(result.futureRent)} />
-          <Metric label="Hochgerechnete Lebenshaltung" value={formatCurrency(result.futureLivingCosts)} />
-        </div>
-        <div className={`zd-alert zd-alert-${inflationDiagnosis.trafficLight}`}>
-          {inflationDiagnosis.text} Bei {formatPercent(input.inflation.expectedInflationPercent)} Inflation über{" "}
-          {formatNumber(result.analysisYears)} Jahre werden heutige Kosten ungefähr mit Faktor{" "}
-          {formatNumber(result.inflationFactor)} hochgerechnet.
-        </div>
-      </ResultSection>
-
-      <ResultSection title="Private-Vorsorge-Diagnose">
-        <div className={`zd-alert zd-alert-${privatePensionSummary.trafficLight}`}>
-          {privatePensionSummary.text}
-        </div>
-        {input.contracts.length > 0 && (
-          <div className="zd-contract-list">
-            {input.contracts.map((contract, index) => {
-              const contractResult = result.contractResults.find((item) => item.id === contract.id);
-              const contractDisplayName = getContractDisplayName(contract, index);
-
-              if (!contractResult) {
-                return null;
-              }
-
-              return (
-                <div className="zd-contract-row" key={contract.id}>
-                  <div className="zd-contract-head">
-                    <p className="zd-contract-title">
-                      {contractDisplayName}: {getContractTypeLabel(contract)}
-                    </p>
-                    <TrafficBadge value={contractResult.trafficLight} />
-                  </div>
-                  <p>{contractResult.message}</p>
-                  <p>{contractResult.hint}</p>
-                  <p className="zd-small">
-                    Selbst eingezahlt: {formatCurrency(contractResult.totalPaid)}. Aktuelles
-                    Guthaben/Rückkaufswert: {formatCurrency(contract.currentBalance)}.
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </ResultSection>
-
-      <ResultSection title="Gesamtbedarf vs. Gesamtversorgung">
-        <div className="zd-result-grid">
-          <Metric label="Geschätzte Versorgung" value={formatCurrency(result.totalEstimatedPension)} />
-          <Metric label="Zukünftiger Monatsbedarf" value={formatCurrency(result.futureTotalNeed)} />
-          <Metric label="Monatliche Lücke" value={formatCurrency(Math.max(0, result.monthlyGap))} />
-        </div>
-        <div className={`zd-alert zd-alert-${gapDiagnosis.trafficLight}`}>{gapDiagnosis.text}</div>
-      </ResultSection>
 
       <ResultSection title="Prüfbedarf-Ampel">
         <p>
