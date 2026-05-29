@@ -267,7 +267,18 @@ export const widgetStyles = `
 
 .zd-input,
 .zd-select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--zd-primary) 50%),
+    linear-gradient(135deg, var(--zd-primary) 50%, transparent 50%);
+  background-position:
+    calc(100% - 19px) 50%,
+    calc(100% - 13px) 50%;
+  background-repeat: no-repeat;
+  background-size: 6px 6px;
+  cursor: pointer;
   height: 46px;
+  padding-right: 42px;
 }
 
 .zd-select-shell {
