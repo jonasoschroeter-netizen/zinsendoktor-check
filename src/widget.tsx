@@ -616,7 +616,7 @@ function InflationStep({
         Die Rechnung zeigt, wie sich heutige Kosten bis zur Rente verändern können.
       </p>
 
-      <div className="zd-grid zd-grid-two">
+      <div className="zd-grid zd-grid-two zd-equal-field-grid">
         <NumberField
           error={errors.currentWarmRent}
           id="currentWarmRent"
@@ -1115,11 +1115,6 @@ function NumberField({
       <label className="zd-label" htmlFor={id}>
         {label} {optional && <span className="zd-small">(optional)</span>}
       </label>
-      {help && (
-        <p className="zd-help" id={helpId}>
-          {help}
-        </p>
-      )}
       <div className={suffix ? "zd-input-wrap" : undefined}>
         <input
           aria-describedby={describedBy || undefined}
@@ -1133,6 +1128,11 @@ function NumberField({
         />
         {suffix && <span className="zd-input-suffix">{suffix}</span>}
       </div>
+      {help && (
+        <p className="zd-help" id={helpId}>
+          {help}
+        </p>
+      )}
       <ErrorMessage error={error} id={errorId} />
     </div>
   );

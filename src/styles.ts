@@ -195,6 +195,7 @@ export const widgetStyles = `
 
 .zd-equal-field-grid .zd-field {
   align-content: start;
+  grid-template-rows: auto 46px auto;
 }
 
 .zd-equal-field-grid .zd-label {
@@ -202,7 +203,7 @@ export const widgetStyles = `
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  min-height: 48px;
+  min-height: 50px;
 }
 
 .zd-tax-layout {
@@ -241,13 +242,19 @@ export const widgetStyles = `
   border-radius: 7px;
   color: var(--zd-text);
   font: inherit;
-  min-height: 44px;
+  min-height: 46px;
   padding: 10px 11px;
   width: 100%;
 }
 
+.zd-input,
+.zd-select {
+  height: 46px;
+}
+
 .zd-input-wrap {
   position: relative;
+  min-height: 46px;
 }
 
 .zd-input-has-suffix {
@@ -533,6 +540,7 @@ export const widgetStyles = `
 
 .zd-contract-fields .zd-field {
   align-content: start;
+  grid-template-rows: auto 46px auto;
 }
 
 .zd-contract-fields .zd-label {
@@ -540,7 +548,22 @@ export const widgetStyles = `
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  min-height: 48px;
+  min-height: 50px;
+}
+
+@media (min-width: 720px) {
+  .zd-grid-two > .zd-field {
+    align-content: start;
+    grid-template-rows: auto 46px auto;
+  }
+
+  .zd-grid-two > .zd-field > .zd-label {
+    align-items: flex-start;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    min-height: 50px;
+  }
 }
 
 .zd-copy-status {
