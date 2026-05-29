@@ -672,7 +672,7 @@ function getContractHint(type: ContractType): string {
     return "Bei Bausparverträgen sollten Guthabenzins, Darlehenszins, Abschlussgebühr, Zuteilung und tatsächlicher Finanzierungsbedarf geprüft werden.";
   }
 
-  return "Bei sonstigen Verträgen sollte geprüft werden, ob Ziel, Kosten, Rendite und Flexibilität noch zusammenpassen.";
+  return "Bei sonstigen Verträgen sollte geprüft werden, ob Ziel, Kosten und Flexibilität noch zusammenpassen.";
 }
 
 function isPaidTaxClearlyHigher(taxInput: TaxInput, calculatedIncomeTax: number): boolean {
