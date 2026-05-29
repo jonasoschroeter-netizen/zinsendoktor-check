@@ -4,21 +4,12 @@ import {
   contractTypeLabels,
   formatCurrency,
   formatNumber,
-  getGapDiagnosis,
-  getGlobalSummaryText,
   getContractTypeLabel,
-  getIncomeTypesDiagnosis,
-  getInflationDiagnosis,
-  getPensionDiagnosis,
-  getPrivatePensionSummary,
-  getTaxComparisonLight,
-  getTaxComparisonText,
   incomeTypeLabels,
   maritalStatusLabels,
   OFFICIAL_TAX_SOURCE_2026,
   RENTEN_SCHAETZUNG_HINWEIS,
-  satisfactionLabels,
-  trafficLightLabels
+  satisfactionLabels
 } from "./calculations";
 import {
   buildCustomerReportPayload,
@@ -33,7 +24,6 @@ import type {
   LeadInput,
   MaritalStatus,
   Satisfaction,
-  TrafficLight,
   VmsProductSession,
   VmsProductSessionResponse,
   VorsorgeContractInput,
@@ -1143,12 +1133,7 @@ function ResultStep({
         Renten- oder Vertragsberatung.
       </p>
 
-      <div className={`zd-alert zd-alert-${result.globalTrafficLight}`}>
-        <TrafficBadge value={result.globalTrafficLight} /> {getGlobalSummaryText(result.globalTrafficLight)}
-      </div>
-
       <div className="zd-summary-grid">
-        <Metric label="Prüfscore" value={`${formatNumber(result.globalScore)} / 100`} />
         <Metric label="Rechnerische Einkommensteuer 2026" value={formatCurrency(result.calculatedIncomeTax)} />
         <Metric label="Mögliche monatliche Lücke" value={formatCurrency(Math.max(0, result.monthlyGap))} />
       </div>
@@ -1190,12 +1175,6 @@ function ResultStep({
       )}
 
       <FinancialCarePreview input={input} result={result} />
-
-      <ResultSection title="Prüfbedarf-Ampel">
-        <p>
-          <TrafficBadge value={result.globalTrafficLight} /> Prüfscore {formatNumber(result.globalScore)} / 100
-        </p>
-      </ResultSection>
 
       {enableLeadForm && <LeadPanel onSubmit={onLeadSubmit} />}
 
@@ -1256,21 +1235,6 @@ function VmsSaveDialog({
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-function ResultSection({
-  children,
-  title
-}: {
-  children: React.ReactNode;
-  title: string;
-}): React.ReactElement {
-  return (
-    <div className="zd-section">
-      <h3 className="zd-section-title">{title}</h3>
-      {children}
     </div>
   );
 }
@@ -1486,10 +1450,6 @@ function Metric({ label, value }: { label: string; value: string }): React.React
       <p className="zd-metric-value">{value}</p>
     </div>
   );
-}
-
-function TrafficBadge({ value }: { value: TrafficLight }): React.ReactElement {
-  return <span className={`zd-badge zd-badge-${value}`}>{trafficLightLabels[value]}</span>;
 }
 
 function StepActions({

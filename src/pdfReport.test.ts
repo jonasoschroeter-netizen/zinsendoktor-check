@@ -56,6 +56,9 @@ describe("customer PDF report", () => {
     expect(html).toContain("Voraussichtliche Bezüge");
     expect(html).not.toContain("Ã");
     expect(html).not.toContain("Prüfbedarf-Ampel");
+    expect(html).not.toContain("Prüfscore");
+    expect(html).not.toContain("Gesamtbewertung");
+    expect(html).not.toContain("Bewertung:");
     expect(html).not.toContain("PDF-Kundenbericht");
     expect(html).not.toContain("Kopierbarer Ergebnistext");
     expect(html).not.toContain("Kundenname optional");
@@ -110,6 +113,9 @@ describe("customer PDF report", () => {
     expect(payload.advisor?.userId).toBe("odoo-user-1");
     expect(payload.reportHtml).toContain("Steuerliche Situation");
     expect(payload.reportText).toContain("Rechnerische Einkommensteuer 2026");
+    expect(payload.reportText).not.toContain("Prüfscore");
+    expect(payload.reportText).not.toContain("Gesamtbewertung");
+    expect(payload.reportText).not.toContain("Bewertung:");
   });
 
   it("calculates covered months from retirement budget", () => {

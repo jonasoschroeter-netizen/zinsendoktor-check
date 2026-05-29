@@ -1,11 +1,9 @@
 import {
   formatCurrency,
   formatNumber,
-  getContractTypeLabel,
-  getGlobalSummaryText,
-  trafficLightLabels
+  getContractTypeLabel
 } from "./calculations";
-import type { CheckInput, CheckResult, TrafficLight } from "./types";
+import type { CheckInput, CheckResult } from "./types";
 import type { AuthenticatedUserContext, CustomerReportPayload } from "./types";
 
 export interface CustomerReportMeta {
@@ -195,28 +193,10 @@ export function generateCustomerReportHtml(
         margin: 14px 0 22px;
       }
 
-      .report-diagnosis-alert {
-        align-items: center;
-        background: ${getReportBackground(result.globalTrafficLight)};
-        border: 1px solid ${getReportColor(result.globalTrafficLight)};
-        border-radius: 9px;
-        color: ${getReportTextColor(result.globalTrafficLight)};
-        display: flex;
-        font-size: 16px;
-        gap: 14px;
-        line-height: 1.55;
-        margin-bottom: 18px;
-        padding: 15px 18px;
-      }
-
-      .report-diagnosis-alert .badge {
-        flex: 0 0 auto;
-      }
-
       .report-diagnosis-metrics {
         display: grid;
         gap: 12px;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
       .report-diagnosis-metric {
@@ -618,15 +598,7 @@ export function generateCustomerReportHtml(
       <header class="report-diagnosis-header">
         <h1 class="report-diagnosis-title">Ihre Finanz-Diagnose</h1>
         <p class="report-diagnosis-copy">Die Auswertung ist eine vereinfachte Orientierung und ersetzt keine individuelle Steuer-, Renten- oder Vertragsberatung.</p>
-        <div class="report-diagnosis-alert">
-          ${trafficBadge(result.globalTrafficLight)}
-          <span>${escapeHtml(getGlobalSummaryText(result.globalTrafficLight))}</span>
-        </div>
         <div class="report-diagnosis-metrics">
-          <div class="report-diagnosis-metric">
-            <p class="report-diagnosis-metric-label">Prüfscore</p>
-            <p class="report-diagnosis-metric-value">${formatNumber(result.globalScore)} / 100</p>
-          </div>
           <div class="report-diagnosis-metric">
             <p class="report-diagnosis-metric-label">Rechnerische Einkommensteuer 2026</p>
             <p class="report-diagnosis-metric-value">${formatCurrency(result.calculatedIncomeTax)}</p>
@@ -773,46 +745,6 @@ function buildPrivateCarePreview(input: CheckInput, result: CheckResult): {
     totalRetirementBudget,
     totalSelfPaid
   };
-}
-
-function trafficBadge(value: TrafficLight): string {
-  return `<span class="badge badge-${value}">${escapeHtml(trafficLightLabels[value])}</span>`;
-}
-
-function getReportColor(value: TrafficLight): string {
-  if (value === "red") {
-    return "#eec1c1";
-  }
-
-  if (value === "yellow") {
-    return "#f1dda6";
-  }
-
-  return "#c5eadc";
-}
-
-function getReportBackground(value: TrafficLight): string {
-  if (value === "red") {
-    return "#fdecec";
-  }
-
-  if (value === "yellow") {
-    return "#fff8e8";
-  }
-
-  return "#e8f7f1";
-}
-
-function getReportTextColor(value: TrafficLight): string {
-  if (value === "red") {
-    return "#8f1f1f";
-  }
-
-  if (value === "yellow") {
-    return "#6f4b00";
-  }
-
-  return "#0b5f49";
 }
 
 function escapeHtml(value: string): string {

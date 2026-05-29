@@ -393,7 +393,6 @@ export function generateResultText(input: CheckInput, result: CheckResult): stri
             `Davon selbst eingezahlt: ${formatCurrency(contractResult?.totalPaid ?? 0)}`,
             `Aktuelles Guthaben/Rückkaufswert: ${formatCurrency(contract.currentBalance)}`,
             `Erfüllt der Vertrag Ihre Erwartungen? ${satisfactionLabels[contract.satisfaction]}`,
-            `Bewertung: ${trafficLightLabels[contractResult?.trafficLight ?? "green"]}`,
             `Hinweis: ${contractResult?.hint ?? ""}`,
             ""
           ];
@@ -437,12 +436,7 @@ export function generateResultText(input: CheckInput, result: CheckResult): stri
     `Mögliche monatliche Lücke: ${formatCurrency(Math.max(0, result.monthlyGap))}`,
     "",
     "5. Private Vorsorge",
-    ...contractLines,
-    "6. Gesamtbewertung",
-    `Prüfscore: ${formatNumber(result.globalScore)} / 100`,
-    `Ampel: ${trafficLightLabels[result.globalTrafficLight]}`,
-    "Zusammenfassung:",
-    getGlobalSummaryText(result.globalTrafficLight)
+    ...contractLines
   ].join("\n");
 }
 
