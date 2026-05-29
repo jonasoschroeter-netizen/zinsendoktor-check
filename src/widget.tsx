@@ -109,7 +109,7 @@ const initialFormState: FormState = {
   yearsToRetirementPerson1: "",
   monthlyNetIncomePerson2: "",
   yearsToRetirementPerson2: "",
-  expectedInflationPercent: "2,5",
+  expectedInflationPercent: "",
   currentWarmRent: "",
   currentLivingCosts: "",
   contracts: []
