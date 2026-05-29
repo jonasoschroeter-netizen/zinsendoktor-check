@@ -30,6 +30,7 @@ export const widgetStyles = `
 .zd-progress,
 .zd-progress-track,
 .zd-step-list,
+.zd-step-item,
 .zd-summary-grid,
 .zd-metric,
 .zd-contract-row,
@@ -650,17 +651,37 @@ export const widgetStyles = `
 
   .zd-step-item {
     align-items: center;
+    appearance: none;
+    background: transparent;
     border-left: 4px solid #dbe2ec;
+    border-bottom: 0;
+    border-right: 0;
+    border-top: 0;
+    color: inherit;
+    cursor: pointer;
     display: inline-flex;
+    font: inherit;
     line-height: 1.2;
     min-height: 36px;
     padding-left: 12px;
+    text-align: left;
   }
 
   .zd-step-item-active {
     border-left-color: var(--zd-accent);
     color: var(--zd-primary);
     font-weight: 800;
+  }
+
+  .zd-step-item:hover,
+  .zd-step-item:focus {
+    border-left-color: var(--zd-accent);
+    color: var(--zd-primary);
+    outline: none;
+  }
+
+  .zd-step-item:focus-visible {
+    box-shadow: 0 0 0 4px var(--zd-focus);
   }
 }
 `;

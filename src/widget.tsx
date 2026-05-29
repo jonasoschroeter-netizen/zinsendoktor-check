@@ -279,6 +279,20 @@ export function ZinsendoktorWidget({
     }
   }
 
+  function jumpToStep(targetStep: StepId): void {
+    if (targetStep === step) {
+      return;
+    }
+
+    if (targetStep === 5) {
+      showResult();
+      return;
+    }
+
+    setErrors({});
+    setStep(targetStep);
+  }
+
   return (
     <div className="zd-widget" style={themeStyle}>
       <div className="zd-shell">
@@ -291,7 +305,7 @@ export function ZinsendoktorWidget({
           </p>
         </header>
 
-        <Progress step={step} />
+        <Progress onStepSelect={jumpToStep} step={step} />
 
         <div className="zd-content">
           {step === 0 && <StartStep onStart={() => setStep(1)} />}
@@ -357,7 +371,13 @@ export function ZinsendoktorWidget({
   );
 }
 
-function Progress({ step }: { step: StepId }): React.ReactElement {
+function Progress({
+  onStepSelect,
+  step
+}: {
+  onStepSelect: (step: StepId) => void;
+  step: StepId;
+}): React.ReactElement {
   const width = `${Math.round((step / 5) * 100)}%`;
 
   return (
@@ -369,16 +389,23 @@ function Progress({ step }: { step: StepId }): React.ReactElement {
       <div className="zd-progress-track" aria-hidden="true">
         <div className="zd-progress-bar" style={{ width }} />
       </div>
-      <div className="zd-step-list" aria-hidden="true">
-        {stepLabels.slice(1).map((label, index) => (
-          <span
-            className={`zd-step-item ${step === index + 1 ? "zd-step-item-active" : ""}`}
-            key={label}
-          >
-            {label}
-          </span>
-        ))}
-      </div>
+      <nav className="zd-step-list" aria-label="Direkt zu Schritt springen">
+        {stepLabels.slice(1).map((label, index) => {
+          const targetStep = (index + 1) as StepId;
+
+          return (
+            <button
+              aria-current={step === targetStep ? "step" : undefined}
+              className={`zd-step-item ${step === targetStep ? "zd-step-item-active" : ""}`}
+              key={label}
+              type="button"
+              onClick={() => onStepSelect(targetStep)}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </nav>
     </div>
   );
 }
